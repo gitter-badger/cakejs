@@ -1,3 +1,3 @@
 export * from './Session'
-export * from './SessionManager'
+export var SessionManager = require('./SessionManager');
 
