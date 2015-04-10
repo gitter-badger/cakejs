@@ -3,10 +3,6 @@ var CakeJS = require("..");
 var path = require('path');
 var filename = path.basename(__filename);
 
-var config = {
-
-};
-
 class Tests{
 	constructor(){
 		var methods = Object.getOwnPropertyNames(Tests.prototype);
@@ -16,7 +12,6 @@ class Tests{
 	}
 	before(){
 		console.log(filename);
-		CakeJS.init(config);
 	}
 	FirstTest(){
 		//No tests written yet
