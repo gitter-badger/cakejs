@@ -16,11 +16,14 @@ class Tests{
 			}
 		}
 	}
-	before(){
-		
+	server_create(){
+		this._server = CakeJS.createServer();
 	}
-	FirstTest(){
-		//No tests written yet
+	server_config(){
+		this._server.config("./example/configs/empty.json");
+	}
+	server_start(){
+		this._server.start();
 	}
 }
 
