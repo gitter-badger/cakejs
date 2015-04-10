@@ -9,8 +9,8 @@ class Static {
 	}
 }
 
-var static = new Static();
+var _static = new Static();
 
 export default function(request, response, next){
-	static.use(request, response, next);
+	_static.use(request, response, next);
 }
