@@ -1,2 +1,2 @@
-export * from './WebSocketConnection'
-export * from './WebSocketConnectionManager'
+export * from './Connection'
+export * from './ConnectionManager'
