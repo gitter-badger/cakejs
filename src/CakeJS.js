@@ -1,12 +1,20 @@
-import MissingConfigException from './Exception/MissingConfigException'
+export var Controller = require('./Controller');
+export var Datasource = require('./Datasource');
+export var ORM = require('./ORM');
 
+import {MissingConfigException} from './Exception/MissingConfigException'
+
+var events = require('events');
 var fs = require('fs');
+var express = require('express');
+var http = require("http");
+var socketio = require("socket.io");
+var cookieParser = require("cookie-parser");
+var bodyParser = require("body-parser");
 
-export default class CakeJS{
-	static Controller = require('./Controller');
-	static Datasource = require('./Datasource');
-	static ORM = require('./ORM');
+export class Server extends events.EventEmitter {
 	constructor(){
+		super();
 		this._config = {};
 	}
 	config(config){
@@ -21,4 +29,11 @@ export default class CakeJS{
 			throw new MissingConfigException();
 		this._config = config;
 	}
+	start(){
+		
+	}
+}
+
+export function createServer(){
+	return new Server();
 }
