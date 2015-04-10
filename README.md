@@ -14,4 +14,4 @@ If this is used with CakePHP then all the Express.static logic will be replaced 
 Since NodeJS is extremly fast and SocketIO is soooo delicious those two combined will add a realtime layer to CakePHP that atleast I have missed alot, examples: realtime chat, realtime diagnostic, realtime feeds
 
 <b>Update:</b>
-Currently porting our prototype project and rewriting it to fit the CakePHP 3.0 standard
+Currently porting our prototype project and rewriting it to fit the CakePHP 3.0 standard!
