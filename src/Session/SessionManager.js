@@ -1,9 +1,7 @@
-export var SessionMananger = new Class {
+class SessionManager {
 	constructor(){
 		this._sessions = {};
 	}
-}();
+};
 
-export default function(){
-	console.log("test");
-}
+export default new SessionManager();
