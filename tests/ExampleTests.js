@@ -3,23 +3,12 @@ var CakeJS = require("..");
 var path = require('path');
 var filename = path.basename(__filename);
 
-var config = {
-
-};
-
 class Tests{
 	constructor(){
 		var methods = Object.getOwnPropertyNames(Tests.prototype);
 		for(var i = 0; i < methods.length; i++)
 			if(["constructor"].indexOf(methods[i]) === -1)
-				this[methods[i]] = this[methods[i]];
-	}
-	before(){
-		console.log(filename);
-		CakeJS.init(config);
-	}
-	FirstTest(){
-		//No tests written yet
+				this[filename.substr(0,filename.length-3)+"->"+methods[i].replace(new RegExp("\_", 'g'), "->")] = this[methods[i]];
 	}
 }
 

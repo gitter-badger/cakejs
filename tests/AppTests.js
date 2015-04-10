@@ -8,10 +8,7 @@ class Tests{
 		var methods = Object.getOwnPropertyNames(Tests.prototype);
 		for(var i = 0; i < methods.length; i++)
 			if(["constructor"].indexOf(methods[i]) === -1)
-				this[methods[i]] = this[methods[i]];
-	}
-	before(){
-		console.log(filename);
+				this[filename.substr(0,filename.length-3)+"->"+methods[i].replace(new RegExp("\_", 'g'), "->")] = this[methods[i]];
 	}
 	FirstTest(){
 		//No tests written yet
