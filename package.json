@@ -20,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/cakejsframework/cakejs/issues"
   },
-  "homepage": "https://github.com/cakejsframework/cakejs"
+  "homepage": "https://github.com/cakejsframework/cakejs",
+  "dependencies": {
+    "babel-runtime": "^5.0.12"
+  }
 }

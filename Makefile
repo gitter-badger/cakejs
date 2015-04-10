@@ -20,7 +20,7 @@ ifeq ($(DEP_MOCHA),)
 endif
 
 build: check clean
-	@babel --stage 0 --out-dir lib src > /dev/null
+	@babel --stage 0 --optional runtime --out-dir lib src > /dev/null
 
 clean:
 ifneq ($(wildcard lib/.*),)
@@ -28,9 +28,9 @@ ifneq ($(wildcard lib/.*),)
 endif
 
 test-silent:
-	@babel --stage 0 --out-dir lib/tests tests > /dev/null
-	@mocha --ui exports lib/tests > /dev/null	
+	@babel --stage 0 --optional runtime --out-dir lib/Tests tests > /dev/null
+	@mocha --ui exports lib/Tests > /dev/null	
 	
 test: build
-	@babel --stage 0 --out-dir lib/tests tests > /dev/null
-	@mocha --ui exports lib/tests
+	@babel --stage 0 --optional runtime --out-dir lib/Tests tests > /dev/null
+	@mocha --ui exports lib/Tests
