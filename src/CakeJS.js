@@ -11,9 +11,9 @@ export class Server extends events.EventEmitter {
 	constructor(){
 		super();
 		this._config = {};
-		this._app = express();
-		this._http = http.Server(this._app);
-		this._sio = socketio(this._http);
+		//this._app = express();
+		//this._http = http.Server(this._app);
+		//this._sio = socketio(this._http);
 	}
 	config(config){
 		if(typeof config === 'string'){
