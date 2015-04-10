@@ -1,7 +1,3 @@
-export var Controller = require('./Controller');
-export var Datasource = require('./Datasource');
-export var ORM = require('./ORM');
-
 import {MissingConfigException} from './Exception/MissingConfigException'
 
 var events = require('events');
