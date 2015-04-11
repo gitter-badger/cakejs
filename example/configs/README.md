@@ -23,7 +23,7 @@ The only requests that won't be proxied are the socketio requests
 {
 	"Proxy": {
 		"host": "127.0.0.1",
-		"port": 8080
+		"port": 8081
 	}
 }
 ```
@@ -31,3 +31,15 @@ The only requests that won't be proxied are the socketio requests
 ## No webserver
 
 If neither <b>Proxy</b> and <b>Static</b> is provided then no content will be served to the browser
+
+## Extra options
+
+If you would like to change listen port you can add the Listen key to the config
+
+```json
+{
+	"Listen": {
+		"port": 8080
+	}
+}
+```
