@@ -14,14 +14,14 @@ When <b>Static</b> is provided then a express instance will serve the path as we
 }
 ```
 
-## CakePHP
+## Proxy
 
-When <b>CakePHP</b> is provided then all requests will be proxied to the CakePHP webserver, keep in mind that if the CakePHP server is on a other domain the cookies won't work and strange sideeffects might occur.
+When <b>Proxy</b> is provided then all requests will be proxied to the webserver, keep in mind that if the webserver is on a other domain the cookies won't work and strange sideeffects might occur.
 The only requests that won't be proxied are the socketio requests
 
 ```json
 {
-	"CakePHP": {
+	"Proxy": {
 		"host": "127.0.0.1",
 		"port": 8080
 	}
@@ -30,4 +30,4 @@ The only requests that won't be proxied are the socketio requests
 
 ## No webserver
 
-If neither <b>CakePHP</b> and <b>Static</b> is provided then no content will be served to the browser
+If neither <b>Proxy</b> and <b>Static</b> is provided then no content will be served to the browser
