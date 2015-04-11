@@ -5,10 +5,18 @@ class SessionParser {
 	use(request, response, next){
 		
 	}
+	set(data, accept){
+		console.log(data);
+	}
 }
 
 var _sessionParser = new SessionParser();
 
-export default function(request, response, next){
-	_sessionParser.use(request, response, next);
+export default function(){
+	return function(p1, p2, p3){
+		if(typeof p3 !== 'undefined')
+			_sessionParser.use(p1, p2, p3);
+		else if(typeof p2 !== 'undefined')
+			_sessionParser.set(p1, p2);
+	}
 }

@@ -20,10 +20,10 @@ class Tests{
 		this._server = CakeJS.createServer();
 	}
 	server_config(){
-		this._server.config("./example/configs/empty.json");
+		this._server.config({});
 	}
-	server_start(){
-		this._server.start();
+	async server_start(){
+		await this._server.start();
 	}
 }
 

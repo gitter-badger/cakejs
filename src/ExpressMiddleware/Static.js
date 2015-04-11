@@ -1,16 +1,13 @@
-var socketio = require("socket.io");
-
 class Static {
-	constructor(){
-		
+	constructor(path){
+		this._path = path;
 	}
 	use(request, response, next){
 		
 	}
 }
 
-var _static = new Static();
-
-export default function(request, response, next){
-	_static.use(request, response, next);
+export default function(path){
+	var _static = new Static(path);
+	return _static.use.bind(_static);
 }
