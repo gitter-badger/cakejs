@@ -10,8 +10,9 @@ The largest difference is that this framework will not have the view support sin
 
 If this is used with CakePHP then all the Express.static logic will be replaced with just proxying the traffic towards the CakePHP webserver and only intercepting the socketio transfers
 
-<b>Conclusion:</b>
-Since NodeJS is extremly fast and SocketIO is soooo delicious those two combined will add a realtime layer to CakePHP that atleast I have missed alot, examples: realtime chat, realtime diagnostic, realtime feeds
+<b>Good to know:</b>
+The development team of CakePHP is going to show how to build realtime applications with NodeJS on their CakeFest 2015 :)
+we will probably attend and take inspiration during this event to gather more knowledge of how to make this even more greater.
 
 <b>Update:</b>
 Currently porting our prototype project and rewriting it to fit the CakePHP 3.0 standard!
