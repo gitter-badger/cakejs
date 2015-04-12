@@ -65,7 +65,12 @@ export class Server extends events.EventEmitter {
 			this._app.use(proxy(this._config.Proxy.host, this._config.Proxy.port));
 		}
 		this._sio.set('authorization', sessionParser());
-		await new Promise((resolve, reject) => this._http.listen(this._config.Listen.port, () => {
+		await new Promise(resolve => this._http.listen(this._config.Listen.port, () => {
+			resolve();
+		}));
+	}
+	async stop(){
+		await new Promise(resolve => this._http.close(() => {
 			resolve();
 		}));
 	}

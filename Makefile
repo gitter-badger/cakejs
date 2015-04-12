@@ -32,9 +32,11 @@ ifneq ($(wildcard lib/.*),)
 endif
 
 test-silent:
+	@cp -R tests lib/Tests
 	@babel --stage 0 --optional runtime --out-dir lib/Tests tests > /dev/null
 	@mocha --ui exports lib/Tests > /dev/null	
 	
 test: build
+	@cp -R tests lib/Tests
 	@babel --stage 0 --optional runtime --out-dir lib/Tests tests > /dev/null
 	@mocha --ui exports lib/Tests

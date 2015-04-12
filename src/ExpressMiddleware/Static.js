@@ -1,9 +1,10 @@
 class Static {
 	constructor(path){
 		this._path = path;
+		this._expressStatic = require('express').static(this._path);
 	}
 	use(request, response, next){
-		
+		this._expressStatic(request, response, next);
 	}
 }
 

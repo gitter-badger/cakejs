@@ -3,7 +3,7 @@ class SessionParser {
 		
 	}
 	use(request, response, next){
-		
+		next();
 	}
 	set(data, accept){
 		console.log(data);

@@ -20,10 +20,25 @@ class Tests{
 		this._server = CakeJS.createServer();
 	}
 	server_config(){
-		this._server.config({});
+		this._server.config({
+			"Static": {
+				"path": path.resolve(__filename,"..","AppTests")
+			}
+		});
 	}
 	async server_start(){
 		await this._server.start();
+	}
+	async connection_test(){
+		var response = await new Promise((resolve, reject) => require('request').get('http://127.0.0.1:8080/').on('error', error => {return reject(error);}).on('response',response => {
+			resolve(response);
+		}));
+		assert.equal(response.statusCode, 200, "Was expecting a successful get");
+		for(var key in response)
+			console.log(key);
+	}
+	async server_stop(){
+		await this._server.stop();
 	}
 }
 
