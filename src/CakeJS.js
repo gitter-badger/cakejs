@@ -1,5 +1,7 @@
 import {MissingConfigException} from './Exception/MissingConfigException'
 import sessionParser from './ExpressMiddleware/SessionParser'
+import sessionManager from './Session/SessionManager'
+import socketIOConnection from './ExpressMiddleware/SocketIOConnection'
 import _static from './ExpressMiddleware/Static'
 import proxy from './ExpressMiddleware/Proxy'
 
@@ -94,15 +96,23 @@ export class Server extends events.EventEmitter {
 	async start(){
 		if(this._config === null)
 			this.config({});
+		sessionManager.config(this._config.Session.name, this._config.Session.ttl);
 		this._app.use(cookieParser());
 		this._app.use(sessionParser(this._config.Session.name, this._config.Session.ttl));
 		this.emit('use', this._app);
+		var javascriptLibraryContent = fs.readFileSync(path.resolve(__filename,'..','Client','client.js'));
+		this._app.get('/js/cakejs.js', (request, response) => {
+			response.writeHead(200, {'content-type': 'text/javascript'});
+			response.write(javascriptLibraryContent);
+			response.end();
+		});
 		if("Static" in this._config){
 			this._app.use(_static(this._config.Static.webroot));
 		}else if("Proxy" in this._config){
 			this._app.use(proxy(this._config.Proxy.host, this._config.Proxy.port));
 		}
 		this._sio.set('authorization', sessionParser());
+		this._sio.on('connection', socketIOConnection());
 		await new Promise(resolve => this._http.listen(this._config.Listen.port, () => {
 			resolve();
 		}));
