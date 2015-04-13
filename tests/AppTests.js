@@ -1,6 +1,7 @@
 var assert = require("assert")
 var CakeJS = require("..");
 var path = require('path');
+var fs = require('fs');
 var filename = path.basename(__filename);
 
 class Tests{
@@ -21,8 +22,11 @@ class Tests{
 	}
 	server_config(){
 		this._server.config({
+			"CakeJS": {
+				"src": path.resolve(__filename,"..","app"),
+			},
 			"Static": {
-				"path": path.resolve(__filename,"..","AppTests")
+				"webroot": path.resolve(__filename,"..","webroot"),
 			}
 		});
 	}
@@ -34,8 +38,13 @@ class Tests{
 			resolve(response);
 		}));
 		assert.equal(response.statusCode, 200, "Was expecting a successful get");
-		for(var key in response)
-			console.log(key);
+		var data = await new Promise((resolve, reject) => require('request').get('http://127.0.0.1:8080/').on('error', error => {return reject(error);}).on('data',data => {
+			resolve(data);
+		})); 
+		assert.equal(data.toString(), fs.readFileSync(path.resolve(__filename,"..","webroot", "index.html")), "The response was incorrect");
+	}
+	async routing_test(){
+		
 	}
 	async server_stop(){
 		await this._server.stop();
