@@ -34,9 +34,9 @@ endif
 test-silent:
 	@cp -R tests lib/Tests
 	@babel --stage 0 --optional runtime --out-dir lib/Tests tests > /dev/null
-	@mocha --ui exports lib/Tests > /dev/null	
+	@mocha --bail --slow 300 --timeout 5000 --ui exports lib/Tests > /dev/null	
 	
 test: build
 	@cp -R tests lib/Tests
 	@babel --stage 0 --optional runtime --out-dir lib/Tests tests > /dev/null
-	@mocha --ui exports lib/Tests
+	@mocha --bail --slow 300 --timeout 5000 --ui exports lib/Tests
