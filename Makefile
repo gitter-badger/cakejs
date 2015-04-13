@@ -25,6 +25,7 @@ endif
 
 build: check clean
 	@babel --stage 0 --optional runtime --out-dir lib src > /dev/null
+	@babel --stage 0 --modules commonStrict --out-dir lib/Client src/Client > /dev/null
 
 clean:
 ifneq ($(wildcard lib/.*),)
