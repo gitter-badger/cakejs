@@ -4,7 +4,7 @@ When you design a config you should keep in mind that there are three modes a co
 
 ## Static
 
-When <b>Static</b> is provided then a express instance will serve the path as webroot, and you won't able to specify CakePHP
+When <b>Static</b> is provided then a express instance will serve the path as webroot, and you won't able to specify Proxy
 
 ```json
 {
