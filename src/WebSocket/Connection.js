@@ -15,4 +15,7 @@ export default class Connection extends events.EventEmitter {
 		});
 		session.connections.add(this);
 	}
+	emit(event, data){
+		this._socket.emit(event, data);
+	}
 }
