@@ -1,5 +1,5 @@
 {
 	"Static": {
-		"path": "/var/www"
+		"webroot": "/var/www"
 	}
 }
