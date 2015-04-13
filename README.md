@@ -44,3 +44,7 @@ Add this to index.html inside <b>\<head\></b><b>\</head\></b>
 <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 <script type="text/javascript" src="/js/cakejs.js"></script>
 ```
+
+## Status
+Currently we are rewriting our prototype project to fit CakePHP 3.x standards
+so this project is at the moment not stable
