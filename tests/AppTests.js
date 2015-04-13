@@ -17,10 +17,8 @@ class Tests{
 			}
 		}
 	}
-	server_create(){
+	async server_create(){
 		this._server = CakeJS.createServer();
-	}
-	server_config(){
 		this._server.config({
 			"CakeJS": {
 				"src": path.resolve(__filename,"..","app"),
@@ -29,11 +27,9 @@ class Tests{
 				"webroot": path.resolve(__filename,"..","webroot"),
 			}
 		});
-	}
-	async server_start(){
 		await this._server.start();
 	}
-	async connection_test(){
+	async connection(){
 		var response = await new Promise((resolve, reject) => require('request').get('http://127.0.0.1:8080/').on('error', error => {return reject(error);}).on('response',response => {
 			resolve(response);
 		}));
@@ -42,9 +38,6 @@ class Tests{
 			resolve(data);
 		})); 
 		assert.equal(data.toString(), fs.readFileSync(path.resolve(__filename,"..","webroot", "index.html")), "The response was incorrect");
-	}
-	async routing_test(){
-		
 	}
 	async server_stop(){
 		await this._server.stop();
