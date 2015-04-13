@@ -9,7 +9,7 @@ When <b>Static</b> is provided then a express instance will serve the path as we
 ```json
 {
 	"Static": {
-		"path": "<PATH TO WEBROOT>"
+		"webroot": "<PATH TO WEBROOT>"
 	}
 }
 ```
