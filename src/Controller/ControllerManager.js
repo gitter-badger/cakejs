@@ -16,6 +16,12 @@ class ControllerManager {
 			throw new MissingControllerException(name);
 		return new this._controllers[name]();
 	}
+	getControllerNames(){
+		var names = [];
+		for(var key in this._controllers)
+			names.push(key);
+		return names;
+	}
 }
 
 export default new ControllerManager();

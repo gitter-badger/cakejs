@@ -1,2 +1,2 @@
 export * from './Controller'
-export * from './ControllerManager'
+export var ControllerManager = require('./ControllerManager')
