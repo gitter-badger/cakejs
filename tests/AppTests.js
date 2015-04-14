@@ -72,22 +72,22 @@ class Tests{
 	}
 	async routing_post(){
 		var form = {
-			"test": 10
+			"keyA": "valueA",
+			"keyB": "valueB"
 		};
-		var response = await new Promise((resolve, reject) => require('request').get('http://127.0.0.1:8080/Test/post').form(form).on('error', error => {return reject(error);}).on('response',response => {
+		var response = await new Promise((resolve, reject) => require('request').post('http://127.0.0.1:8080/Test/post').form(form).on('error', error => {return reject(error);}).on('response',response => {
 			resolve(response);
 		}));
 		assert.equal(response.statusCode, 200, "Was expecting a successful get");
-		var data = await new Promise((resolve, reject) => require('request').get('http://127.0.0.1:8080/Test/post').form(form).on('error', error => {return reject(error);}).on('data',data => {
+		var data = await new Promise((resolve, reject) => require('request').post('http://127.0.0.1:8080/Test/post').form(form).on('error', error => {return reject(error);}).on('data',data => {
 			resolve(data);
 		}));
-		console.log(data);
 		try{
 			data = JSON.parse(data);
 		}catch(e){
 			throw new Error("Unable to parse data");
 		}
-		assert.equal(data, true, "The response was incorrect");
+		assert.equal(JSON.stringify(data), JSON.stringify(form), "The response was incorrect");
 	}
 	async server_stop(){
 		await this._server.stop();
