@@ -9,6 +9,7 @@ export class Request{
 		};
 		if(request !== null){
 			this.url = request.url;
+			this.data = request.body;
 			for(var key in this._detectors){
 				
 			}
