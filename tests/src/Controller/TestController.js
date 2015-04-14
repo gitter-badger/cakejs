@@ -1,4 +1,8 @@
-export default class TestController extends CakeJS.Controller.Controller {
+//uses
+var ClientException = CakeJS.Controller.Exception.ClientException;
+var Controller = CakeJS.Controller.Controller;
+
+export default class TestController extends Controller {
 	index(){
 		return true;
 	}
@@ -6,6 +10,6 @@ export default class TestController extends CakeJS.Controller.Controller {
 		throw null;
 	}
 	client_error(){
-		throw new CakeJS.Controller.Exception.ClientException({"custom": "error"});
+		throw new ClientException({"custom": "error"}); 
 	}
 }
