@@ -1,2 +1,3 @@
 export var Exception = require('./Exception')
-export * from './ClassLoader'
+export var ClassLoader = require('./ClassLoader')
+export var Configure = require('./Configure')
