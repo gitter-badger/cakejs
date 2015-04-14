@@ -70,6 +70,25 @@ class Tests{
 		}));
 		assert.equal(data.toString(),'{"custom":"error"}', "Was expecting a json string");
 	}
+	async routing_post(){
+		var form = {
+			"test": 10
+		};
+		var response = await new Promise((resolve, reject) => require('request').get('http://127.0.0.1:8080/Test/post').form(form).on('error', error => {return reject(error);}).on('response',response => {
+			resolve(response);
+		}));
+		assert.equal(response.statusCode, 200, "Was expecting a successful get");
+		var data = await new Promise((resolve, reject) => require('request').get('http://127.0.0.1:8080/Test/post').form(form).on('error', error => {return reject(error);}).on('data',data => {
+			resolve(data);
+		}));
+		console.log(data);
+		try{
+			data = JSON.parse(data);
+		}catch(e){
+			throw new Error("Unable to parse data");
+		}
+		assert.equal(data, true, "The response was incorrect");
+	}
 	async server_stop(){
 		await this._server.stop();
 	}

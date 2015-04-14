@@ -4,6 +4,7 @@ import {MissingActionException} from '../Controller/Exception/MissingActionExcep
 import {ClientException} from '../Controller/Exception/ClientException'
 import {FatalException} from '../Core/Exception/FatalException'
 import {Exception} from '../Core/Exception/Exception'
+import {Request} from '../Network/Request'
 
 class Static {
 	constructor(path){
@@ -12,7 +13,9 @@ class Static {
 	}
 	use(request, response, next){
 		try{
+			request = new Request(request);
 			var route = router.parse(request.url);
+			console.log(route);
 			var controller = controllerManager.get(route.controller);
 			if(!(route.action in controller))
 				throw new MissingActionException(route.action);

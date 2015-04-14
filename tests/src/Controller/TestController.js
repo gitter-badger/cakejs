@@ -12,4 +12,7 @@ export default class TestController extends Controller {
 	client_error(){
 		throw new ClientException({"custom": "error"}); 
 	}
+	post(){
+		//this.request.data
+	}
 }
