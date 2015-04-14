@@ -13,16 +13,16 @@ class Static {
 	}
 	use(request, response, next){
 		try{
-			request = new Request(request);
 			var route = router.parse(request.url);
-			console.log(route);
 			var controller = controllerManager.get(route.controller);
+			controller.request = new Request(request);
 			if(!(route.action in controller))
 				throw new MissingActionException(route.action);
 			try{
 				var result = controller[route.action].apply(controller, route.params);
 				response.writeHead(200, {'Content-Type': 'application/json'});
-				response.write(JSON.stringify(result));
+				if(typeof result !== 'undefined')
+					response.write(JSON.stringify(result));
 			}catch(e){
 				if(e === null || e === false || e === true)
 					return response.sendStatus(500);
