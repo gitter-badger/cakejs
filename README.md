@@ -29,7 +29,7 @@ cakejs.config({
 	"Listen": {
 		"port": 8080
 	},
-	"CakeJS": {0
+	"CakeJS": {
 		"src": path.resolve(__filename,"..","src"),
 	},
 	"Static": {
