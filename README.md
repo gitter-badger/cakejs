@@ -23,7 +23,8 @@ $ npm install cakejs
 ## Simple static webserver with cakejs and socketio
 
 ```js
-var cakejs = require('/opt/cakejs').createServer();
+require('cakejs')
+var cakejs = CakeJS.createServer();
 cakejs.config({
 	"Listen": {
 		"port": 8080
