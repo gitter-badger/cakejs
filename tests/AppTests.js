@@ -39,7 +39,7 @@ class Tests{
 		})); 
 		assert.equal(data.toString(), fs.readFileSync(path.resolve(__filename,"..","webroot", "index.html")), "The response was incorrect");
 	}
-	async routing_success(){
+	async routing(){
 		var response = await new Promise((resolve, reject) => require('request').get('http://127.0.0.1:8080/Test').on('error', error => {return reject(error);}).on('response',response => {
 			resolve(response);
 		}));
