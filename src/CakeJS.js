@@ -71,6 +71,7 @@ export class Server extends events.EventEmitter {
 			response.end();
 		});
 		if(configure.get("Static") !== null){
+			this._app.use(bodyParser.urlencoded({ extended: false }));
 			this._app.use(_static(configure.get("Static.webroot", "/var/www")));
 		}else if(configure.get("Proxy") !== null){
 			this._app.use(proxy(configure.get("Proxy.host", "127.0.0.1"), configure.get("Proxy.port", 80)));
