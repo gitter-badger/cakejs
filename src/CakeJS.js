@@ -5,6 +5,10 @@ import socketIOConnection from './ExpressMiddleware/SocketIOConnection'
 import _static from './ExpressMiddleware/Static'
 import proxy from './ExpressMiddleware/Proxy'
 
+import controllerManager from './Controller/ControllerManager'
+import router from './Routing/Router'
+import configure from './Core/Configure'
+
 var events = require('events');
 var fs = require('fs');
 var path = require('path');
@@ -26,7 +30,6 @@ export class Server extends events.EventEmitter {
 	 */
 	constructor(config){
 		super();
-		this._config = null;
 		this._app = express();
 		this._http = http.Server(this._app);
 		this._sio = socketio(this._http);
@@ -42,63 +45,24 @@ export class Server extends events.EventEmitter {
 	 * @returns {void}
 	 */
 	config(config){
-		if(typeof config === 'string'){
-			try{
-				config = JSON.parse(fs.readFileSync(config));
-			}catch(e){
-				throw new MissingConfigException();
-			}
-		}
-		
-		if(typeof config !== 'object')
-			throw new MissingConfigException();
-		this._config = config;
-		
-		//CakeJS
-		if(!("CakeJS" in this._config))
-			this._config.CakeJS = {};
-		if(!("src" in this._config.CakeJS))
-			this._config.CakeJS.src = path.resolve('.');
-		
-		//Listen
-		if(!("Listen" in this._config))
-			this._config.Listen = {};
-		if(!("port" in this._config.Listen))
-			this._config.Listen.port = 8080;
-		
-		//Session
-		if(!("Session" in this._config))
-			this._config.Session = {};
-		if(!("name" in this._config.Session))
-			this._config.Session.name = "cakejs_sessid";
-		if(!("ttl" in this._config.Session))
-			this._config.Session.ttl = 1000*60*60*24;
-		
-		//Static
-		if("Static" in this._config){
-			if(!("webroot" in this._config.Static))
-				this._config.Static.webroot = "/var/www";
-		}
-		
-		//Proxy
-		if("Proxy" in this._config){
-			if(!("host" in this._config.Proxy))
-				this._config.Proxy.host = "127.0.0.1";
-			if(!("port" in this._config.Proxy))
-				this._config.Proxy.port = 80;
-		}
+		configure.config(config);		
 	}
 	/**
 	 * Starts the CakeJS server
 	 * 
 	 * @returns {Promise}
 	 */
-	async start(){
-		if(this._config === null)
-			this.config({});
-		sessionManager.config(this._config.Session.name, this._config.Session.ttl);
+	async start(){		
+		//Preloads managers
+		await controllerManager.load(path.resolve(configure.get("CakeJS.src", path.resolve('.')),"Controller"));
+		
+		//Build routes
+		await router.initialize();
+
+		//Starts the web related services
+		sessionManager.config(configure.get("Session.name", "cakejs_sessid"), configure.get("Session.ttl", 1000*60*60*24));
 		this._app.use(cookieParser());
-		this._app.use(sessionParser(this._config.Session.name, this._config.Session.ttl));
+		this._app.use(sessionParser(configure.get("Session.name", "cakejs_sessid"), configure.get("Session.ttl", 1000*60*60*24)));
 		this.emit('use', this._app);
 		var javascriptLibraryContent = fs.readFileSync(path.resolve(__filename,'..','Client','client.js'));
 		this._app.get('/js/cakejs.js', (request, response) => {
@@ -106,14 +70,14 @@ export class Server extends events.EventEmitter {
 			response.write(javascriptLibraryContent);
 			response.end();
 		});
-		if("Static" in this._config){
-			this._app.use(_static(this._config.Static.webroot));
-		}else if("Proxy" in this._config){
-			this._app.use(proxy(this._config.Proxy.host, this._config.Proxy.port));
+		if(configure.get("Static") !== null){
+			this._app.use(_static(configure.get("Static.webroot", "/var/www")));
+		}else if(configure.get("Proxy") !== null){
+			this._app.use(proxy(configure.get("Proxy.host", "127.0.0.1"), configure.get("Proxy.port", 80)));
 		}
 		this._sio.set('authorization', sessionParser());
 		this._sio.on('connection', socketIOConnection());
-		await new Promise(resolve => this._http.listen(this._config.Listen.port, () => {
+		await new Promise(resolve => this._http.listen(configure.get("Listen.port", 8080), () => {
 			resolve();
 		}));
 	}
@@ -128,7 +92,6 @@ export class Server extends events.EventEmitter {
 		}));
 	}
 }
-
 export function createServer(){
 	return new Server();
 }
