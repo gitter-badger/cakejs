@@ -88,9 +88,7 @@ export class Server extends events.EventEmitter {
 	 * @returns {Promise}
 	 */
 	async stop(){
-		await new Promise(resolve => this._http.close(() => {
-			resolve();
-		}));
+		await new Promise(resolve => this._http.close(resolve));
 	}
 }
 export function createServer(){
