@@ -152,3 +152,5 @@ class Client {
 		sio.on(event, callback);
 	}
 }
+
+var client = new Client();
