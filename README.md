@@ -13,7 +13,7 @@ but our current goal is to support Model-Controller structure with low performan
 projects scalable easy.
 
 
-## Installation (Not yet published)
+## Installation
 
 ```bash
 $ npm install cakejs
