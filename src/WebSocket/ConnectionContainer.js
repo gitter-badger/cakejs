@@ -7,10 +7,9 @@ export default class ConnectionContainer{
 		this.remove(connection);
 		this._connections.push(connection);
 		//If connection is closed, remove connection from container
-		connection.on('disconnect', (connection) => {
+		connection.event.on('disconnect', (connection) => {
 			this.remove(connection);
 		});
-		console.log(this._connections.length);
 	}
 	remove(connection){
 		var index = this._connections.indexOf(connection);

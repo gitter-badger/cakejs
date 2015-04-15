@@ -1,21 +1,24 @@
 var events = require('events');
 
-export default class Connection extends events.EventEmitter {
+export default class Connection {
 	constructor(socket){
-		super();
 		var session = socket.request._session;
 		delete socket.request._session;
-		this._socket = socket;
+		this.socket = socket;
 		this.session = session.data;
-		socket.on('disconnect', () => {
-			this.emit('disconnect', this);
+		this.event = new events.EventEmitter();
+		this.socket.on('disconnect', () => {
+			this.event.emit('disconnect', this);
 		});
-		socket.on('error', () => {
-			this.emit('disconnect', this);
+		this.socket.on('error', () => {
+			this.event.emit('disconnect', this);
 		});
 		session.connections.add(this);
 	}
 	emit(event, data){
-		this._socket.emit(event, data);
+		this.socket.emit("WebSocketEmit", {
+			event: event,
+			data: data
+		});
 	}
 }
