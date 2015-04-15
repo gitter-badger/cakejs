@@ -66,3 +66,7 @@ release-major: build test
 publish:
 	git push --tags origin HEAD:master
 	npm publish
+	
+reset:
+	git fetch --all
+	git reset --hard origin/master
