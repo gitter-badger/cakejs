@@ -24,23 +24,24 @@ ifeq ($(wildcard node_modules/.*),)
 endif
 
 build: check clean
-	@babel --stage 0 --optional runtime --out-dir lib src > /dev/null
-	@babel --stage 0 --modules commonStrict --out-dir lib/Client src/Client > /dev/null
+	@mkdir build
+	@babel --stage 0 --optional runtime --out-dir build/src src > /dev/null
+	@babel --stage 0 --modules commonStrict --out-dir build/pub pub > /dev/null
 
 clean:
-ifneq ($(wildcard lib/.*),)
-	@rm -r lib
+ifneq ($(wildcard build/.*),)
+	@rm -r build
 endif
 
 test-silent:
-	@cp -R tests lib/Tests
-	@babel --stage 0 --optional runtime --out-dir lib/Tests tests > /dev/null
-	@mocha --bail --slow 300 --timeout 5000 --ui exports lib/Tests > /dev/null	
+	@cp -R tests build/tests
+	@babel --stage 0 --optional runtime --out-dir build/tests tests > /dev/null
+	@mocha --bail --slow 300 --timeout 5000 --ui exports build/tests > /dev/null	
 	
 test: build
-	@cp -R tests lib/Tests
-	@babel --stage 0 --optional runtime --out-dir lib/Tests tests > /dev/null
-	@mocha --bail --slow 300 --timeout 5000 --ui exports lib/Tests
+	@cp -R tests build/tests
+	@babel --stage 0 --optional runtime --out-dir build/tests tests > /dev/null
+	@mocha --bail --slow 300 --timeout 5000 --ui exports build/tests
 
 define release
 	VERSION=`node -pe "require('./package.json').version"` && \

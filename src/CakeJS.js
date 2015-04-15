@@ -64,7 +64,7 @@ export class Server extends events.EventEmitter {
 		this._app.use(cookieParser());
 		this._app.use(sessionParser(configure.get("Session.name", "cakejs_sessid"), configure.get("Session.ttl", 1000*60*60*24)));
 		this.emit('use', this._app);
-		var javascriptLibraryContent = fs.readFileSync(path.resolve(__filename,'..','Client','client.js'));
+		var javascriptLibraryContent = fs.readFileSync(path.resolve(__filename,'..','..','pub','client.js'));
 		this._app.get('/js/cakejs.js', (request, response) => {
 			response.writeHead(200, {'content-type': 'text/javascript'});
 			response.write(javascriptLibraryContent);
