@@ -1,32 +1,17 @@
-DEP_BABEL = $(shell npm ls -g | grep 'babel')
-DEP_MOCHA = $(shell npm ls -g | grep 'mocha')
-
 install:
-ifeq ($(DEP_BABEL),)
 	@echo make: installing dependency \'babel\'
-	@npm install -g babel
-endif
-ifeq ($(DEP_MOCHA),)
+	@npm install -s -g babel
 	@echo make: installing dependency \'mocha\'
-	@npm install -g mocha
-endif
+	@npm install -s -g mocha
+	@echo make: installing dependency \'browserify\'
+	@npm install -s -g browserify
 	@npm install > /dev/null
 
-check:
-ifeq ($(DEP_BABEL),)
-	$(error npm:Babel was not installed, globally, run: make install)
-endif
-ifeq ($(DEP_MOCHA),)
-	$(error npm:Mocha was not installed, globally, run: make install)
-endif
-ifeq ($(wildcard node_modules/.*),)
-	$(error npm:Node modules are missing, run: make install)
-endif
-
-build: check clean
+build: clean index
 	@mkdir build
 	@babel --stage 0 --optional runtime --out-dir build/src src > /dev/null
-	@babel --stage 0 --modules commonStrict --out-dir build/pub pub > /dev/null
+	@mkdir build/pub
+	@browserify pub/client.js -t [ babelify --stage 0 ] --outfile build/pub/client.js
 
 clean:
 ifneq ($(wildcard build/.*),)
@@ -54,6 +39,9 @@ define release
 	git commit -m "release $$NEXT_VERSION" -- package.json && \
 	git tag "$$NEXT_VERSION" -m "release $$NEXT_VERSION"
 endef
+
+index:
+	@node utils/indexer.js src
 
 release-patch: build test
 	@$(call release,patch)
