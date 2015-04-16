@@ -24,12 +24,22 @@ function timeoutPromise(promise, timeoutInMilliseconds){
 	});
 }
 
+class Request {
+	constructor(args){
+		
+	}
+}
+
 class Item {
-	constructor(controller, action, data, timeout){
+	constructor(args, timeout){
 		this.index = itemIndexCounter++;
-		this._controller = typeof controller !== 'string' ? null : (controller.trim() === '' ? null : /^[a-zA-Z0-9]+$/.test(controller) ? controller : null );
-		this._action = typeof action !== 'string' ? null : (action.trim() === '' ? null : /^[a-zA-Z0-9]+$/.test(action) ? action : null );
-		this._data = data;
+		this.request = new Request(args);
+		this.request = {
+			controller: null,
+			action: null,
+			arguments: [],
+			data: null
+		};
 		this._timeout = typeof timeout === 'undefined' ? 60*1000 : timeout;
 		this.resolve = null;
 		this.reject = null;
@@ -50,9 +60,7 @@ class CallItem extends Item {
 			try{
 				sio.emit('WebSocketRequest', {
 					index: this.index,
-					controller: controller,
-					action: action,
-					data: data
+					request: this.request
 				});
 			}catch(e){
 				this.reject('Call to '+controller+'->'+action+' failed');
@@ -110,13 +118,17 @@ class GetItem extends Item {
 class Client {
 	constructor(){
 		this._items = {};
-		sio.on('WebSocketResponse', async(response) => {
+		this._events = {};
+		sio.on('WebSocketResponse', (response) => {
 			if(typeof response === 'object' && 'index' in response && response.index in this._items){
 				if('error' in response)
 					this._items[response.index].reject(response.error);
 				else
 					this._items[response.index].resolve(response);
 			}
+		});
+		sio.on('WebSocketEmit', (response) => {
+			console.log(response);
 		});
 	}
 	async _invoke(item){
@@ -132,24 +144,27 @@ class Client {
 			throw e;
 		}
 	}
-	_parseToJSON(data){
-		if(typeof data === 'undefined' || data === null || (typeof data === 'string' && (data.trim() === '')))
-			return null;
-		return data;
+	call(){
+		return this._invoke(new CallItem(arguments, 130*1000));
 	}
-	call(controller, action, data){
-		data = this._parseToJSON(data);
-		return this._invoke(new CallItem(controller, action, data, 130*1000));
+	post(){
+		return this._invoke(new PostItem(arguments, 20*1000));
 	}
-	post(controller, action, data){
-		data = this._parseToJSON(data);
-		return this._invoke(new PostItem(controller, action, data, 20*1000));
-	}
-	get(controller, action){
-		return this._invoke(new GetItem(controller, action, null, 20*1000));
+	get(){
+		return this._invoke(new GetItem(arguments, 20*1000));
 	}
 	on(event, callback){
-		sio.on(event, callback);
+		if(typeof event !== 'string')
+			throw "Expected first argument to be a string";
+		callback = typeof callback !== 'function' ? null : callback;
+		if(callback === null){
+			if(event in this._events)
+				delete this._events[event];
+		}else{
+			if(!(event in this._events))
+				this._events[event] = [];
+			this._events[event].push(callback);			
+		}
 	}
 }
 
