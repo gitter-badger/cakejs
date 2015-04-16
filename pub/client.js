@@ -6,27 +6,43 @@ sio.on('error', function(error){
 	}
 });
 
-function timeoutPromise(promise, timeoutInMilliseconds){
-	timeoutInMilliseconds = typeof timeoutInMilliseconds === 'undefined' ? 60 * 1000 : timeoutInMilliseconds;
-	return new Promise(async (resolve, reject) => {
-		var timeout = setTimeout(() => {
-			timeout = null;
-			reject("Timeout promise, Timed out");
-		},timeoutInMilliseconds);
-		try{
-			var response = await promise;
-			resolve(response);
-		}catch(e){
-			reject(e);
-		}
-		if(timeout !== null)
-			clearTimeout(timeout);
-	});
-}
-
 class Request {
 	constructor(args){
-		
+		this.controller = null;
+		this.action = null;
+		this.arguments = [];
+		this.data = null;
+		var _args = new Array();
+		for(var key in args)
+			if(/^[0-9]{1,}$/.test(key))
+				_args.push(args[key]);
+		do{
+			var item = _args.shift();
+			if(typeof item === 'string'){
+				if(this.controller === null){
+					this.controller = item;
+				}else if(this.action === null){
+					this.action = item;
+				}else{
+					this.arguments.push(item);
+				}
+			}else if(typeof item === 'object'){
+				if(this.controller === null){
+					if('controller' in item){
+						this.controller = item.controller;
+						delete item.controller;
+					}
+					if('action' in item){
+						this.action = item.action;
+						delete item.action;
+					}
+					for(var key in item)
+						this.arguments.push(item[key]);
+				}else{
+					this.data = item;
+				}
+			}
+		}while(_args.length > 0);
 	}
 }
 
@@ -34,26 +50,37 @@ class Item {
 	constructor(args, timeout){
 		this.index = itemIndexCounter++;
 		this.request = new Request(args);
-		this.request = {
-			controller: null,
-			action: null,
-			arguments: [],
-			data: null
-		};
-		this._timeout = typeof timeout === 'undefined' ? 60*1000 : timeout;
+		this.timeout = typeof timeout === 'undefined' ? 60*1000 : timeout;
 		this.resolve = null;
 		this.reject = null;
 	}
-	async _run(controller, action, data){throw "Not Implemented";}
-	async run(){
-		if(this._controller === null)
-			throw 'Post failed due to invalid controller name';
-		return await timeoutPromise(this._run(this._controller, this._action, this._data), this._timeout);
+	_run(){return new Promise((resolve, reject) => {reject("Not Implemented");})}
+	run(){
+		return new Promise((resolve, reject) => {
+			if(this.request.controller === null)
+				return reject("Post failed due to invalid controller name");
+			var timeout = setTimeout(() => {
+				timeout = null;
+			}, this.timeout);
+			this._run().then((response) => {
+				if(timeout !== null){
+					clearTimeout(timeout);
+					timeout = null;
+				}
+				resolve(response);
+			},(error) => {
+				if(timeout !== null){
+					clearTimeout(timeout);
+					timeout = null;
+				}
+				reject(error);
+			});
+		});
 	}
 }
 
 class CallItem extends Item {
-	_run(controller, action, data){
+	_run(){
 		return new Promise((resolve, reject) => {
 			this.resolve = resolve;
 			this.reject = reject;
@@ -63,53 +90,66 @@ class CallItem extends Item {
 					request: this.request
 				});
 			}catch(e){
-				this.reject('Call to '+controller+'->'+action+' failed');
+				this.reject('Call to '+this.request.controller+'->'+this.request.action+' failed');
 			}
 		});
 	}
 }
 
 class PostItem extends Item {
-	_run(controller, action, data){
-		return new Promise(async (resolve, reject) => {
+	_run(){
+		return new Promise((resolve, reject) => {
 			this.resolve = resolve;
 			this.reject = reject;
 			try{
 				$.ajax({
-					url: '/post/'+controller+(action===null?'':'/'+action),
+					url: '/'+this.request.controller+"/"+(this.request.action===null?'':this.request.action)+"/"+this.request.arguments.join("/"),
 					method: 'POST',
-					data: {
-						index: this.index,
-						data: typeof data === 'undefined'?data:JSON.stringify(data)
-					}
+					data: typeof this.request.data === 'undefined'?null:this.request.data
 				}).done((data) => {
 					this.resolve(data);
 				}).fail((e) => {
-					this.reject('Post to '+controller+'->'+action+' failed');
+					if(e.status === 520){
+						try{
+							this.reject(JSON.parse(e.responseText));
+						}catch(e){
+							this.reject('Post to '+this.request.controller+'->'+this.request.action+' failed');
+						}
+					}else{
+						this.reject('Post to '+this.request.controller+'->'+this.request.action+' failed');
+					}
 				});
 			}catch(e){
-				this.reject('Post to '+controller+'->'+action+' failed');
+				this.reject('Post to '+this.request.controller+'->'+this.request.action+' failed');
 			}
 		});
 	}
 }
 
 class GetItem extends Item {
-	_run(controller, action, data){
-		return new Promise(async (resolve, reject) => {
+	_run(){
+		return new Promise((resolve, reject) => {
 			this.resolve = resolve;
 			this.reject = reject;
 			try{
 				$.ajax({
-					url: '/get/'+controller+(action===null?'':'/'+action),
+					url: '/'+this.request.controller+"/"+(this.request.action===null?'':this.request.action)+"/"+this.request.arguments.join("/"),
 					method: 'GET'
 				}).done((data) => {
 					this.resolve(data);
 				}).fail((e) => {
-					this.reject('Get to '+controller+'->'+action+' failed');
+					if(e.status === 520){
+						try{
+							this.reject(JSON.parse(e.responseText));
+						}catch(e){
+							this.reject('Get to '+this.request.controller+'->'+this.request.action+' failed');
+						}
+					}else{
+						this.reject('Get to '+this.request.controller+'->'+this.request.action+' failed');
+					}
 				});
 			}catch(e){
-				this.reject('Get to '+controller+'->'+action+' failed');
+				this.reject('Get to '+this.request.controller+'->'+this.request.action+' failed');
 			}
 		});
 	}
@@ -121,28 +161,35 @@ class Client {
 		this._events = {};
 		sio.on('WebSocketResponse', (response) => {
 			if(typeof response === 'object' && 'index' in response && response.index in this._items){
-				if('error' in response)
-					this._items[response.index].reject(response.error);
-				else
+				if('error' in response){
+					if(response.error === null){
+						console.error("CALL FAILED WITH 500 (Internal Server Error)");
+						this._items[response.index].reject('Call to '+this._items[response.index].request.controller+'->'+this._items[response.index].request.action+' failed');
+					}else{
+						this._items[response.index].reject(response.error);
+					}
+				}else{
 					this._items[response.index].resolve(response);
+				}
 			}
 		});
 		sio.on('WebSocketEmit', (response) => {
 			console.log(response);
 		});
 	}
-	async _invoke(item){
-		this._items[item.index] = item;
-		try{
-			var response = await item.run();
-			delete this._items[item.index];
-			if(typeof response !== 'object' || !('data' in response))
-				return;
-			return response.data;
-		}catch(e){
-			delete this._items[item.index];
-			throw e;
-		}
+	_invoke(item){
+		return new Promise((resolve, reject) => {
+			this._items[item.index] = item;
+			item.run().then(response => {
+				delete this._items[item.index];
+				if(typeof response !== 'object' || !('data' in response))
+					return resolve(response);
+				resolve(response.data);
+			},error => {
+				delete this._items[item.index];
+				reject(error);
+			});
+		});
 	}
 	call(){
 		return this._invoke(new CallItem(arguments, 130*1000));
@@ -166,6 +213,9 @@ class Client {
 			this._events[event].push(callback);			
 		}
 	}
+	test(){
+		console.log("test");
+	}
 }
 
-var client = new Client();
+window.client = new Client();
