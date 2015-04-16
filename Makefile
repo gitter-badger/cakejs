@@ -43,13 +43,13 @@ endef
 index:
 	@node utils/indexer.js src
 
-release-patch: build test
+release-patch: build test-silent
 	@$(call release,patch)
 
-release-minor: build test
+release-minor: build test-silent
 	@$(call release,minor)
 
-release-major: build test
+release-major: build test-silent
 	@$(call release,major)
 
 publish:
