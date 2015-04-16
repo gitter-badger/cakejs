@@ -14,7 +14,7 @@ class Static {
 		this._path = path;
 		this._expressStatic = require('express').static(this._path);
 	}
-	use(request, response, next){
+	async use(request, response, next){
 		try{
 			var route = Router.parse(request.url);
 			var controller = ControllerManager.get(route.controller);
@@ -22,7 +22,7 @@ class Static {
 			if(!(route.action in controller))
 				throw new MissingActionException(route.action);
 			try{
-				var result = controller[route.action].apply(controller, route.params);
+				var result = await controller[route.action].apply(controller, route.params);
 				response.writeHead(200, {'Content-Type': 'application/json'});
 				if(typeof result !== 'undefined')
 					response.write(JSON.stringify(result));
@@ -32,7 +32,7 @@ class Static {
 				if(typeof e !== 'object')
 					e = new Error(e);
 				if(e instanceof ClientException){
-					response.writeHead(510, {'Content-Type': 'application/json'});
+					response.writeHead(520, {'Content-Type': 'application/json'});
 					response.write(JSON.stringify(e.data));
 				}else if(e instanceof FatalException){
 					console.log(e.message);
