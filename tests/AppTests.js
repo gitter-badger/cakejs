@@ -64,7 +64,7 @@ class Tests{
 		var response = await new Promise((resolve, reject) => require('request').get('http://127.0.0.1:8080/Test/client_error').on('error', error => {return reject(error);}).on('response',response => {
 			resolve(response);
 		}));
-		assert.equal(response.statusCode, 510, "Was expecting a failure get");
+		assert.equal(response.statusCode, 520, "Was expecting a failure get");
 		var data = await new Promise((resolve, reject) => require('request').get('http://127.0.0.1:8080/Test/client_error').on('error', error => {return reject(error);}).on('data',data => {
 			resolve(data);
 		}));
