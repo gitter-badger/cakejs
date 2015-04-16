@@ -8,25 +8,25 @@ install:
 	@npm install > /dev/null
 
 build: clean index
-	@mkdir dist
-	@babel --stage 0 --optional runtime --out-dir dist/src src > /dev/null
-	@mkdir dist/pub
-	@browserify pub/client.js -t [ babelify --stage 0 ] --outfile dist/pub/client.js
+	@mkdir build
+	@babel --stage 0 --optional runtime --out-dir build/src src > /dev/null
+	@mkdir build/pub
+	@browserify pub/client.js -t [ babelify --stage 0 ] --outfile build/pub/client.js
 
 clean:
-ifneq ($(wildcard dist/.*),)
-	@rm -r dist
+ifneq ($(wildcard build/.*),)
+	@rm -r build
 endif
 
 test-silent:
-	@cp -R tests dist/tests
-	@babel --stage 0 --optional runtime --out-dir dist/tests tests > /dev/null
-	@mocha --bail --slow 300 --timeout 5000 --ui exports dist/tests > /dev/null	
+	@cp -R tests build/tests
+	@babel --stage 0 --optional runtime --out-dir build/tests tests > /dev/null
+	@mocha --bail --slow 300 --timeout 5000 --ui exports build/tests > /dev/null	
 	
 test: build
-	@cp -R tests dist/tests
-	@babel --stage 0 --optional runtime --out-dir dist/tests tests > /dev/null
-	@mocha --bail --slow 300 --timeout 5000 --ui exports dist/tests
+	@cp -R tests build/tests
+	@babel --stage 0 --optional runtime --out-dir build/tests tests > /dev/null
+	@mocha --bail --slow 300 --timeout 5000 --ui exports build/tests
 
 define release
 	VERSION=`node -pe "require('./package.json').version"` && \
