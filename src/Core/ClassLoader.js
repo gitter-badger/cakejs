@@ -1,9 +1,11 @@
+//Types
 import {FatalException} from './Exception/FatalException'
 
+//Requires
 var fs = require('fs');
 var path = require('path');
 
-class ClassLoader {
+export var ClassLoader = new class {
 	async load(file){
 		if(!fs.existsSync(file))
 			throw new FatalException("File does not exist: "+file);
@@ -18,5 +20,3 @@ class ClassLoader {
 		return classes;
 	}
 }
-
-export default new ClassLoader();

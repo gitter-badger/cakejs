@@ -1,10 +1,13 @@
-import router from '../Routing/Router'
-import controllerManager from '../Controller/ControllerManager'
+//Types
 import {MissingActionException} from '../Controller/Exception/MissingActionException'
 import {ClientException} from '../Controller/Exception/ClientException'
 import {FatalException} from '../Core/Exception/FatalException'
 import {Exception} from '../Core/Exception/Exception'
 import {Request} from '../Network/Request'
+
+//Singelton instances
+import {Router} from '../Routing/Router'
+import {ControllerManager} from '../Controller/ControllerManager'
 
 class Static {
 	constructor(path){
@@ -13,8 +16,8 @@ class Static {
 	}
 	use(request, response, next){
 		try{
-			var route = router.parse(request.url);
-			var controller = controllerManager.get(route.controller);
+			var route = Router.parse(request.url);
+			var controller = ControllerManager.get(route.controller);
 			controller.request = new Request(request);
 			if(!(route.action in controller))
 				throw new MissingActionException(route.action);

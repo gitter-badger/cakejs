@@ -1,6 +1,7 @@
-import Session from './Session'
+//Types
+import {Session} from './Session'
 
-class SessionManager {
+export var SessionManager = new class {
 	constructor(){
 		this._sessions = {};
 		this.keyName = null;
@@ -22,5 +23,3 @@ class SessionManager {
 		return session;
 	}
 };
-
-export default new SessionManager();

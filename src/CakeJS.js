@@ -1,14 +1,19 @@
+//Types
 import {MissingConfigException} from './Exception/MissingConfigException'
+
+//Express middlewares
 import sessionParser from './ExpressMiddleware/SessionParser'
-import sessionManager from './Session/SessionManager'
 import socketIOConnection from './ExpressMiddleware/SocketIOConnection'
 import _static from './ExpressMiddleware/Static'
 import proxy from './ExpressMiddleware/Proxy'
 
-import controllerManager from './Controller/ControllerManager'
-import router from './Routing/Router'
-import configure from './Core/Configure'
+//Singelton instances
+import {ControllerManager} from './Controller/ControllerManager'
+import {Router} from './Routing/Router'
+import {Configure} from './Core/Configure'
+import {SessionManager} from './Session/SessionManager'
 
+//Requires
 var events = require('events');
 var fs = require('fs');
 var path = require('path');
@@ -45,7 +50,7 @@ export class Server extends events.EventEmitter {
 	 * @returns {void}
 	 */
 	config(config){
-		configure.config(config);		
+		Configure.config(config);
 	}
 	/**
 	 * Starts the CakeJS server
@@ -54,15 +59,15 @@ export class Server extends events.EventEmitter {
 	 */
 	async start(){		
 		//Preloads managers
-		await controllerManager.load(path.resolve(configure.get("CakeJS.src", path.resolve('.')),"Controller"));
+		await ControllerManager.load(path.resolve(Configure.get("CakeJS.src", path.resolve('.')),"Controller"));
 		
 		//Build routes
-		await router.initialize();
+		await Router.initialize();
 
 		//Starts the web related services
-		sessionManager.config(configure.get("Session.name", "cakejs_sessid"), configure.get("Session.ttl", 1000*60*60*24));
+		SessionManager.config(Configure.get("Session.name", "cakejs_sessid"), Configure.get("Session.ttl", 1000*60*60*24));
 		this._app.use(cookieParser());
-		this._app.use(sessionParser(configure.get("Session.name", "cakejs_sessid"), configure.get("Session.ttl", 1000*60*60*24)));
+		this._app.use(sessionParser(Configure.get("Session.name", "cakejs_sessid"), Configure.get("Session.ttl", 1000*60*60*24)));
 		this.emit('use', this._app);
 		var javascriptLibraryContent = fs.readFileSync(path.resolve(__filename,'..','..','pub','client.js'));
 		this._app.get('/js/cakejs.js', (request, response) => {
@@ -70,15 +75,15 @@ export class Server extends events.EventEmitter {
 			response.write(javascriptLibraryContent);
 			response.end();
 		});
-		if(configure.get("Static") !== null){
+		if(Configure.get("Static") !== null){
 			this._app.use(bodyParser.urlencoded({ extended: false }));
-			this._app.use(_static(configure.get("Static.webroot", "/var/www")));
-		}else if(configure.get("Proxy") !== null){
-			this._app.use(proxy(configure.get("Proxy.host", "127.0.0.1"), configure.get("Proxy.port", 80)));
+			this._app.use(_static(Configure.get("Static.webroot", "/var/www")));
+		}else if(Configure.get("Proxy") !== null){
+			this._app.use(proxy(Configure.get("Proxy.host", "127.0.0.1"), Configure.get("Proxy.port", 80)));
 		}
 		this._sio.set('authorization', sessionParser());
 		this._sio.on('connection', socketIOConnection());
-		await new Promise(resolve => this._http.listen(configure.get("Listen.port", 8080), () => {
+		await new Promise(resolve => this._http.listen(Configure.get("Listen.port", 8080), () => {
 			resolve();
 		}));
 	}

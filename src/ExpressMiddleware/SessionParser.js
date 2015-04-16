@@ -1,11 +1,13 @@
-import sessionManager from '../Session/SessionManager'
+//Singelton instances
+import {SessionManager} from '../Session/SessionManager'
 
+//Requires
 var cookie = require("cookie");
 
 class SessionParser {
 	use(request, response, next){
-		var session = sessionManager.get(request.cookies);
-		response.cookie(sessionManager.keyName, session.key, {maxAge: 365 * 24 * 60 * 60 * 1000});
+		var session = SessionManager.get(request.cookies);
+		response.cookie(SessionManager.keyName, session.key, {maxAge: 365 * 24 * 60 * 60 * 1000});
 		request.session = session.data;
 		session.touch();
 		next();
@@ -15,7 +17,7 @@ class SessionParser {
 			return accept("BAD", false);
 		try{
 			var cookies = cookie.parse(data.headers.cookie);
-			var session = sessionManager.get(cookies);
+			var session = SessionManager.get(cookies);
 			data._session = session;
 			session.touch();
 		}catch(e){

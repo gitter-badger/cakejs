@@ -1,13 +1,18 @@
-import classLoader from '../Core/ClassLoader'
+//Types
 import {MissingControllerException} from './Exception/MissingControllerException'
+
+//Singelton instances
+import {ClassLoader} from '../Core/ClassLoader'
+
+//Requires
 var fs = require('fs');
 
-class ControllerManager {
+export var ControllerManager = new class {
 	constructor(){
 		this._controllers = {};
 	}
 	async load(path){
-		var classes = await classLoader.loadFolder(path);
+		var classes = await ClassLoader.loadFolder(path);
 		for(var key in classes)
 			this._controllers[key.substr(0,key.length-"Controller.js".length)] = classes[key];
 	}
@@ -23,5 +28,3 @@ class ControllerManager {
 		return names;
 	}
 }
-
-export default new ControllerManager();

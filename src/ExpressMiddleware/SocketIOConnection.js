@@ -1,10 +1,13 @@
-import Connection from '../WebSocket/Connection'
-import connectionManager from '../WebSocket/ConnectionManager'
+//Types
+import {Connection} from '../WebSocket/Connection'
+
+//Singelton instances
+import {ConnectionManager} from '../WebSocket/ConnectionManager'
 
 class SocketIOConnection {
 	newConnection(socket){
 		var connection = new Connection(socket);
-		connectionManager.add(connection);
+		ConnectionManager.add(connection);
 	}
 }
 

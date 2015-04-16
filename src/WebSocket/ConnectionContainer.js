@@ -1,4 +1,7 @@
-export default class ConnectionContainer{
+//Types
+import {Exception} from '../Core/Exception/Exception'
+
+export class ConnectionContainer{
 	constructor(){
 		this._connections = [];
 	}
@@ -18,6 +21,8 @@ export default class ConnectionContainer{
 		this._connections.splice(index, 1);
 	}
 	forEach(callback){
+		if(typeof callback !== 'function')
+			throw new Exception("Callback must be a function");
 		for(var connection of this._connections)
 			callback(connection);
 	}

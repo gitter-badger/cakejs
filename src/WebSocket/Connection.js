@@ -1,6 +1,7 @@
+//Requires
 var events = require('events');
 
-export default class Connection {
+export class Connection {
 	constructor(socket){
 		var session = socket.request._session;
 		delete socket.request._session;
@@ -15,10 +16,11 @@ export default class Connection {
 		});
 		session.connections.add(this);
 	}
-	emit(event, data){
+	emit(event){
+		arguments.shift();
 		this.socket.emit("WebSocketEmit", {
 			event: event,
-			data: data
+			arguments: arguments
 		});
 	}
 }

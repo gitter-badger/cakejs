@@ -1,12 +1,14 @@
-import ConnectionContainer from '../WebSocket/ConnectionContainer'
+//Types
+import {ConnectionContainer} from './ConnectionContainer'
 
-class ConnectionManager {
+export var ConnectionManager = new class {
 	constructor(){
 		this.connections = new ConnectionContainer();
 	}
 	add(connection){
 		this.connections.add(connection);
 	}
+	forEach(callback){
+		this.connections.forEach(callback);
+	}
 }
-
-export default new ConnectionManager();

@@ -1,8 +1,14 @@
+//Types
 import {FatalException} from '../Core/Exception/FatalException'
 import {BadRouteException} from './Exception/BadRouteException'
-import controllerManager from '../Controller/ControllerManager'
+
+//Singelton instances
+import {ControllerManager} from '../Controller/ControllerManager'
+
+//Requires
 var fs = require('fs');
 var Inflector = require('inflected');
+
 function escapeRegExp(string) {
     return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
 }
@@ -10,7 +16,7 @@ function replaceAll(string, find, replace) {
   return string.replace(new RegExp(escapeRegExp(find), 'g'), replace);
 }
 
-class Router {
+export var Router = new class {
 	constructor(){
 		this._templates = {
 			"action": '(\/[a-zA-Z0-9\_]*)?',
@@ -21,9 +27,9 @@ class Router {
 		this._controllers = [];
 	}
 	initialize(){
-		this._templates["controller"] = "("+controllerManager.getControllerNames().join("|")+")";
+		this._templates["controller"] = "("+ControllerManager.getControllerNames().join("|")+")";
 		if(this._routes.length === 0){
-			for(var name of controllerManager.getControllerNames()){
+			for(var name of ControllerManager.getControllerNames()){
 				this.connect("\/("+(name+"|"+Inflector.underscore(name))+"):action:param:param:param:param:param:param:param", {controller: name}, {shiftController: true});
 				this._controllers.push(name);
 			}
@@ -127,5 +133,3 @@ class Router {
 		this._routes.push({route: route, defaults: defaults, options: options});
 	}
 }
-
-export default new Router();

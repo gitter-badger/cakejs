@@ -1,7 +1,10 @@
-import uuid from '../Utilities/uuid'
-import ConnectionContainer from '../WebSocket/ConnectionContainer'
+//Types
+import {ConnectionContainer} from '../WebSocket/ConnectionContainer'
 
-export default class Session {
+//Function
+import uuid from '../Utilities/uuid'
+
+export class Session {
 	constructor(ttl){
 		this.key = uuid(null, 'uuids');
 		this.data = {};

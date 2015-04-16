@@ -1,6 +1,7 @@
+//Types
 import {FatalException} from './Exception/FatalException'
 
-class Configure {
+export var Configure = new class {
 	constructor(){
 		this._config = null;
 		this._selectedConfigData = {};
@@ -47,5 +48,3 @@ class Configure {
 	}
 	
 }
-
-export default new Configure();

@@ -1,3 +1,4 @@
+//Requires
 var md5 = require('MD5');
 
 function replaceAt(str, index, character) {

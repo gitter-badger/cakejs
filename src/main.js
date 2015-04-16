@@ -1,0 +1,1 @@
+global.CakeJS = require('./index');
