@@ -2,7 +2,7 @@
   "name": "cakejs",
   "version": "0.1.5",
   "description": "CakeJS Framework",
-  "main": "build/src/main.js",
+  "main": "dist/src/main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
