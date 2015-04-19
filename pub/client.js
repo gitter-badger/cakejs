@@ -174,6 +174,13 @@ class Client {
 			}
 		});
 		sio.on('WebSocketEmit', (response) => {
+			if(!('event' in response))
+				return;
+			if(!(response.event in this._events))
+				return;
+			/*for(var i = 0; i < this._events[response.event].length; i++)
+				this._events[response.event][i]*/
+				
 			console.log(response);
 		});
 	}
@@ -212,9 +219,6 @@ class Client {
 				this._events[event] = [];
 			this._events[event].push(callback);			
 		}
-	}
-	test(){
-		console.log("test");
 	}
 }
 
