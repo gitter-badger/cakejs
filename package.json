@@ -1,6 +1,6 @@
 {
   "name": "cakejs",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "CakeJS Framework",
   "main": "build/src/main.js",
   "scripts": {
