@@ -178,10 +178,8 @@ class Client {
 				return;
 			if(!(response.event in this._events))
 				return;
-			/*for(var i = 0; i < this._events[response.event].length; i++)
-				this._events[response.event][i]*/
-				
-			console.log(response);
+			for(var callback of this._events[response.event])
+				callback.apply(null, response.arguments);
 		});
 	}
 	_invoke(item){
