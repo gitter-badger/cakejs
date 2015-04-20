@@ -1,6 +1,9 @@
 //Types
 import {FatalException} from './Exception/FatalException'
 
+//Requires
+var fs = require('fs');
+
 export var Configure = new class {
 	constructor(){
 		this._config = null;
