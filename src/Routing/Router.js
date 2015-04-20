@@ -80,10 +80,12 @@ export var Router = new class {
 			}
 		}
 		if(typeof obj === 'string'){
+			if(obj[obj.length - 1] === '/')
+				obj = obj.substr(0,obj.length - 1);
 			for(var filter of this._filters){
 				var results = obj.match(filter.regexp);
 				if(results === null || results[0] !== obj)
-					continue;
+					continue;				
 				results.shift();
 				if(!('controller' in filter.defaults)){
 					route.controller = results.shift();
