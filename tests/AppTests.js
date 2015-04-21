@@ -20,6 +20,9 @@ class Tests{
 	async server_create(){
 		this._server = CakeJS.createServer();
 		this._server.config({
+			"Listen": {
+				"port": 31337
+			},
 			"CakeJS": {
 				"src": path.resolve(__filename,"..","src"),
 			},
@@ -30,21 +33,21 @@ class Tests{
 		await this._server.start();
 	}
 	async connection(){
-		var response = await new Promise((resolve, reject) => require('request').get('http://127.0.0.1:8080/').on('error', error => {return reject(error);}).on('response',response => {
+		var response = await new Promise((resolve, reject) => require('request').get('http://127.0.0.1:31337/').on('error', error => {return reject(error);}).on('response',response => {
 			resolve(response);
 		}));
 		assert.equal(response.statusCode, 200, "Was expecting a successful get");
-		var data = await new Promise((resolve, reject) => require('request').get('http://127.0.0.1:8080/').on('error', error => {return reject(error);}).on('data',data => {
+		var data = await new Promise((resolve, reject) => require('request').get('http://127.0.0.1:31337/').on('error', error => {return reject(error);}).on('data',data => {
 			resolve(data);
 		})); 
 		assert.equal(data.toString(), fs.readFileSync(path.resolve(__filename,"..","webroot", "index.html")), "The response was incorrect");
 	}
 	async routing(){
-		var response = await new Promise((resolve, reject) => require('request').get('http://127.0.0.1:8080/Test').on('error', error => {return reject(error);}).on('response',response => {
+		var response = await new Promise((resolve, reject) => require('request').get('http://127.0.0.1:31337/Test').on('error', error => {return reject(error);}).on('response',response => {
 			resolve(response);
 		}));
 		assert.equal(response.statusCode, 200, "Was expecting a successful get");
-		var data = await new Promise((resolve, reject) => require('request').get('http://127.0.0.1:8080/Test').on('error', error => {return reject(error);}).on('data',data => {
+		var data = await new Promise((resolve, reject) => require('request').get('http://127.0.0.1:31337/Test').on('error', error => {return reject(error);}).on('data',data => {
 			resolve(data);
 		}));
 		try{
@@ -55,17 +58,17 @@ class Tests{
 		assert.equal(data, true, "The response was incorrect");
 	}
 	async routing_error_regular(){
-		var response = await new Promise((resolve, reject) => require('request').get('http://127.0.0.1:8080/Test/error').on('error', error => {return reject(error);}).on('response',response => {
+		var response = await new Promise((resolve, reject) => require('request').get('http://127.0.0.1:31337/Test/error').on('error', error => {return reject(error);}).on('response',response => {
 			resolve(response);
 		}));
 		assert.equal(response.statusCode, 500, "Was expecting a failure get");
 	}
 	async routing_error_client(){
-		var response = await new Promise((resolve, reject) => require('request').get('http://127.0.0.1:8080/Test/client_error').on('error', error => {return reject(error);}).on('response',response => {
+		var response = await new Promise((resolve, reject) => require('request').get('http://127.0.0.1:31337/Test/client_error').on('error', error => {return reject(error);}).on('response',response => {
 			resolve(response);
 		}));
 		assert.equal(response.statusCode, 520, "Was expecting a failure get");
-		var data = await new Promise((resolve, reject) => require('request').get('http://127.0.0.1:8080/Test/client_error').on('error', error => {return reject(error);}).on('data',data => {
+		var data = await new Promise((resolve, reject) => require('request').get('http://127.0.0.1:31337/Test/client_error').on('error', error => {return reject(error);}).on('data',data => {
 			resolve(data);
 		}));
 		assert.equal(data.toString(),'{"custom":"error"}', "Was expecting a json string");
@@ -75,11 +78,11 @@ class Tests{
 			"keyA": "valueA",
 			"keyB": "valueB"
 		};
-		var response = await new Promise((resolve, reject) => require('request').post('http://127.0.0.1:8080/Test/post').form(form).on('error', error => {return reject(error);}).on('response',response => {
+		var response = await new Promise((resolve, reject) => require('request').post('http://127.0.0.1:31337/Test/post').form(form).on('error', error => {return reject(error);}).on('response',response => {
 			resolve(response);
 		}));
 		assert.equal(response.statusCode, 200, "Was expecting a successful get");
-		var data = await new Promise((resolve, reject) => require('request').post('http://127.0.0.1:8080/Test/post').form(form).on('error', error => {return reject(error);}).on('data',data => {
+		var data = await new Promise((resolve, reject) => require('request').post('http://127.0.0.1:31337/Test/post').form(form).on('error', error => {return reject(error);}).on('data',data => {
 			resolve(data);
 		}));
 		try{
