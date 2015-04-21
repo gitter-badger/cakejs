@@ -41,6 +41,7 @@ export class Connection {
 				controller.request = new Request();
 				controller.request.url = "/"+request.controller+"/"+request.action;
 				controller.request.data = request.data;
+				controller.request.session = this.session;
 				if(!(route.action in controller))
 					throw new MissingActionException(route.action);
 				var result = await controller[route.action].apply(controller, route.params);
