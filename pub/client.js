@@ -109,7 +109,9 @@ class PostItem extends Item {
 				}).done((data) => {
 					this.resolve(data);
 				}).fail((e) => {
-					if(e.status === 520){
+					if(e.status === 200){
+						this.resolve();
+					}else if(e.status === 520){
 						try{
 							this.reject(JSON.parse(e.responseText));
 						}catch(e){
@@ -138,7 +140,9 @@ class GetItem extends Item {
 				}).done((data) => {
 					this.resolve(data);
 				}).fail((e) => {
-					if(e.status === 520){
+					if(e.status === 200){
+						this.resolve();
+					}else if(e.status === 520){
 						try{
 							this.reject(JSON.parse(e.responseText));
 						}catch(e){
@@ -187,9 +191,9 @@ class Client {
 			this._items[item.index] = item;
 			item.run().then(response => {
 				delete this._items[item.index];
-				if(typeof response !== 'object' || !('data' in response))
-					return resolve(response);
-				resolve(response.data);
+				if(response !== null && typeof response === 'object' && 'data' in response)
+					resolve(response.data);
+				return resolve(response);
 			},error => {
 				delete this._items[item.index];
 				reject(error);
