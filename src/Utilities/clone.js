@@ -14,12 +14,5 @@ export default function clone(obj){
         }
         return copy;
     }
-    if (obj instanceof Object) {
-        copy = {};
-        for (var attr in obj) {
-            if (obj.hasOwnProperty(attr)) copy[attr] = clone(obj[attr]);
-        }
-        return copy;
-    }
-	throw new Error("Type not supported");
+	return obj;
 }
