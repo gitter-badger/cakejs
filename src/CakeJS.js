@@ -12,6 +12,7 @@ import {ControllerManager} from './Controller/ControllerManager'
 import {Router} from './Routing/Router'
 import {Configure} from './Core/Configure'
 import {SessionManager} from './Session/SessionManager'
+import {ConnectionManager} from './Datasource/ConnectionManager'
 
 //Requires
 var events = require('events');
@@ -83,6 +84,10 @@ export class Server extends events.EventEmitter {
 		}
 		this._sio.set('authorization', sessionParser());
 		this._sio.on('connection', socketIOConnection());
+		var datasources = Configure.get("Datasources", {});
+		for(var key in datasources){
+			ConnectionManager.config(key, datasources[key]);
+		}
 		await new Promise(resolve => this._http.listen(Configure.get("Listen.port", 8080), () => {
 			resolve();
 		}));
