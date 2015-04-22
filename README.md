@@ -19,6 +19,10 @@ projects scalable easy.
 $ npm install cakejs
 ```
 
+## Documentation and Examples
+
+Documentation of how to properly use this framework and examples will be created shortly after Model and ORM support is added. So be patient. ETA probably two weeks from this change
+
 
 ## Simple static webserver with cakejs and socketio
 
