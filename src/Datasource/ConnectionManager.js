@@ -1,7 +1,7 @@
 //Types
 import {MissingConfigException} from '../Exception/MissingConfigException'
 import {AlreadyDefinedException} from '../Exception/AlreadyDefinedException'
-import {Connection} from './Connection'
+import {Connection} from '../Database/Connection'
 
 export var ConnectionManager = new class {
 	constructor(){
@@ -11,6 +11,8 @@ export var ConnectionManager = new class {
 	config(name, configuration){
 		if(name in this._configurations)
 			throw new AlreadyDefinedException("ConnectionMananger: "+name);
+		if(typeof configuration !== 'object')
+			throw new MissingConfigException();
 		this._configurations[name] = configuration;
 	}
 	get(name){
