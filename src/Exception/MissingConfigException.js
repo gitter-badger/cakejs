@@ -2,7 +2,7 @@
 import {FatalException} from '../Core/Exception/FatalException'
 
 export class MissingConfigException extends FatalException{
-	constructor(){
-		super("CakeJS config is missing or not parseable");
+	constructor(message){
+		super(typeof message !== 'string'?"CakeJS config is missing or not parseable":message);
 	}
 }
