@@ -12,7 +12,7 @@ import clone from '../Utilities/clone'
 export class Connection{
 	constructor(config){
 		if(!('driver' in config))
-			throw MissingConfigException("driver");
+			throw new MissingConfigException('Missing database config option "driver"');
 		this.driver(config.driver, config)
 	}
 	driver(driver, config){
