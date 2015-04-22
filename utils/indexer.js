@@ -39,7 +39,10 @@ function r(path){
 		if(["index.js", "main.js"].indexOf(file) !== -1 || !fs.statSync(global.path.resolve(path, file)).isFile())
 			continue;
 		file = file.substr(0, file.length-3);
-		content += "export * from './"+file+"';"+"\n";
+		if(/^[a-z]/.test(file))
+			content += "export "+file+" from './"+file+"';"+"\n";
+		else
+			content += "export * from './"+file+"';"+"\n";
 	}
 	fs.writeFileSync(global.path.resolve(path, "index.js"), content);
 }
