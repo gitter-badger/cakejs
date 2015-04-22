@@ -28,6 +28,15 @@ class Tests{
 			},
 			"Static": {
 				"webroot": path.resolve(__filename,"..","webroot"),
+			},
+			"Datasources": {
+				"default": {
+					"driver": "Mysql",
+					"host": "127.0.0.1",
+					"username": "test",
+					"password": "test",
+					"database": "test"
+				}
 			}
 		});
 		await this._server.start();
@@ -92,8 +101,9 @@ class Tests{
 		}
 		assert.equal(JSON.stringify(data), JSON.stringify(form), "The response was incorrect");
 	}
-	async server_stop(){
-		await this._server.stop();
+	async database_test(){
+		var connection = CakeJS.Datasource.ConnectionManager.get("default");
+		var result = await connection.query("SELECT * FROM ??", "table");
 	}
 }
 
