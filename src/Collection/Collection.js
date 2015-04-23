@@ -17,6 +17,7 @@
 
 //Types
 import {InvalidParameterException} from '../Exception/InvalidParameterException'
+import {NotImplementedException} from '../Exception/NotImplementedException'
 import {CollectionInterface} from './CollectionInterface'
 
 //Utilities
@@ -41,6 +42,7 @@ export class Collection extends CollectionInterface{
 			}
 		}
 	}
+	
 	forEach(callback){
 		if(typeof callback !== 'function'){
 			throw new InvalidParameterException(callback, "function");
@@ -48,6 +50,7 @@ export class Collection extends CollectionInterface{
 		this.each(callback);
 		return this;
 	}
+	
 	each(callback){
 		if(typeof callback !== 'function'){
 			throw new InvalidParameterException(callback, "function");
@@ -59,6 +62,7 @@ export class Collection extends CollectionInterface{
 		}
 		return this;
 	}
+	
 	map(callback){
 		if(typeof callback !== 'function'){
 			throw new InvalidParameterException(callback, "function");
@@ -69,6 +73,7 @@ export class Collection extends CollectionInterface{
 		}
 		return new Collection(newObject);
 	}
+	
 	extract(keyPath){
 		if(typeof keyPath !== 'string'){
 			throw new InvalidParameterException(keyPath, "string");
@@ -88,30 +93,7 @@ export class Collection extends CollectionInterface{
 		}
 		return new Collection(value);
 	}
-	insert(keyPath, value){
-		if(typeof keyPath !== 'string'){
-			throw new InvalidParameterException(keyPath, "string");
-		}
-		if(typeof value === 'undefined'){
-			throw new InvalidParameterException(value, 'anything');
-		}
-		keyPath = keyPath.split(".");
-		var newObject = clone(this._data);
-		var cursor = newObject;
-		while(keyPath.length > 1){
-			var listItem = keyPath.shift();
-			if(typeof cursor !== 'object'){
-				return false;
-			}
-			if(!(listItem in cursor)){
-				cursor[listItem] = {};
-			}
-			cursor = cursor[listItem];
-		}
-		var listItem = keyPath.shift();
-		cursor[listItem] = value;
-		return new Collection(newObject);
-	}
+	
 	combine(keyPath, valuePath, groupPath){
 		groupPath = typeof groupPath === 'undefined' ? null : groupPath;
 		if(typeof keyPath !== 'string'){
@@ -147,6 +129,7 @@ export class Collection extends CollectionInterface{
 		}
 		return new Collection(newObject);
 	}
+	
 	stopWhen(callback){
 		if(typeof callback !== 'function'){
 			throw new InvalidParameterException(callback, "function");
@@ -160,6 +143,7 @@ export class Collection extends CollectionInterface{
 		});
 		return new Collection(newObject);
 	}
+	
 	unfold(){
 		var args = [];
 		for(var key in arguments){
@@ -214,6 +198,7 @@ export class Collection extends CollectionInterface{
 		}
 		return new Collection(newObject);
 	}
+	
 	filter(callback){
 		if(typeof callback !== 'function'){
 			throw new InvalidParameterException(callback, "function");
@@ -226,6 +211,7 @@ export class Collection extends CollectionInterface{
 		});
 		return new Collection(newObject);
 	}
+	
 	reject(callback){
 		if(typeof callback !== 'function'){
 			throw new InvalidParameterException(callback, "function");
@@ -238,6 +224,11 @@ export class Collection extends CollectionInterface{
 		});
 		return new Collection(newObject);
 	}
+	
+	every(){throw new NotImplementedException();}
+	
+	some(){throw new NotImplementedException();}
+	
 	match(conditions){
 		if(typeof conditions !== 'object'){
 			throw new InvalidParameterException(conditions, "object");
@@ -254,6 +245,7 @@ export class Collection extends CollectionInterface{
 		});
 		return new Collection(newObject);
 	}
+	
 	firstMatch(conditions){
 		if(typeof conditions !== 'object'){
 			throw new InvalidParameterException(conditions, "object");
@@ -271,6 +263,27 @@ export class Collection extends CollectionInterface{
 		});
 		return item;
 	}
+	
+	reduce(){throw new NotImplementedException();}
+	
+	min(){throw new NotImplementedException();}
+	
+	max(){throw new NotImplementedException();}
+	
+	sumOf(){throw new NotImplementedException();}
+	
+	groupBy(){throw new NotImplementedException();}
+	
+	countBy(){throw new NotImplementedException();}
+	
+	indexBy(){throw new NotImplementedException();}
+	
+	sortBy(){throw new NotImplementedException();}
+	
+	nest(){throw new NotImplementedException();}
+	
+	listNested(){throw new NotImplementedException();}
+	
 	contains(value){
 		if(typeof value === 'undefined'){
 			throw new InvalidParameterException(value, "anything");
@@ -284,6 +297,48 @@ export class Collection extends CollectionInterface{
 		});
 		return result;
 	}
+	
+	shuffle(){throw new NotImplementedException();}
+	
+	sample(){throw new NotImplementedException();}
+	
+	take(){throw new NotImplementedException();}
+	
+	append(){throw new NotImplementedException();}
+	
+	insert(keyPath, value){
+		if(typeof keyPath !== 'string'){
+			throw new InvalidParameterException(keyPath, "string");
+		}
+		if(typeof value === 'undefined'){
+			throw new InvalidParameterException(value, 'anything');
+		}
+		keyPath = keyPath.split(".");
+		var newObject = clone(this._data);
+		var cursor = newObject;
+		while(keyPath.length > 1){
+			var listItem = keyPath.shift();
+			if(typeof cursor !== 'object'){
+				return false;
+			}
+			if(!(listItem in cursor)){
+				cursor[listItem] = {};
+			}
+			cursor = cursor[listItem];
+		}
+		var listItem = keyPath.shift();
+		cursor[listItem] = value;
+		return new Collection(newObject);
+	}
+	
+	through(){throw new NotImplementedException();}
+	
+	buffered(){throw new NotImplementedException();}
+	
+	compile(){
+		return new Collection(this.toObject(true));
+	}
+	
 	toList(cloneObject){
 		return this.toArray(cloneObject);
 	}
@@ -298,8 +353,5 @@ export class Collection extends CollectionInterface{
 	toObject(cloneObject){
 		cloneObject = typeof cloneObject === 'boolean' ? cloneObject : false;
 		return cloneObject?clone(this._data):this._data;
-	}
-	compile(){
-		return new Collection(this.toObject(true));
 	}
 }
