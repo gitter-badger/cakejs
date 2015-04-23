@@ -18,8 +18,7 @@ class Static {
 		try{
 			var route = Router.parse(request.url);
 			var controller = ControllerManager.get(route.controller);
-			controller.request = new Request(request);
-			controller.request.session = request.session;
+			controller.request = new Request(request, request.session);
 			if(!(route.action in controller))
 				throw new MissingActionException(route.action);
 			try{
