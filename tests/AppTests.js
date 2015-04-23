@@ -17,6 +17,32 @@ class Tests{
 			}
 		}
 	}
+	/*async test_class() {
+		//var result = await CakeJS.Core.ClassLoader.load(path.resolve(__filename,"..","src/test.js"));
+		this._server = CakeJS.createServer();
+		this._server.config({
+			"Listen": {
+				"port": 31337
+			},
+			"CakeJS": {
+				"app": path.resolve(__filename,"..","src"),
+			},
+			"Static": {
+				"webroot": path.resolve(__filename,"..","webroot"),
+			},
+			"Datasources": {
+				"default": {
+					"driver": "Mysql",
+					"host": "127.0.0.1",
+					"username": "test",
+					"password": "test",
+					"database": "test"
+				}
+			}
+		});
+		//await this._server.start();
+		var articles = CakeJS.ORM.TableRegistry.get("Articles");
+	}*/
 	async server_create(){
 		this._server = CakeJS.createServer();
 		this._server.config({
@@ -24,7 +50,7 @@ class Tests{
 				"port": 31337
 			},
 			"CakeJS": {
-				"src": path.resolve(__filename,"..","src"),
+				"app": path.resolve(__filename,"..","src"),
 			},
 			"Static": {
 				"webroot": path.resolve(__filename,"..","webroot"),
