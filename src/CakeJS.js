@@ -13,6 +13,7 @@ import {Router} from './Routing/Router'
 import {Configure} from './Core/Configure'
 import {SessionManager} from './Session/SessionManager'
 import {ConnectionManager} from './Datasource/ConnectionManager'
+import {TableRegistry} from './ORM/TableRegistry'
 
 //Requires
 var events = require('events');
@@ -52,6 +53,14 @@ export class Server extends events.EventEmitter {
 	 */
 	config(config){
 		Configure.config(config);
+		SessionManager.config(Configure.get("Session.name", "cakejs_sessid"), Configure.get("Session.ttl", 1000*60*60*24));
+		TableRegistry.config({
+			"path": path.resolve(Configure.get("CakeJS.app", path.resolve('.')),"Model")
+		});
+		var datasources = Configure.get("Datasources", {});
+		for(var key in datasources){
+			ConnectionManager.config(key, datasources[key]);
+		}
 	}
 	/**
 	 * Starts the CakeJS server
@@ -60,13 +69,13 @@ export class Server extends events.EventEmitter {
 	 */
 	async start(){		
 		//Preloads managers
-		await ControllerManager.load(path.resolve(Configure.get("CakeJS.src", path.resolve('.')),"Controller"));
+		await ControllerManager.load(path.resolve(Configure.get("CakeJS.app", path.resolve('.')),"Controller"));
 		
 		//Build routes
 		await Router.initialize();
 
 		//Starts the web related services
-		SessionManager.config(Configure.get("Session.name", "cakejs_sessid"), Configure.get("Session.ttl", 1000*60*60*24));
+		
 		this._app.use(cookieParser());
 		this._app.use(sessionParser(Configure.get("Session.name", "cakejs_sessid"), Configure.get("Session.ttl", 1000*60*60*24)));
 		this.emit('use', this._app);
@@ -84,10 +93,6 @@ export class Server extends events.EventEmitter {
 		}
 		this._sio.set('authorization', sessionParser());
 		this._sio.on('connection', socketIOConnection());
-		var datasources = Configure.get("Datasources", {});
-		for(var key in datasources){
-			ConnectionManager.config(key, datasources[key]);
-		}
 		await new Promise(resolve => this._http.listen(Configure.get("Listen.port", 8080), () => {
 			resolve();
 		}));
