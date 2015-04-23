@@ -5,9 +5,11 @@ import {BadRouteException} from './Exception/BadRouteException'
 //Singelton instances
 import {ControllerManager} from '../Controller/ControllerManager'
 
+//Utilities
+import {Inflector} from '../Utilities/Inflector'
+
 //Requires
 var fs = require('fs');
-var Inflector = require('inflected');
 
 function escapeRegExp(string) {
     return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
