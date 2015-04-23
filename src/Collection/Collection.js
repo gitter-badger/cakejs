@@ -7,13 +7,19 @@ import clone from '../Utilities/clone'
 
 export class Collection{
 	constructor(object){
-		if(typeof object === 'object' && object instanceof Array){
+		if(typeof object === 'undefined')
+			object = {};
+		this._data = {};
+		if(typeof object === 'object' && object instanceof Collection){
+			this._data = object.toObject();
+		}else if(typeof object === 'object' && object instanceof Array){
 			var newObject = {};
 			for(var i = 0; i < object.length; i++)
 				newObject[i] = object[i];
 			this._data = newObject;
 		}else{
-			this._data = object;
+			if(typeof object === 'object')
+				this._data = object;
 		}
 	}
 	forEach(callback){
@@ -42,7 +48,7 @@ export class Collection{
 		if(typeof keyPath !== 'string')
 			throw new InvalidParameterException(keyPath, "string");
 		var value = extract(this._data, keyPath);
-		if(typeof value !== 'object')
+		if(typeof value !== 'object' || value === null)
 			return value;
 		if(typeof Object.getPrototypeOf !== 'undefined'){
 			if(Object.getPrototypeOf(value) !== Object.prototype)
