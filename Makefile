@@ -11,7 +11,7 @@ build: clean index
 	@mkdir build
 	@babel --stage 0 --optional runtime --out-dir build/src src > /dev/null
 	@mkdir build/pub
-	@browserify pub/client.js -t [ babelify --stage 0 ] --outfile build/pub/client.js
+	@browserify pub/client.js -t [ babelify --stage 0 ] --standalone client --outfile build/pub/client.js
 
 clean:
 ifneq ($(wildcard build/.*),)
