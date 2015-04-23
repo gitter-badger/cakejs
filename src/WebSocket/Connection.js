@@ -90,7 +90,7 @@ export class Connection {
 		session.connections.add(this);
 	}
 	emit(event){
-		var args = new Array();
+		var args = [];
 		for(var key in arguments)
 			args.push(arguments[key]);
 		args.shift();
