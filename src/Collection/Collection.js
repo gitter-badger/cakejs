@@ -161,7 +161,7 @@ export class Collection extends CollectionInterface{
 		return new Collection(newObject);
 	}
 	unfold(){
-		var args = new Array();
+		var args = [];
 		for(var key in arguments){
 			args.push(arguments[key]);
 		}
@@ -289,7 +289,7 @@ export class Collection extends CollectionInterface{
 	}
 	toArray(cloneObject){
 		cloneObject = typeof cloneObject === 'boolean' ? cloneObject : false;
-		var array = new Array();
+		var array = [];
 		this.each((value) => {
 			array.push(cloneObject?clone(value):value);
 		});
