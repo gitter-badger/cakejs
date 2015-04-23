@@ -34,7 +34,7 @@ cakejs.config({
 		"port": 8080
 	},
 	"CakeJS": {
-		"src": path.resolve(__filename,"..","src"),
+		"app": path.resolve(__filename,"..","src"),
 	},
 	"Static": {
 		"webroot": path.resolve(__filename,"..","webroot"),
