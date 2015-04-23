@@ -1,9 +1,11 @@
 export class Request{
-	constructor(request){
+	constructor(request, session){
 		request = typeof request !== 'undefined' ? request : null;
+		session = typeof session !== 'undefined' ? session : null;
 		this.data = null;
 		this.url = null;
 		this._detectorCache = {};
+		this._session = session;
 		this._detectors = {
 			
 		};
@@ -14,6 +16,9 @@ export class Request{
 				
 			}
 		}
+	}
+	session(){
+		return this._session;
 	}
 	setDetected(key){
 		this._detectorCache[key] = true;
