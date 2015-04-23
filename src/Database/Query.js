@@ -13,21 +13,15 @@
  * @license     http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-//Uses
-var ClientException = CakeJS.Controller.Exception.ClientException;
-var Controller = CakeJS.Controller.Controller;
+//CakeJS.Database.Query
 
-export default class TestController extends Controller {
-	index(){
-		return true;
+//Types
+import {CollectionInterface} from '../Collection/CollectionInterface'
+
+export class Query extends CollectionInterface {
+	constructor(){
+		super();
+		this.initialize();
 	}
-	error(){
-		throw null;
-	}
-	client_error(){
-		throw new ClientException({"custom": "error"}); 
-	}
-	post(){
-		return this.request.data;
-	}
+	initialize(){}
 }
