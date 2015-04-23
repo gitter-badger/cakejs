@@ -15,10 +15,7 @@ export class Connection{
 			throw new MissingConfigException('Missing database config option "driver"');
 		this.driver(config.driver, config)
 	}
-	driver(driver, config){
-		var args = new Array();
-		for(var key in arguments)
-			args.push(arguments[key]);
+	driver(...args){
 		if(args.length === 0)
 			return this._driver;
 		if(args.length !== 2)
@@ -27,17 +24,14 @@ export class Connection{
 			throw new InvalidParameterException(args[0], "string");
 		if(typeof args[1] !== 'object')
 			throw new InvalidParameterException(args[1], "object");
-		this._configuration = clone(config);
-		this._configuration.driver = driver;
-		this._driver = DriverManager.get(clone(config));
+		this._configuration = clone(args[1]);
+		this._configuration.driver = args[0];
+		this._driver = DriverManager.get(clone(args[1]));
 	}
 	config(){
 		return this._configuration;
 	}
-	async query(){
-		var args = new Array();
-		for(var key in arguments)
-			args.push(arguments[key]);
+	async query(...args){
 		if(typeof args[0] !== 'string')
 			throw new InvalidParameterException(args[0], "string");
 		return await this.driver().query.apply(this.driver(), args);
