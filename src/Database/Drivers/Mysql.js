@@ -77,7 +77,7 @@ export class Mysql extends Driver{
 		this._connection = null;
 	}
 	query(sql){
-		var args = new Array();
+		var args = [];
 		for(var key in arguments)
 			args.push(arguments[key]);
 		args.shift();
