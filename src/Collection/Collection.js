@@ -1,12 +1,14 @@
 //Types
 import {InvalidParameterException} from '../Exception/InvalidParameterException'
+import {CollectionInterface} from './CollectionInterface'
 
 //Utilities
 import extract from '../Utilities/extract'
 import clone from '../Utilities/clone'
 
-export class Collection{
+export class Collection extends CollectionInterface{
 	constructor(object){
+		super();
 		if(typeof object === 'undefined')
 			object = {};
 		this._data = {};
