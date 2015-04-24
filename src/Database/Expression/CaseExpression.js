@@ -21,7 +21,7 @@
 //CakeJS.Database.Expression.CaseExpression
 
 //Types
-import {ExpressionInterface} from './ExpressionInterface'
+import {ExpressionInterface} from '../ExpressionInterface'
 
 //Requires
 var sprintf = require("sprintf-js").sprintf;
@@ -34,12 +34,13 @@ import isEmpty from '../../Utilities/isEmpty'
  */
 export class CaseExpression extends ExpressionInterface{
 	constructor(conditions = [], values = [], types = []){
+		super();
 		this._conditions = [];
 		this._values  = [];
 		this._elseValue  = null;
 		
 		if (!isEmpty(conditions)) {
-            this->add(conditions, values, types);
+            this.add(conditions, values, types);
         }
 		
 		if((typeof conditions === 'object' && (conditions instanceof Array || conditions instanceof ExpressionInterface)) && typeof values === 'object'){
@@ -59,7 +60,7 @@ export class CaseExpression extends ExpressionInterface{
 			}
 
 			if (valuesCount > conditionsCount) {
-				this->elseValue(values[lastkey], isset(types[lastkey]) ? types[lastkey] : null);
+				this.elseValue(values[lastkey], isset(types[lastkey]) ? types[lastkey] : null);
 			}
 		}
 	}

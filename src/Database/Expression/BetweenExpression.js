@@ -21,7 +21,7 @@
 //CakeJS.Database.Expression.BetweenExpression
 
 //Types
-import {ExpressionInterface} from './ExpressionInterface'
+import {ExpressionInterface} from '../ExpressionInterface'
 
 //Requires
 var sprintf = require("sprintf-js").sprintf;
@@ -31,6 +31,7 @@ var sprintf = require("sprintf-js").sprintf;
  */
 export class BetweenExpression extends ExpressionInterface{
 	constructor(field, from, to, type = null){
+		super()
 		this._field = field;
 		this._from = from;
 		this._to = to;
