@@ -21,7 +21,5 @@ import * as Database from '../Database/Query'
 export class Query extends Database.Query {
 	constructor(){
 		super();
-		this.initialize();
 	}
-	initialize(){}
 }
