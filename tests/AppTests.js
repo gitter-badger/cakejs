@@ -21,7 +21,7 @@ var filename = path.basename(__filename);
 
 class Tests{
 	constructor(){
-		var methods = Object.getOwnPropertyNames(Tests.prototype);
+		/*var methods = Object.getOwnPropertyNames(Tests.prototype);
 		for(var i = 0; i < methods.length; i++){
 			if(["constructor"].indexOf(methods[i]) === -1){
 				if(["before", "after", "beforeEach"].indexOf(methods[i]) === -1){
@@ -30,7 +30,7 @@ class Tests{
 					this[methods[i]] = this[methods[i]];
 				}
 			}
-		}
+		}*/
 	}
 	/*async test_class() {
 		//var result = await CakeJS.Core.ClassLoader.load(path.resolve(__filename,"..","src/test.js"));
