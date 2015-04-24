@@ -23,4 +23,14 @@
 export class ExpressionInterface{
 	sql(){throw new NotImplementedException();}
 	traverse(){throw new NotImplementedException();}
+	
+	setField(field)
+    {
+        this._field = field;
+    }
+
+    getField()
+    {
+        return this._field;
+    }
 }
