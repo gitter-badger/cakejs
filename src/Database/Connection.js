@@ -28,29 +28,45 @@ import clone from '../Utilities/clone'
 
 export class Connection{
 	constructor(config){
-		if(!('driver' in config))
-			throw new MissingConfigException('Missing database config option "driver"');
-		this.driver(config.driver, config)
+		this._config = config;
+		
+		var driver = '';
+		if('driver' in config && config.driver !== null){
+			driver = config['driver'];
+		}
+		this.driver(driver, config);
 	}
-	driver(...args){
-		if(args.length === 0)
+	
+	driver(driver = null, config = {}){
+		if(driver === null){
 			return this._driver;
-		if(args.length !== 2)
-			throw new MissingParameterException();
-		if(typeof args[0] !== 'string')
-			throw new InvalidParameterException(args[0], "string");
-		if(typeof args[1] !== 'object')
-			throw new InvalidParameterException(args[1], "object");
-		this._configuration = clone(args[1]);
-		this._configuration.driver = args[0];
-		this._driver = DriverManager.get(clone(args[1]));
+		}
+		if(typeof driver === 'string'){
+			this._driver = DriverManager.get(config);
+		}
+		return this._driver
 	}
+	
 	config(){
 		return this._configuration;
 	}
+	
 	async query(...args){
 		if(typeof args[0] !== 'string')
 			throw new InvalidParameterException(args[0], "string");
 		return await this.driver().query.apply(this.driver(), args);
+	}
+	
+	async prepare(sql){
+		var statement = await this._driver.prepare(sql);
+		return statement;
+	}
+	
+	async run(query){
+		var statement = this.prepare(query);
+		query.valueBinder().attachTo(statement);
+		statement.execute();
+		
+		return statement;
 	}
 }
