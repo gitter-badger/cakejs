@@ -28,7 +28,7 @@ export default function count(object){
 			return string.length;
 			break;
 		
-		case "boolean"
+		case "boolean":
 			return object?1:0;
 			break;
 			
