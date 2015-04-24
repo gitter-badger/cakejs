@@ -15,13 +15,18 @@
 
 //CakeJS.Database.Drivers.Mysql
 
-//Types
-import {Driver} from '../Driver'
+//Exceptions
 import {InvalidParameterException} from '../../Exception/InvalidParameterException'
 import {MissingConfigException} from '../../Exception/MissingConfigException'
+import {Exception} from '../../Core/Exception/Exception'
+
+//Types
+import {Driver} from '../Driver'
+import {Query} from '../Query'
+import {MysqlStatement} from '../Statement/MysqlStatement'
 
 //Requires
-var mysql = require('mysql');
+var mysql = require('mysql2');
 
 export class Mysql extends Driver{
 	constructor(config){
@@ -35,6 +40,7 @@ export class Mysql extends Driver{
 			config.persistent = true;
 		super(config);
 		this._connection = null;
+		this._connected = false;
 	}
 	_create(){
 		var config = {
@@ -56,6 +62,8 @@ export class Mysql extends Driver{
 		});
 	}
 	connect(){
+		if(this._connected)
+			return true;
 		if(this._connection === null)
 			this._create();
 		return new Promise((resolve, reject) => {
@@ -63,6 +71,7 @@ export class Mysql extends Driver{
 				this._connection.connect((err) => {
 					if(err)
 						return reject();
+					this._connected = true;
 					resolve();
 				});
 			}catch(e){
@@ -75,6 +84,7 @@ export class Mysql extends Driver{
 			this._connection.destroy();
 		}catch(e){}
 		this._connection = null;
+		this._connected = false;
 	}
 	query(sql){
 		var args = [];
@@ -94,5 +104,26 @@ export class Mysql extends Driver{
 				reject(e);
 			}
 		});		
+	}
+	prepare(query){
+		return new Promise(async (resolve, reject) => {
+			try{
+				await this.connect();
+				var isObject = (typeof query === 'object') && (query instanceof Query);
+				var statement = this._connection.prepare(isObject ? query.sql() : query, (err, statement) => {
+					try{
+						if(err){
+							throw new Exception(err);
+						}
+						var result = new MysqlStatement(statement, this);
+						resolve(result);
+					}catch(e){
+						reject(e);
+					}
+				});
+			}catch(e){
+				reject(e);
+			}
+		});
 	}
 }
