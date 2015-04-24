@@ -28,6 +28,8 @@ var sprintf = require("sprintf-js").sprintf;
 
 //Utilities
 import isEmpty from '../../Utilities/isEmpty'
+import isArray from '../../Utilities/isArray'
+import count from '../../Utilities/count'
 
 /**
  * @internal
@@ -43,7 +45,7 @@ export class CaseExpression extends ExpressionInterface{
             this.add(conditions, values, types);
         }
 		
-		if((typeof conditions === 'object' && (conditions instanceof Array || conditions instanceof ExpressionInterface)) && typeof values === 'object'){
+		if(isArray(conditions) && isArray(values) && count(values) > count(conditions)){
 			var lastkey = null;
 			for(var key in values){
 				lastkey = key;
@@ -66,16 +68,16 @@ export class CaseExpression extends ExpressionInterface{
 	}
 	
 	add(conditions = [], values = [], types = []){
-		if(typeof conditions === 'object' && (conditions instanceof Array || conditions instanceof ExpressionInterface)){
-			conditions = [];
+		if(!isArray(conditions)){
+			conditions = [conditions];
 		}
 		
-		if(typeof values === 'object'){
-			values = [];
+		if(!isArray(values)){
+			values = [values];
 		}
 		
-		if(typeof types === 'object'){
-			types = [];
+		if(!isArray(types)){
+			types = [types];
 		}
 		
 		this._addExpressions(conditions, values, types);
@@ -116,13 +118,13 @@ export class CaseExpression extends ExpressionInterface{
 	}
 	
 	elseValue(value = null, type = null){
-		if(typeof value === 'object' && !(value instanceof ExpressionInterface)){
+		if(isArray(value)){
 			var lastkey = null;
 			for(var key in values){
 				lastkey = key;
 			}
 			value = value[lastKey];
-		}else if(value !== null && !(value instanceof ExpressionInterface)){
+		}else if(value !== null && !(typeof value === 'object' && value instanceof ExpressionInterface)){
 			value = {
 				'value': value,
 				'type': type
@@ -134,7 +136,7 @@ export class CaseExpression extends ExpressionInterface{
 	_compile(part, generator){
 		if(typeof part === 'object' && part instanceof ExpressionInterface){
 			part = part.sql(generator);
-		}else if(typeof part === 'object'){
+		}else if(isArray(part)){
 			var placeholder = generator.placeholder('param');
 			generator.bind(placeholder, part['value'], part['type']);
 			part = placeholder;
