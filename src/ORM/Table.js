@@ -67,20 +67,22 @@ export class Table {
 		this._connection = connection;
 	}
 	initialize(){}
-	find(finder, options){
-		finder = typeof finder === 'undefined' ? null : finder;
-		options = typeof options === 'undefined' ? null : {};
-		if(typeof options === 'object' && options instanceof Collection)
-			options = options.toObject();
-		var query = new Query();
-		if(finder === null)
-			return query;
-		finder = "find"+Inflector.camelize(finder);
-		if(!(finder in this))
-			throw new FinderNotFoundException(this.constructor.name, finder);
-		return this[finder](query, options);
+	find(type = 'all', options = {}){
+		query = this.query();
+		query.select();
+		return this.callFinder(type, query, options);
 	}
 	findAll(query, options){
 		return query;
+	}
+	
+	callFinder(type, query, options = {}){
+		query.applyOptions(options);
+		options = query.getOptions();
+		var finder = 'find'+type;
+		if(finder in this){
+			return this[finder](query, options);
+		}
+		throw new FinderNotFoundException(this.constructor.name, finder);		
 	}
 }
