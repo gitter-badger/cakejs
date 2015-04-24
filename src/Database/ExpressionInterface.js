@@ -20,6 +20,12 @@
 
 //CakeJS.Database.ExpressionInterface
 
+//Types
+import TypeMap from './TypeMap'
+
+//Utilities
+import isArray from '../Utilities/isArray'
+
 export class ExpressionInterface{
 	sql(){throw new NotImplementedException();}
 	traverse(){throw new NotImplementedException();}
@@ -33,4 +39,26 @@ export class ExpressionInterface{
     {
         return this._field;
     }
+	
+	typeMap(typeMap){
+		if(!this._typeMap){
+			this._typeMap = new TypeMap();
+		}
+		
+		if(typeMap === null){
+			return this._typeMap;
+		}
+		
+		this._typeMap = isArray(typeMap) ? new TypeMap(typeMap) : typeMap;
+		return this;
+	}
+	
+	defaultTypes(types = null)
+	{
+		if(types === null){
+			return this.typeMap().defaults();
+		}
+		this.typeMap().defaults(types);
+		return this;
+	}
 }
