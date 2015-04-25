@@ -74,7 +74,7 @@ export class QueryCompiler {
 		if(typeof sql_object !== 'object'){
 			sql_object = {sql: sql_object};
 		}
-		return function (parts, name) {
+		return (parts, name) => {
 			if(!count(parts)){
 				return;
 			}
