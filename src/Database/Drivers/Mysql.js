@@ -23,6 +23,7 @@ import {Exception} from '../../Core/Exception/Exception'
 //Types
 import {Driver} from '../Driver'
 import {Query} from '../Query'
+import {QueryCompiler} from '../QueryCompiler'
 import {MysqlStatement} from '../Statement/MysqlStatement'
 
 //Requires
@@ -87,25 +88,12 @@ export class Mysql extends Driver{
 		this._connected = false;
 	}
 	query(sql){
-		var args = [];
-		for(var key in arguments)
-			args.push(arguments[key]);
-		args.shift();
-		return new Promise(async (resolve, reject) => {
-			try{
-				if(this._connection === null)
-					await this.connect();
-				this._connection.query(sql, args, function(err, rows, fields){
-					if(err)
-						return reject(err);
-					resolve(rows);
-				});
-			}catch(e){
-				reject(e);
-			}
-		});		
+		console.log(sql);
+		var statement = this.prepare(sql);
+		statement.execute();
+		return statement;
 	}
-	prepare(query){
+	oldprepare(query){
 		return new Promise(async (resolve, reject) => {
 			try{
 				await this.connect();
@@ -126,12 +114,84 @@ export class Mysql extends Driver{
 			}
 		});
 	}
+	prepare(query){
+		var isObject = (typeof query === 'object') && (query instanceof Query);
+		return new MysqlStatement(isObject ? query.sql() : query, this);
+	}
 	
 	compileQuery(query, generator)
 	{
 		var processor = this.newCompiler();
-		var translator = this.queryTranslator(query.type());
-		query = translator(query);
+		//var translator = this.queryTranslator(query.type());
+		//query = translator(query);
 		return [query, processor.compile(query, generator)];
+	}
+	
+	newCompiler(){
+		return new QueryCompiler();
+	}
+	
+	/**
+	 * SqlDialectTrait
+	 */
+	quoteIdentifier(identifier){
+		identifier = identifier.trim();
+		
+		if(identifier === '*'){
+			return '*'
+		}
+		
+		if(identifier === ''){
+			return '';
+		}
+		
+		if(/^[\w-]+$/.test(identifier)){
+			return this._startQuote+identifier+this._endQuote;
+		}
+		
+		if(/^[\w-]+\.[^ \*]*$/.test(identifier)){
+			var items = identifier.split(".");
+			return this._startQuote + items.join(this._endQuote + '.' + this._startQuote) + this._endQuote;
+		}
+		
+		if(/^[\w-]+\.\*$/.test(identifier)){
+			return this._startQuote + identifier.replace('.*', this._endQuote+'.*');
+		}
+		
+		if(/^([\w-]+)\((.*)\)$/.test(identifier)){
+			var matches = identifier.match(/^([\w-]+)\((.*)\)$/);
+			return matches[1] + '(' + this.quoteIdentifier(matches[2]) + ')';
+		}
+		
+		if(/^([\w-]+(\.[\w-]+|\(.*\))*)\s+AS\s*([\w-]+)$/i.test(identifier)){
+			var matches = identifier.match(/^([\w-]+(\.[\w-]+|\(.*\))*)\s+AS\s*([\w-]+)$/i);
+			return this.quoteIdentifier(matches[1]) + ' AS ' + this.quoteIdentifier(matches[3]);
+		}
+		
+		return identifier;
+	}
+	
+	queryTranslator(type){
+		return (query) => {
+			if(this.autoQutoing()){
+				query = (new IdentifierQuoter(this)).quote(query);
+			}
+			
+			query = this['_'+type+'QueryTranslator'](query);
+			translators = this._expressionTranslators();
+			if(!translators){
+				return query;
+			}
+			
+			return query;
+			
+			/*query.traverseExpressions((expression) => {
+				for(var class in translators){
+					var method = translators[class];
+					//No idea at the moment how to convert
+				}
+			});
+			return query;*/
+		};
 	}
 }

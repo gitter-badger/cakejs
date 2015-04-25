@@ -36,7 +36,6 @@ import getArrayKeysAndValues from '../Utilities/getArrayKeysAndValues'
 export class Query extends ExpressionInterface {
 	constructor(connection){
 		super();
-		
 		this._valueBinder = null;
 		
 		this._connection = null;
@@ -71,7 +70,7 @@ export class Query extends ExpressionInterface {
 		this.connection(connection);
 	}
 	
-	connection(connection){
+	connection(connection = null){
 		if (connection === null) {
             return this._connection;
         }
@@ -255,7 +254,9 @@ export class Query extends ExpressionInterface {
 	
 	epilog(){throw new NotImplementedException();}
 	
-	type(){throw new NotImplementedException();}
+	type(){
+		return this._type;
+	}
 	
 	newExpr(){throw new NotImplementedException();}
 	
@@ -263,7 +264,9 @@ export class Query extends ExpressionInterface {
 	
 	getIterator(){throw new NotImplementedException();}
 	
-	clause(){throw new NotImplementedException();}
+	clause(name){
+		return this._parts[name];
+	}
 	
 	decorateResults(){throw new NotImplementedException();}
 	

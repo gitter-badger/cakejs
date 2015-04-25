@@ -199,7 +199,7 @@ export class QueryCompiler {
 	}
 	
 	_stringifyExpressions(expressions, generator){
-		var result = {};
+		var result = [];
 		for(var k in expressions){
 			var expression = expressions [k];
 			if(typeof expression === 'object' && expression instanceof ExpressionInterface){

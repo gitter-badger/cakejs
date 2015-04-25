@@ -51,14 +51,20 @@ export class Connection{
 		return this._configuration;
 	}
 	
-	async query(...args){
+	async oldQuery(sql){
 		if(typeof args[0] !== 'string')
 			throw new InvalidParameterException(args[0], "string");
 		return await this.driver().query.apply(this.driver(), args);
 	}
 	
-	async prepare(sql){
-		var statement = await this._driver.prepare(sql);
+	query(sql){
+		var statement = this.prepare(sql);
+		statement.execute();
+		return statement;
+	}
+	
+	prepare(sql){
+		var statement = this._driver.prepare(sql);
 		return statement;
 	}
 	

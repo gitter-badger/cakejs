@@ -48,22 +48,24 @@ export class Table {
 		}
 		this._table = table;
 	}
-	alias(alias){
-		alias = typeof alias === 'undefined' ? null : alias;
-		if(alias !== null)
+	alias(alias = null){
+		if(alias !== null){
 			this._alias = alias;
+		}
+		
 		if(typeof this._alias === 'undefined' || this._alias === null){
 			if(alias === null){
 				alias = this.constructor.name.replace(/Table$/,"");
 			}
 			this._alias = Inflector.tableize(alias);
 		}
+		
 		this._alias = alias;
 	}
-	connection(connection){
-		connection = typeof connection === 'undefined' ? null : connection;
-		if(connection === null)
+	connection(connection = null){
+		if(connection === null){
 			return this._connection;
+		}
 		this._connection = connection;
 	}
 	initialize(){}

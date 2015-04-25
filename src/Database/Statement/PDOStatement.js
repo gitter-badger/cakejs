@@ -13,13 +13,23 @@
  * @license     http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-//CakeJS.Database.Statement.MysqlStatement
+//CakeJS.Database.Statement.PDOStatement
 
 //Types
-import {PDOStatement} from './PDOStatement';
+import {StatementDecorator} from './StatementDecorator';
 
-export class MysqlStatement extends PDOStatement{
-	execute(params = null){
-		return null;
+export class PDOStatement extends StatementDecorator {
+	constructor(statement = null, driver = null){
+		super(statement, driver);
+	}
+	
+	bindValue(column, value, type = 'string'){
+		if(type === null){
+			type = 'string';
+		}
+		
+		if(/^[0-9]{1,}$/.test(type)){
+			//var [value, type] = this.cast(value, type);
+		}
 	}
 }

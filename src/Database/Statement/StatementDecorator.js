@@ -13,13 +13,15 @@
  * @license     http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-//CakeJS.Database.Statement.MysqlStatement
+//CakeJS.Database.Statement.StatementDecorator
 
 //Types
-import {PDOStatement} from './PDOStatement';
+import {StatementInterface} from '../StatementInterface';
 
-export class MysqlStatement extends PDOStatement{
-	execute(params = null){
-		return null;
+export class StatementDecorator extends StatementInterface {
+	constructor(statement = null, driver = null){
+		super();
+		this._statement = statement;
+		this._driver = driver;
 	}
 }
