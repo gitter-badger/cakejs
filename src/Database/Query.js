@@ -20,14 +20,24 @@ import {NotImplementedException} from '../Exception/NotImplementedException'
 
 //Types
 import {CollectionInterface} from '../Collection/CollectionInterface'
+import {ExpressionInterface} from './ExpressionInterface'
 import {ValueBinder} from './ValueBinder'
 
 //Utilities
 import merge from '../Utilities/merge'
+import isEmpty from '../Utilities/isEmpty'
+import isArray from '../Utilities/isArray'
+import toArray from '../Utilities/toArray'
+import count from '../Utilities/count'
+import getArrayKeysAndValues from '../Utilities/getArrayKeysAndValues'
 
-export class Query extends CollectionInterface {
+
+
+export class Query extends ExpressionInterface {
 	constructor(connection){
 		super();
+		
+		this._valueBinder = null;
 		
 		this._connection = null;
 		
@@ -58,10 +68,6 @@ export class Query extends CollectionInterface {
 		
 		this._resultDecorators = [];
 		
-		this._iterator;
-		
-		this._transformedQuery = null;
-		
 		this.connection(connection);
 	}
 	
@@ -69,11 +75,15 @@ export class Query extends CollectionInterface {
 		if (connection === null) {
             return this._connection;
         }
+		this._dirty();
         this._connection = connection;
         return this;
 	}
 	
-	execute(){throw new NotImplementedException();}
+	execute(){
+		var statement = this._connection.run(this);
+		return this._iterator = this._decorateStatement(statement);
+	}
 	
 	sql(generator = null){
 		if(!generator){
@@ -83,7 +93,14 @@ export class Query extends CollectionInterface {
 		return this.connection().compileQuery(this, generator);
 	}
 	
-	traverse(){throw new NotImplementedException();}
+	traverse(visitor, parts = []){
+		var [keys] = getArrayKeysAndValues(this._parts);
+		parts = parts ? parts : keys;
+		for(var name of parts){
+			visitor(this._parts[name], name);
+		}
+		return this;
+	}
 	
 	select(fields = [], overwrite = false){
 		if(typeof fields === 'function'){
@@ -102,15 +119,93 @@ export class Query extends CollectionInterface {
 		
 		this._dirty();
 		this._type = 'select';
+		return this;
 	}
 	
-	distinct(){throw new NotImplementedException();}
+	distinct(on = [], overwrite = false){
+		if(count(on) === 0){
+			on = true;
+		}
+		
+		if(isArray(on)){
+			var _merge = [];
+			if(isArray(this._parts['distinct'])){
+				_merge = this._parts['distinct'];
+			}
+			var [keys, values] = getArrayKeysAndValues(on);
+			on = (overwrite) ? values : merge(_merge, values);
+		}
+		
+		this._parts['distinct'] = on;
+		this._dirty();
+		return this;
+	}
 	
-	modifier(){throw new NotImplementedException();}
+	modifier(modifiers, overwrite = false){
+		this._dirty();
+		if(overwrite){
+			this._parts['modifiers'] = [];
+		}
+		this._parts['modifiers'] = merge(this._parts['modifiers'], toArray(modifiers));
+		return this;
+	}
 	
-	from(){throw new NotImplementedException();}
+	from(tables = [], overwrite = false){
+		if(isEmpty(tables)){
+			return this._parts['from'];
+		}
+		
+		if(typeof tables === 'string'){
+			tables = [tables];
+		}
+		
+		if(overwrite){
+			this._parts['from'] = tables;
+		}else{
+			this._parts['from'] = merge(this._parts['from'], tables);
+		}
+		
+		this._dirty();
+		return this;
+	}
 	
-	join(){throw new NotImplementedException();}
+	join(tables = null, types = [], overwrite = false){
+		if(tables === null){
+			return this._parts['join'];
+		}
+		
+		if(typeof tables === 'string' || 'table' in tables){
+			tables = [tables];
+		}
+		
+		var joins = [];
+		var i = count(this._parts['join']);
+		for(var alias in tables){
+			var t = tables[alias];
+			if(!isArray(t)){
+				t = {'table': t, 'conditions': this.newExpr()};
+			}
+			
+			if(typeof t['conditions'] === 'function'){
+				t['conditions'] = t['conditions'](this.newExpr(), this);
+			}
+			
+			if(typeof t['conditions'] === 'object' && t['conditions'] instanceof ExpressionInterface){
+				t['conditions'] = this.newExpr().add(t['conditions'], types);
+			}
+			alias = typeof alias === 'string' ? alias : null;
+			joins[alias ? alias : i++] = merge(t, {'type': 'INNER', 'alias': alias});
+		}
+		
+		if(overwrite){
+			this._parts['join'] = joins;
+		}else{
+			this._parts['join'] = merge(this._parts['join'], joins);
+		}
+		
+		this._dirty();
+		return this;
+	}
 	
 	leftJoin(){throw new NotImplementedException();}
 	

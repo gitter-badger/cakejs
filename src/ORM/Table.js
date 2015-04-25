@@ -67,8 +67,13 @@ export class Table {
 		this._connection = connection;
 	}
 	initialize(){}
+	
+	query(){
+		return new Query(this.connection(), this);
+	}
+	
 	find(type = 'all', options = {}){
-		query = this.query();
+		var query = this.query();
 		query.select();
 		return this.callFinder(type, query, options);
 	}
@@ -77,8 +82,9 @@ export class Table {
 	}
 	
 	callFinder(type, query, options = {}){
-		query.applyOptions(options);
-		options = query.getOptions();
+		//query.applyOptions(options);
+		//options = query.getOptions();
+		type = type.substr(0,1).toUpperCase()+type.substr(1);
 		var finder = 'find'+type;
 		if(finder in this){
 			return this[finder](query, options);

@@ -21,7 +21,7 @@ var filename = path.basename(__filename);
 
 class Tests{
 	constructor(){
-		/*var methods = Object.getOwnPropertyNames(Tests.prototype);
+		var methods = Object.getOwnPropertyNames(Tests.prototype);
 		for(var i = 0; i < methods.length; i++){
 			if(["constructor"].indexOf(methods[i]) === -1){
 				if(["before", "after", "beforeEach"].indexOf(methods[i]) === -1){
@@ -30,9 +30,9 @@ class Tests{
 					this[methods[i]] = this[methods[i]];
 				}
 			}
-		}*/
+		}
 	}
-	/*async test_class() {
+	async test_class() {
 		//var result = await CakeJS.Core.ClassLoader.load(path.resolve(__filename,"..","src/test.js"));
 		this._server = CakeJS.createServer();
 		this._server.config({
@@ -58,8 +58,8 @@ class Tests{
 		//await this._server.start();
 		var articles = await CakeJS.ORM.TableRegistry.get("Articles").find().sql();
 		console.log(articles);
-	}*/
-	async server_create(){
+	}
+	/*async server_create(){
 		this._server = CakeJS.createServer();
 		this._server.config({
 			"Listen": {
@@ -146,7 +146,7 @@ class Tests{
 	async database_test(){
 		var connection = CakeJS.Datasource.ConnectionManager.get("default");
 		var result = await connection.query("SELECT * FROM ??", "table");
-	}
+	}*/
 }
 
 export default new Tests();

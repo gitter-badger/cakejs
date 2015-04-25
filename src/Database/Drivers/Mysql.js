@@ -126,4 +126,12 @@ export class Mysql extends Driver{
 			}
 		});
 	}
+	
+	compileQuery(query, generator)
+	{
+		var processor = this.newCompiler();
+		var translator = this.queryTranslator(query.type());
+		query = translator(query);
+		return [query, processor.compile(query, generator)];
+	}
 }

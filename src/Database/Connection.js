@@ -69,4 +69,8 @@ export class Connection{
 		
 		return statement;
 	}
+	
+	compileQuery(query, generator){
+		return this.driver().compileQuery(query, generator)[1];
+	}
 }
