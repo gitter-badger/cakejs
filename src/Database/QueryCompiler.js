@@ -92,7 +92,7 @@ export class QueryCompiler {
 	}
 	
 	_buildSelectPart(parts, query, generator){
-		var driver = query.connection().query();
+		var driver = query.connection().driver();
 		var select = 'SELECT %s%s%s';
 		if(this._orderedUnion && query.clause('union')){
 			select = '(SELECT %s%s%s';
