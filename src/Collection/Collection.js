@@ -340,15 +340,15 @@ export class Collection extends CollectionInterface{
 	}
 	
 	toList(cloneObject){
-		return this.toArray(cloneObject);
-	}
-	toArray(cloneObject){
 		cloneObject = typeof cloneObject === 'boolean' ? cloneObject : false;
 		var array = [];
 		this.each((value) => {
 			array.push(cloneObject?clone(value):value);
 		});
 		return array;
+	}
+	toArray(cloneObject){
+		return this.toObject(cloneObject);
 	}		
 	toObject(cloneObject){
 		cloneObject = typeof cloneObject === 'boolean' ? cloneObject : false;
