@@ -17,12 +17,16 @@
 
 //Exceptions
 import {NotImplementedException} from '../Exception/NotImplementedException'
+import {RuntimeException} from '../Exception/RuntimeException'
 
 //Types
 import {CollectionInterface} from '../Collection/CollectionInterface'
-import {ExpressionInterface} from './ExpressionInterface'
 import {ValueBinder} from './ValueBinder'
+
+//Expressions
+import {ExpressionInterface} from './ExpressionInterface'
 import {QueryExpression} from './Expression/QueryExpression'
+import {ValuesExpression} from './Expression/ValuesExpression'
 
 //Utilities
 import merge from '../Utilities/merge'
@@ -251,17 +255,81 @@ export class Query extends ExpressionInterface {
 	
 	unionAll(){throw new NotImplementedException();}
 	
-	insert(){throw new NotImplementedException();}
+	insert(columns, types = []){
+		if(isEmpty(columns)){
+			throw new RuntimeException('At least 1 column is required to perform an insert.');
+		}
+		this._dirty();
+		this._type = 'insert';
+		this._parts['insert'][1] = columns;
+		
+		if(isEmpty(this._parts['values'])){
+			this._parts['values'] = new ValuesExpression(columns, this.typeMap().types(types));
+		}
+		
+		return this;
+	}
 	
-	into(){throw new NotImplementedException();}
+	into(table){
+		this._dirty();
+		this._type = 'insert';
+		this._parts['insert'][0] = table;
+		return this;
+	}
 	
-	values(){throw new NotImplementedException();}
+	values(data){
+		if(this._type !== 'insert'){
+			throw new RuntimeException('You cannot add values before defining columns to use.');
+		}
+		if(isEmpty(this._parts['insert'])){
+			throw new RuntimeException('You cannot add values before defining columns to use.');
+		}
+		
+		this._dirty();
+		if(typeof data === 'object' && data instanceof ValuesExpression){
+			this._parts['values'] = data;
+			return this;
+		}
+		
+		this._parts['values'].add(data);
+		return this;
+	}
 	
-	update(){throw new NotImplementedException();}
+	update(table){
+		this._dirty();
+		this._type = 'update';
+		this._parts['update'][0] = table;
+		return this;
+	}
 	
-	set(){throw new NotImplementedException();}
+	set(key, value = null, types = []){
+		if(isEmpty(this._parts['set'])){
+			this._parts['set'] = this.newExpr().type(',');
+		}
+		
+		if(isArray(key) || (typeof key === 'object' && key instanceof ExpressionInterface)){
+			types = toArray(value);
+			this._parts['set'].add(key, types);
+			return this;
+		}
+		
+		if(typeof types === 'string' && typeof key === 'string'){
+			types = {};
+			types[key] = types;
+		}
+		this._parts['set'].eq(key, value, types);
+		
+		return this;		
+	}
 	
-	delete(){throw new NotImplementedException();}
+	delete(table = null){
+		this._dirty();
+		this._type = 'delete';
+		if(!isEmpty(table)){
+			this.from(table);
+		}
+		return this;
+	}
 	
 	epilog(){throw new NotImplementedException();}
 	

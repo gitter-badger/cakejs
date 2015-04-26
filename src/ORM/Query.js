@@ -127,7 +127,6 @@ export class Query extends Database.Query {
 	
 	sql(binder = null){
 		//this.triggerBeforeFind(
-		
 		this._transformQuery();
 		var sql = super.sql(binder);
 		return sql;
