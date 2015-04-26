@@ -22,6 +22,7 @@
 
 //Utilities
 import isEmpty from '../Utilities/isEmpty'
+import toArray from '../Utilities/toArray'
 
 //Requires
 var sprintf = require("sprintf-js").sprintf;
@@ -69,8 +70,10 @@ export class ValueBinder{
 		if(isEmpty(bindings)){
 			return;
 		}
-		var params = types = [];
-		for(var b of bindings){
+		var params = {};
+		var types = {};
+		for(var a in toArray(bindings)){
+			var b = bindings[a];
 			params[b['placeholder']] = b['value'];
 			types[b['placeholder']] = b['type'];
 		}
