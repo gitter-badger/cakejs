@@ -73,7 +73,7 @@ export class Mysql extends Driver{
 			try{
 				this._connection.connect((err) => {
 					if(err)
-						return reject();
+						return reject(err);
 					this._connected = true;
 					resolve();
 				});
@@ -89,8 +89,32 @@ export class Mysql extends Driver{
 		this._connection = null;
 		this._connected = false;
 	}
+	execute(sql, placeholderData){
+		return new Promise(async (resolve, reject) => {
+			try{
+				if(!this._connected){
+					await this.connect();
+				}
+				var result = await new Promise((inner_resolve, inner_reject) => {
+					try{
+						this._connection.config.namedPlaceholders = true;
+						this._connection.execute(sql, placeholderData, (error, rows, fields) => {
+							if(error){
+								return inner_reject(error);
+							}
+							inner_resolve([rows, fields]);
+						});
+					}catch(error){
+						return inner_reject(error);
+					}
+				});
+				resolve(result);
+			}catch(error){
+				reject(error);
+			}
+		});
+	}
 	query(sql){
-		console.log(sql);
 		var statement = this.prepare(sql);
 		statement.execute();
 		return statement;
