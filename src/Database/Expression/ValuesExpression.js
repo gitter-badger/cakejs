@@ -97,7 +97,7 @@ export class ValuesExpression extends ExpressionInterface{
 		var i = 0;
 		var defaults = {};
 		for(var key of this._columns)
-			defualts[key] = null;
+			defaults[key] = null;
 		var placeholders = [];
 		
 		for(var row of this._values){
@@ -110,7 +110,7 @@ export class ValuesExpression extends ExpressionInterface{
 					rowPlaceholders.push('('+value.sql(generator)+')');
 					continue;
 				}
-				type = this.typeMap().type(column);
+				var type = this.typeMap().type(column);
 				var placeholder = generator.placeholder(i);
 				rowPlaceholders.push(placeholder);
 				generator.bind(placeholder, value, type);
