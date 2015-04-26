@@ -266,9 +266,22 @@ export class Query extends Database.Query {
 	
 	formatResults(){throw new NotImplementedException();}
 	
-	first(){throw new NotImplementedException();}
+	async first(){
+		if(this._type !== 'select'){
+			throw new RuntimeException('You cannot call all() on a non-select query. Use execute() instead.');
+		}
+		this.limit(1);
+		var resultSet = await this._all();
+		return resultSet.first();
+	}
 	
-	firstOrFail(){throw new NotImplementedException();}
+	async firstOrFail(){
+		var entity = await this.first();
+		if(entity === null){
+			throw new RuntimeException('Record not found in table');
+		}
+		return entity;
+	}
 	
 	getOptions(){throw new NotImplementedException();}
 	
