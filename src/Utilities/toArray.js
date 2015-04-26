@@ -17,6 +17,9 @@
 
 export default function toArray(object){
 	var newObject = {}
+	if(typeof object === 'number'){
+		object = [object];
+	}
 	object = JSON.parse(JSON.stringify(object));
 	if(typeof object === 'object' && object instanceof Array){
 		for(var i = 0; i < object.length; i++){
