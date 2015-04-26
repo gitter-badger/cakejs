@@ -32,7 +32,7 @@ class Tests{
 			}
 		}
 	}
-	async test_class() {
+	/*async test_class() {
 		//var result = await CakeJS.Core.ClassLoader.load(path.resolve(__filename,"..","src/test.js"));
 		this._server = CakeJS.createServer();
 		this._server.config({
@@ -62,8 +62,13 @@ class Tests{
 				.where({id: [10, 55]})
 				.sql();
 		console.log(articles);
-	}
-	/*async server_create(){
+		CakeJS.ORM.TableRegistry
+				.get("Users")
+				.find('all')
+				.where({id: [10, 55]})
+				.execute();
+	}*/
+	async server_create(){
 		this._server = CakeJS.createServer();
 		this._server.config({
 			"Listen": {
@@ -147,10 +152,16 @@ class Tests{
 		}
 		assert.equal(JSON.stringify(data), JSON.stringify(form), "The response was incorrect");
 	}
-	async database_test(){
-		var connection = CakeJS.Datasource.ConnectionManager.get("default");
-		var result = await connection.query("SELECT * FROM ??", "table");
-	}*/
+	async orm_sql(){
+		var sql = await CakeJS.ORM.TableRegistry
+				.get("table")
+				.find()
+				.select('column_a', 'column_b')
+				.where({'column_c': 50, 'column_d': 50})
+				.sql();
+		assert.equal(sql, 'SELECT tables.column_a AS `tables__column_a` FROM tables WHERE (column_c = :0 AND column_d = :1)', 'Was excpeting a proper sql query');
+	}
 }
+
 
 export default new Tests();
