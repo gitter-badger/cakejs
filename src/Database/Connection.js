@@ -71,7 +71,7 @@ export class Connection{
 	async run(query){
 		var statement = this.prepare(query);
 		query.valueBinder().attachTo(statement);
-		statement.execute();
+		await statement.execute();
 		
 		return statement;
 	}
