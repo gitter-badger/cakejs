@@ -9,6 +9,7 @@ coverage
 .grunt
 .lock-wscript
 build
+dist
 node_modules
 lib
 index.js

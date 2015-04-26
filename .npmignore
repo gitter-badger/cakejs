@@ -1,4 +1,5 @@
 /build/tests
+/dist/tests
 /example
 /pub
 /src
