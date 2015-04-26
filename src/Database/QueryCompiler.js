@@ -130,6 +130,7 @@ export class QueryCompiler {
 		}else{
 			modifiers = '';
 		}
+		
 		return sprintf(select, distinct, modifiers, normalized.join(', '));
 	}
 	
@@ -144,6 +145,7 @@ export class QueryCompiler {
 			}
 			normalized.push(p);
 		}
+		
 		return sprintf(select, normalized.join(', '));
 	}
 	

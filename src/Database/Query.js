@@ -248,7 +248,14 @@ export class Query extends ExpressionInterface {
 	
 	page(){throw new NotImplementedException();}
 	
-	limit(){throw new NotImplementedException();}
+	limit(num){
+		this._dirty();
+		if(num !== null && typeof num !== 'object'){
+			num = parseInt(num);
+		}
+		this._parts['limit'] = num;
+		return this;
+	}
 	
 	offset(){throw new NotImplementedException();}
 	
