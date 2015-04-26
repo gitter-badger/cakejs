@@ -85,8 +85,8 @@ export class Query extends ExpressionInterface {
         return this;
 	}
 	
-	execute(){
-		var statement = this._connection.run(this);
+	async execute(){
+		var statement = await this._connection.run(this);
 		return this._iterator = this._decorateStatement(statement);
 	}
 	
@@ -306,7 +306,12 @@ export class Query extends ExpressionInterface {
 	
 	bufferResults(){throw new NotImplementedException();}
 	
-	_decorateStatement(){throw new NotImplementedException();}
+	_decorateStatement(statement){
+		/*for(var p of this._resultDecorators){
+			
+		}*/
+		return statement;
+	}
 	
 	_conjugate(part, append, conjunction, types){
 		var expression = !isEmpty(this._parts[part]) ? this._parts[part] : this.newExpr();
