@@ -23,6 +23,7 @@ import {CollectionInterface} from './CollectionInterface'
 //Utilities
 import extract from '../Utilities/extract'
 import clone from '../Utilities/clone'
+import count from '../Utilities/count'
 
 export class Collection extends CollectionInterface{
 	constructor(object = {}){
@@ -41,6 +42,10 @@ export class Collection extends CollectionInterface{
 				this._data = object;
 			}
 		}
+	}
+	
+	get length() {
+		return count(this._data);
 	}
 	
 	forEach(callback){
