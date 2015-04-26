@@ -21,6 +21,7 @@ import {RuntimeException} from '../Exception/RuntimeException'
 
 //Types
 import * as Database from '../Database/Query'
+import {ResultSet} from './ResultSet'
 
 //Utilities
 import isEmpty from '../Utilities/isEmpty'
@@ -132,6 +133,12 @@ export class Query extends Database.Query {
 		return sql;
 	}
 	
+	async _execute(){
+		//await this.triggerBeforeFind();
+		var statement = await this.execute();		
+		return new ResultSet(this, statement);
+	}
+	
 	_transformQuery(){
 		if(!this._dirty){
 			return;
@@ -198,6 +205,27 @@ export class Query extends Database.Query {
 		return this._all();
 	}
 	
+	async _all(){
+		
+		if(typeof this._results !== 'undefined' && this._results !== null){
+			return this._results;
+		}
+		
+		if(typeof this._cache !== 'undefined' && this._cache !== null){
+			var results = this._cache.fetch(this);
+		}
+		
+		if(typeof this._results === 'undefined' || this._results === null){
+			var results = this._decorateResults(await this._execute());
+			if(typeof this._cache !== 'undefined' && this._cache !== null){
+				this._cache.store(this, results);
+			}
+		}
+		
+		this._results = results;
+		return this._results;
+	}
+	
 	
 	/*
 	 * QUERY TRAIT START
@@ -219,7 +247,7 @@ export class Query extends Database.Query {
 		return this.all();
 	}
 	
-	_cache(){throw new NotImplementedException();}
+	//_cache(){throw new NotImplementedException();}
 	
 	eagerLoader(value = null){
 		if(value === null){
@@ -229,24 +257,7 @@ export class Query extends Database.Query {
 		return this;
 	}
 	
-	_all(){
-		if(typeof this._results !== 'undefined' && this._results !== null){
-			return this._results;
-		}
-		
-		if(this._cache){
-			results = this._cache.fetch(this);
-		}
-		
-		if(typeof this._results === 'undefined' || this._results === null){
-			results = this._decorateResults(this._execute());
-			if(this._cache){
-				this._cache.store(this, results);
-			}
-		}
-		this._results = results;
-		return this._results;
-	}
+	/*_all(){}*/
 	
 	toArray(){
 		return this.all().toArray();
@@ -262,7 +273,17 @@ export class Query extends Database.Query {
 	
 	getOptions(){throw new NotImplementedException();}
 	
-	_decorateResults(){throw new NotImplementedException();}
+	_decorateResults(result){
+		return result;
+		result = this._applyDecorators(result);
+		
+		if(!(typeof result === 'object' && result instanceof ResultSet) && this.bufferResults()){
+			var _class = this.decoratorClass();
+			result = new _class(result.buffered());
+		}
+		
+		return result;
+	}
 	
 	_decoratorClass(){throw new NotImplementedException();}
 	/*
