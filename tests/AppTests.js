@@ -55,18 +55,13 @@ class Tests{
 				}
 			}
 		});
-		//await this._server.start();
-		var articles = await CakeJS.ORM.TableRegistry
-				.get("Users")
+		var result = await CakeJS.ORM.TableRegistry
+				.get("table")
 				.find('all')
-				.where({id: [10, 55]})
-				.sql();
-		console.log(articles);
-		CakeJS.ORM.TableRegistry
-				.get("Users")
-				.find('all')
-				.where({id: [10, 55]})
-				.execute();
+				.all();
+		result.each((row) => {
+			console.log(row);
+		});
 	}*/
 	async server_create(){
 		this._server = CakeJS.createServer();
