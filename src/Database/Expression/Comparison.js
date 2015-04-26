@@ -23,6 +23,9 @@
 //Types
 import {ExpressionInterface} from '../ExpressionInterface'
 
+//Utilities
+import isEmpty from '../../Utilities/isEmpty'
+
 //Requires
 var sprintf = require("sprintf-js").sprintf;
 
@@ -93,7 +96,7 @@ export class Comparison extends ExpressionInterface{
 			template = '(%s) ';
 		}
 		
-		if(this._type.indexOf('[]') !== -1) {
+		if(!isEmpty(this._type) && this._type.indexOf('[]') !== -1) {
 			template += '%s (%s)';
 			var type = type.replace('[]', '');
 			var value = this._flattenValue(this._value, generator, type);

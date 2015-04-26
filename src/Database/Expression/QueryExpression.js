@@ -257,7 +257,6 @@ export class QueryExpression extends ExpressionInterface{
 		
 		var type = this.typeMap().type(expression);
 		operator = operator.trim().toLowerCase();
-		type = 'TYPE';
 		var typeMultiple = !isEmpty(type) && (type.indexOf('[]') !== -1);
 		if(['in', 'not in'].indexOf(operator) !== -1 || typeMultiple){
 			type = type ? type : 'string';
