@@ -32,6 +32,10 @@ export default function count(object){
 			return object?1:0;
 			break;
 			
+		case "undefined":
+			return 0;
+			break;
+			
 		default:
 			if(object === null){
 				return 0;

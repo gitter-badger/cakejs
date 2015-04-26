@@ -25,6 +25,10 @@ import * as Database from '../Database/Query'
 import isEmpty from '../Utilities/isEmpty'
 import isNumeric from '../Utilities/isNumeric'
 import count from '../Utilities/count'
+import merge from '../Utilities/merge'
+
+//Requires
+var sprintf = require("sprintf-js").sprintf;
 
 export class Query extends Database.Query {
 	constructor(connection, table){
@@ -40,15 +44,18 @@ export class Query extends Database.Query {
 		 * QUERY TRAIT STOP
 		 */
 		this.repository(table);
+		if(this._repository){
+			this.addDefaultTypes(this._repository)
+		}
 	}
 	
 	addDefaultTypes(table){
 		var alias = table.alias();
 		var schema = table.schema();
 		var fields = [];
-		for(var f of schema.columns()){
+		/*for(var f of schema.columns()){
 			fields[f] = fields[alias+'.'+f] = schema.columnType(f);
-		}
+		}*/
 		this.defaultTypes(fields);
 		
 		return this;
@@ -59,9 +66,8 @@ export class Query extends Database.Query {
 	matching(){throw new NotImplementedException();}
 	
 	aliasField(field, alias = null){
-		var namespaced = field.indexOf('.') !== false;
+		var namespaced = field.indexOf('.') !== -1;
 		var aliasedField = field;
-		
 		if(namespaced){
 			var [alias, field] = field.split('.');
 		}
@@ -69,23 +75,21 @@ export class Query extends Database.Query {
 		if(!alias){
 			alias = this.repository().alias();
 		}
-		
 		var key = sprintf('%s__%s', alias, field);
 		if(!namespaced){
 			aliasedField = alias + '.' + field;
 		}
 		var obj = {};
 		obj[key] = aliasedField;
-		
 		return obj;
 	}
 	
 	aliasFields(fields, defaultAlias = null){
-		var aliased = [];
+		var aliased = {};
 		for(var alias in fields){
-			var field = fields[alias];
-			if(isNumeric(alias) && typeof field === 'string'){
-				aliased.push(this.aliasField(field, defaultAlias));
+			var field = fields[alias];			
+			if(isNumeric(alias) && typeof field === 'string' && field !== '*'){
+				aliased = merge(aliased, this.aliasField(field, defaultAlias));
 				continue;
 			}
 			aliased[alias] = field;
@@ -149,7 +153,8 @@ export class Query extends Database.Query {
 		
 		if(!count(select) || this._autoFields === true){
 			this._hasFields = false;
-			this.select(this.repository().schema().columns());
+			this.select(['*']); //Since I have not solved the schema columns mapping yet
+			//this.select(this.repository().schema().columns());
 			select = this.clause('select');
 		}
 		

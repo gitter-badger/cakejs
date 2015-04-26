@@ -56,7 +56,11 @@ class Tests{
 			}
 		});
 		//await this._server.start();
-		var articles = await CakeJS.ORM.TableRegistry.get("Articles").find('all').sql();
+		var articles = await CakeJS.ORM.TableRegistry
+				.get("Users")
+				.find('all')
+				.where({id: [10, 55]})
+				.sql();
 		console.log(articles);
 	}
 	/*async server_create(){

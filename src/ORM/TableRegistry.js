@@ -72,6 +72,7 @@ export var TableRegistry = new class {
 			}
 			if(config.extract("connection") === null){
 				config.insert("connection", ConnectionManager.get("default"));
+				config.insert("schema", config.extract("connection")._config.database);
 			}
 			this._tables[name] = config;
 		}

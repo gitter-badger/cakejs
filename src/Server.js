@@ -68,7 +68,7 @@ export class Server extends events.EventEmitter {
 	 * @param {string|object} Path to config or a json object containing the configuration
 	 * @returns {void}
 	 */
-	config(config){
+	async config(config){
 		Configure.config(config);
 		SessionManager.config(Configure.get("Session.name", "cakejs_sessid"), Configure.get("Session.ttl", 1000*60*60*24));
 		TableRegistry.config({
@@ -76,7 +76,7 @@ export class Server extends events.EventEmitter {
 		});
 		var datasources = Configure.get("Datasources", {});
 		for(var key in datasources){
-			ConnectionManager.config(key, datasources[key]);
+			await ConnectionManager.config(key, datasources[key]);
 		}
 	}
 	/**

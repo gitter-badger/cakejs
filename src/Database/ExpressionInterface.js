@@ -21,7 +21,7 @@
 //CakeJS.Database.ExpressionInterface
 
 //Types
-import TypeMap from './TypeMap'
+import {TypeMap} from './TypeMap'
 
 //Utilities
 import isArray from '../Utilities/isArray'
@@ -40,7 +40,7 @@ export class ExpressionInterface{
         return this._field;
     }
 	
-	typeMap(typeMap){
+	typeMap(typeMap = null){
 		if(!this._typeMap){
 			this._typeMap = new TypeMap();
 		}

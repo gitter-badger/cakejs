@@ -22,6 +22,7 @@ import {NotImplementedException} from '../Exception/NotImplementedException'
 import {CollectionInterface} from '../Collection/CollectionInterface'
 import {ExpressionInterface} from './ExpressionInterface'
 import {ValueBinder} from './ValueBinder'
+import {QueryExpression} from './Expression/QueryExpression'
 
 //Utilities
 import merge from '../Utilities/merge'
@@ -30,6 +31,9 @@ import isArray from '../Utilities/isArray'
 import toArray from '../Utilities/toArray'
 import count from '../Utilities/count'
 import getArrayKeysAndValues from '../Utilities/getArrayKeysAndValues'
+
+//Requires
+var sprintf = require("sprintf-js").sprintf;
 
 
 
@@ -108,16 +112,15 @@ export class Query extends ExpressionInterface {
 			fields = fields(this);
 		}
 		
-		if(typeof fields !== 'object' || fields instanceof Array){
+		if(!isArray(fields)){
 			fields = [fields];
 		}
 		
 		if(overwrite){
 			this._parts['select'] = fields;
 		}else{
-			this._parts['select'] = Object.assign(this._parts['select'], fields);
+			this._parts['select'] = merge(this._parts['select'], fields);
 		}
-		
 		this._dirty();
 		this._type = 'select';
 		return this;
@@ -216,7 +219,13 @@ export class Query extends ExpressionInterface {
 	
 	_makeJoin(){throw new NotImplementedException();}
 	
-	where(){throw new NotImplementedException();}
+	where(conditions = null, types = [], overwrite = false){
+		if(overwrite){
+			this._parts['where'] = this.newExpr();
+		}
+		this._conjugate('where', conditions, 'AND', types);
+        return this;
+	}
 	
 	andWhere(){throw new NotImplementedException();}
 	
@@ -260,7 +269,15 @@ export class Query extends ExpressionInterface {
 		return this._type;
 	}
 	
-	newExpr(){throw new NotImplementedException();}
+	newExpr(rawExpression = null){
+		var expression = new QueryExpression([], this.typeMap());
+		
+		if(rawExpression !== null){
+			expression.add(rawExpression);
+		}
+		
+		return expression;
+	}
 	
 	func(){throw new NotImplementedException();}
 	
@@ -291,7 +308,22 @@ export class Query extends ExpressionInterface {
 	
 	_decorateStatement(){throw new NotImplementedException();}
 	
-	_conjugate(){throw new NotImplementedException();}
+	_conjugate(part, append, conjunction, types){
+		var expression = !isEmpty(this._parts[part]) ? this._parts[part] : this.newExpr();
+		
+		if(typeof append === 'function'){
+			append = append(this.newExpr(), this);
+		}
+		
+		if(expression.type() === conjunction){
+			expression.add(append, types);
+		}else{
+			expression = this.newExpr().type(conjunction).add([append, expression], types);
+		}
+		
+		this._parts[part] = expression;
+		this._dirty();
+	}
 	
 	_dirty(){
 		this.__dirty = true;

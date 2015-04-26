@@ -105,6 +105,7 @@ export class QueryCompiler {
 		parts = this._stringifyExpressions(parts, generator);
 		for(var k in parts){
 			var p = parts[k];
+			
 			if(!isNumeric(k)){
 				p = p + ' AS ' + driver.quoteIdentifier(k);
 			}
@@ -113,6 +114,8 @@ export class QueryCompiler {
 		
 		if(distinct === true){
 			distinct = 'DISTINCT ';
+		}else{
+			distinct = '';
 		}
 		
 		if(isArray(distinct)){
@@ -123,8 +126,9 @@ export class QueryCompiler {
 		if(modifiers !== null){
 			modifiers = this._stringifyExpressions(modifiers, generator);
 			modifiers = modifiers.join(' ')+modifiers;
+		}else{
+			modifiers = '';
 		}
-		
 		return sprintf(select, distinct, modifiers, normalized.join(', '));
 	}
 	

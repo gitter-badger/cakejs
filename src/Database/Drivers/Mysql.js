@@ -40,6 +40,8 @@ export class Mysql extends Driver{
 		if(!('persistent' in config) || typeof config.persistent !== 'boolean')
 			config.persistent = true;
 		super(config);
+		this._startQuote = '`';
+		this._endQuote = '`';
 		this._connection = null;
 		this._connected = false;
 	}

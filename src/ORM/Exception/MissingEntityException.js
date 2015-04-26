@@ -8,22 +8,16 @@
  * For full copyright and license information, please see the LICENSE
  * Redistributions of files must retain the above copyright notice.
  * 
- * @copyright	Copyright (c) 2015 Tiinusen
- * @link		https://github.com/cakejsframework/cakejs
+ * @copyright   Copyright (c) 2015 Tiinusen
+ * @link        https://github.com/cakejsframework/cakejs
  * @license     http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-//CakeJS.Utilities.toArray
+//CakeJS.ORM.Exception.MissingEntityException
 
-export default function toArray(object){
-	var newObject = {}
-	object = JSON.parse(JSON.stringify(object));
-	if(typeof object === 'object' && object instanceof Array){
-		for(var i = 0; i < object.length; i++){
-			newObject[i] = object[i];
-		}
-	}else{
-		newObject = object;
-	}
-	return newObject;
+//Types
+import {Exception} from '../../Core/Exception/Exception'
+
+export class MissingEntityException extends Exception{
+	
 }

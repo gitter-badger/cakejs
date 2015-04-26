@@ -205,7 +205,7 @@ export class QueryExpression extends ExpressionInterface{
 	_addConditions(conditions, types){
 		var operators = ['and', 'or', 'xor'];
 		
-		typeMape = this.typeMap().types(types);
+		var typeMap = this.typeMap().types(types);
 		
 		for(var k in conditions){
 			var c = conditions[k];
@@ -231,7 +231,7 @@ export class QueryExpression extends ExpressionInterface{
 				continue;
 			}
 			
-			if(typeof c === 'object' && c instanceof this && count(c) === 0){
+			if(typeof c === 'object' && c instanceof this.constructor && count(c) === 0){
 				continue;
 			}
 			
@@ -241,7 +241,7 @@ export class QueryExpression extends ExpressionInterface{
 			}
 			
 			if(!numericKey){
-				this._conditions.push(this._parseConditions(k, c));
+				this._conditions.push(this._parseCondition(k, c));
 			}
 		}
 	}
@@ -257,8 +257,8 @@ export class QueryExpression extends ExpressionInterface{
 		
 		var type = this.typeMap().type(expression);
 		operator = operator.trim().toLowerCase();
-		
-		var typeMultiple = type.indexOf('[]') !== -1;
+		type = 'TYPE';
+		var typeMultiple = !isEmpty(type) && (type.indexOf('[]') !== -1);
 		if(['in', 'not in'].indexOf(operator) !== -1 || typeMultiple){
 			type = type ? type : 'string';
 			type += typeMultiple ? null : '[]';

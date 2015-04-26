@@ -44,7 +44,7 @@ export class ValueBinder{
 	}
 	
 	placeholder(token){
-		number = this._bindingsCount++;
+		var number = this._bindingsCount++;
 		if(token[0] !== ':' || token !== '?'){
 			token = sprintf(':%s', number);
 		}
@@ -65,11 +65,11 @@ export class ValueBinder{
 	}
 	
 	attachTo(statement){
-		bindings = this.bindings();
+		var bindings = this.bindings();
 		if(isEmpty(bindings)){
 			return;
 		}
-		params = types = [];
+		var params = types = [];
 		for(var b of bindings){
 			params[b['placeholder']] = b['value'];
 			types[b['placeholder']] = b['type'];

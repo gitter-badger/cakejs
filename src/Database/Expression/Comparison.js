@@ -87,7 +87,7 @@ export class Comparison extends ExpressionInterface{
 	}
 	
 	_stringExpression(generator){
-		template = '%s ';
+		var template = '%s ';
 		
 		if(typeof this._field === 'object' && this._field instanceof ExpressionInterface){
 			template = '(%s) ';
@@ -95,26 +95,28 @@ export class Comparison extends ExpressionInterface{
 		
 		if(this._type.indexOf('[]') !== -1) {
 			template += '%s (%s)';
-			type = type.replace('[]', '');
-			value = this._flattenValue(this._value, generator, type);
+			var type = type.replace('[]', '');
+			var value = this._flattenValue(this._value, generator, type);
 			
 			if(value === ''){
 				return ['1 != 1', ''];
 			}
 		}else{
 			template += '%s %s';
-			value = this._bindValue(this._value, generator, this._type);
+			var value = this._bindValue(this._value, generator, this._type);
 		}
+		
+		return [template, value];
 	}
 	
 	_bindValue(value, generator, type){
-		placeholder = generator.placeholder('c');
+		var placeholder = generator.placeholder('c');
 		generator.bind(placeholder, value, type);
 		return placeholder;
 	}
 	
 	_flattenValue(value, generator, type = null){
-		parts = [];
+		var parts = [];
 		for(var k in value){
 			var v = value[k];
 			parts.push(this._bindValue(v, generator, type));
