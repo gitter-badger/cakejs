@@ -55,9 +55,6 @@ class Tests{
 				}
 			}
 		});
-		var sql = await CakeJS.ORM.TableRegistry.get('table').query()
-				.delete()
-				.execute();
 		
 		var result = await CakeJS.ORM.TableRegistry
 				.get("table")
