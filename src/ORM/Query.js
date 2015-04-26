@@ -17,6 +17,7 @@
 
 //Exceptions
 import {NotImplementedException} from '../Exception/NotImplementedException'
+import {RuntimeException} from '../Exception/RuntimeException'
 
 //Types
 import * as Database from '../Database/Query'
@@ -188,6 +189,13 @@ export class Query extends Database.Query {
 		var table = this.repository().table();
 		this.into(table);
 		return super.insert(columns, types);
+	}
+	
+	all(){
+		if(this._type !== 'select'){
+			throw new RuntimeException('You cannot call all() on a non-select query. Use execute() instead.');
+		}
+		return this._all();
 	}
 	
 	
