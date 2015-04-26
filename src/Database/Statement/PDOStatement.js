@@ -21,6 +21,7 @@ import {StatementDecorator} from './StatementDecorator';
 export class PDOStatement extends StatementDecorator {
 	constructor(statement = null, driver = null){
 		super(statement, driver);
+		this._columns = {};
 	}
 	
 	bindValue(column, value, type = 'string'){
@@ -28,8 +29,10 @@ export class PDOStatement extends StatementDecorator {
 			type = 'string';
 		}
 		
+		
 		if(/^[0-9]{1,}$/.test(type)){
 			//var [value, type] = this.cast(value, type);
 		}
+		this._columns[column] = value;
 	}
 }

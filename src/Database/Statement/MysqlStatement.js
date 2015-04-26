@@ -19,7 +19,13 @@
 import {PDOStatement} from './PDOStatement';
 
 export class MysqlStatement extends PDOStatement{
-	execute(params = null){
-		return null;
+	async execute(params = null){
+		try{
+			var results = await this._driver.execute(this._statement, this._columns);
+			this.results = results[0];
+		}catch(e){
+			
+		}
+		return this;
 	}
 }
