@@ -32,7 +32,7 @@ class Tests{
 			}
 		}
 	}
-	/*async test_class() {
+	/*async development_tests() {
 		//var result = await CakeJS.Core.ClassLoader.load(path.resolve(__filename,"..","src/test.js"));
 		this._server = CakeJS.createServer();
 		this._server.config({
@@ -55,6 +55,10 @@ class Tests{
 				}
 			}
 		});
+		var sql = await CakeJS.ORM.TableRegistry.get('table').query()
+				.delete()
+				.execute();
+		
 		var result = await CakeJS.ORM.TableRegistry
 				.get("table")
 				.find('all')
@@ -148,13 +152,43 @@ class Tests{
 		assert.equal(JSON.stringify(data), JSON.stringify(form), "The response was incorrect");
 	}
 	async orm_sql(){
-		var sql = await CakeJS.ORM.TableRegistry
+		var sql = null;
+		//Tests a Select
+		sql = await CakeJS.ORM.TableRegistry
 				.get("table")
 				.find()
 				.select('column_a', 'column_b')
 				.where({'column_c': 50, 'column_d': 50})
 				.sql();
 		assert.equal(sql, 'SELECT tables.column_a AS `tables__column_a` FROM tables WHERE (column_c = :0 AND column_d = :1)', 'Was expecting a proper sql query');
+		
+		//Tests a Insert
+		sql = await CakeJS.ORM.TableRegistry
+				.get("table")
+				.query()
+				.insert(['id', 'column_a', 'column_b'])
+				.values({'id': 2,'column_a': 50, 'column_b': 50})
+				.sql();
+		assert.equal(sql, 'INSERT INTO tables (id, column_a, column_b) VALUES (:0, :1, :2)', 'Was expecting a proper sql query');
+		
+		//Tests a Update
+		sql = await CakeJS.ORM.TableRegistry
+				.get("table")
+				.query()
+				.update()
+				.set({'column_c': 50, 'column_d': 50})
+				.where({'column_c': 70, 'column_d': 100})
+				.sql();
+		assert.equal(sql, 'UPDATE tables SET column_c = :0 , column_d = :1 WHERE (column_c = :2 AND column_d = :3)', 'Was expecting a proper sql query');
+		
+		//Tests a Delete
+		sql = await CakeJS.ORM.TableRegistry
+				.get("table")
+				.query()
+				.delete()
+				.where({'column_c': 70, 'column_d': 100})
+				.sql();
+		assert.equal(sql, 'DELETE FROM tables WHERE (column_c = :0 AND column_d = :1)', 'Was expecting a proper sql query');
 	}
 }
 
