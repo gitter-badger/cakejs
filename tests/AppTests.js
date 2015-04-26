@@ -154,7 +154,7 @@ class Tests{
 				.select('column_a', 'column_b')
 				.where({'column_c': 50, 'column_d': 50})
 				.sql();
-		assert.equal(sql, 'SELECT tables.column_a AS `tables__column_a` FROM tables WHERE (column_c = :0 AND column_d = :1)', 'Was excpeting a proper sql query');
+		assert.equal(sql, 'SELECT tables.column_a AS `tables__column_a` FROM tables WHERE (column_c = :0 AND column_d = :1)', 'Was expecting a proper sql query');
 	}
 }
 
