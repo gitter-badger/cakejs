@@ -35,6 +35,7 @@ import isArray from '../Utilities/isArray'
 import toArray from '../Utilities/toArray'
 import count from '../Utilities/count'
 import getArrayKeysAndValues from '../Utilities/getArrayKeysAndValues'
+import uuid from '../Utilities/uuid'
 
 //Requires
 var sprintf = require("sprintf-js").sprintf;
@@ -259,6 +260,12 @@ export class Query extends ExpressionInterface {
 		if(isEmpty(columns)){
 			throw new RuntimeException('At least 1 column is required to perform an insert.');
 		}
+		
+		//Forcing add of ID, at the moment
+		if(!isEmpty(columns) && columns.indexOf('id') === -1){
+			columns.push('id');
+		}
+		
 		this._dirty();
 		this._type = 'insert';
 		this._parts['insert'][1] = columns;
@@ -289,6 +296,11 @@ export class Query extends ExpressionInterface {
 		if(typeof data === 'object' && data instanceof ValuesExpression){
 			this._parts['values'] = data;
 			return this;
+		}
+		
+		//Forcing uuid
+		if(!('id' in data)){
+			data.id = uuid(null);
 		}
 		
 		this._parts['values'].add(data);
