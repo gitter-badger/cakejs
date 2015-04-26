@@ -344,6 +344,15 @@ export class Collection extends CollectionInterface{
 		return new Collection(this.toObject(true));
 	}
 	
+	first(){
+		if(this.length > 0){
+			for(var key in this._data){
+				return this._data[key];
+			}
+		}
+		return null;
+	}
+	
 	toList(cloneObject){
 		cloneObject = typeof cloneObject === 'boolean' ? cloneObject : false;
 		var array = [];
