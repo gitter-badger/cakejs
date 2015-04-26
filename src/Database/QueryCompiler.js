@@ -29,6 +29,7 @@ import {Collection} from '../Collection/Collection'
 //Utilities
 import isEmpty from '../Utilities/isEmpty'
 import isArray from '../Utilities/isArray'
+import isNumeric from '../Utilities/isNumeric'
 import toArray from '../Utilities/toArray'
 import count from '../Utilities/count'
 
@@ -75,7 +76,7 @@ export class QueryCompiler {
 			sql_object = {sql: sql_object};
 		}
 		return (parts, name) => {
-			if(!count(parts)){
+			if(isEmpty(parts)){
 				return;
 			}
 			if(typeof parts === 'object' && parts instanceof ExpressionInterface){
@@ -94,17 +95,17 @@ export class QueryCompiler {
 	_buildSelectPart(parts, query, generator){
 		var driver = query.connection().driver();
 		var select = 'SELECT %s%s%s';
-		if(this._orderedUnion && query.clause('union')){
+		if(this._orderedUnion && !isEmpty(query.clause('union'))){
 			select = '(SELECT %s%s%s';
 		}
 		var distinct = query.clause('distinct');
-		var modifiers = query.clause('modifier') ? query.clause('modifier') : null;
+		var modifiers = !isEmpty(query.clause('modifier')) ? query.clause('modifier') : null;
 		
 		var normalized = [];
 		parts = this._stringifyExpressions(parts, generator);
 		for(var k in parts){
 			var p = parts[k];
-			if(typeof p !== 'number'){
+			if(!isNumeric(k)){
 				p = p + ' AS ' + driver.quoteIdentifier(k);
 			}
 			normalized.push(p);
@@ -127,13 +128,13 @@ export class QueryCompiler {
 		return sprintf(select, distinct, modifiers, normalized.join(', '));
 	}
 	
-	_buildFrompart(parts, query, generator){
+	_buildFromPart(parts, query, generator){
 		var select = ' FROM %s';
 		var normalized = [];
 		var parts = this._stringifyExpressions(parts, generator);
 		for(var k in parts){
 			var p = parts[k];
-			if(typeof k === 'number'){
+			if(isNumeric(k)){
 				p = p + ' ' + k;
 			}
 			normalized.push(p);
@@ -148,7 +149,7 @@ export class QueryCompiler {
 				join['table'] = '('+join['table'].sql(generator)+')';
 			}
 			joins += sprintf(' %s JOIN %s %s', join['type'], join['table'], join['alias']);
-			if('conditions' in join && count(join['conditions'])){
+			if('conditions' in join && !isEmpty(join['conditions'])){
 				joins += sprintf(' ON %s', join['conditions'].sql(generator));
 			}else{
 				joins += ' ON 1 = 1';

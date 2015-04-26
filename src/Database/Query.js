@@ -67,6 +67,8 @@ export class Query extends ExpressionInterface {
 		
 		this._resultDecorators = [];
 		
+		this._useBufferedResults = true;
+		
 		this.connection(connection);
 	}
 	

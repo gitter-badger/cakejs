@@ -56,7 +56,7 @@ class Tests{
 			}
 		});
 		//await this._server.start();
-		var articles = await CakeJS.ORM.TableRegistry.get("Articles").find().sql();
+		var articles = await CakeJS.ORM.TableRegistry.get("Articles").find('all').sql();
 		console.log(articles);
 	}
 	/*async server_create(){

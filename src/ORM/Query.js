@@ -15,11 +15,245 @@
 
 //CakeJS.ORM.Query
 
+//Exceptions
+import {NotImplementedException} from '../Exception/NotImplementedException'
+
 //Types
 import * as Database from '../Database/Query'
+
+//Utilities
+import isEmpty from '../Utilities/isEmpty'
+import isNumeric from '../Utilities/isNumeric'
+import count from '../Utilities/count'
 
 export class Query extends Database.Query {
 	constructor(connection, table){
 		super(connection);
+		/*
+		 * QUERY TRAIT START
+		 */
+		this._mapReduce = [];
+		this._formatters = [];
+		this._options = [];
+		this._eagerLoaded = false;
+		/*
+		 * QUERY TRAIT STOP
+		 */
+		this.repository(table);
 	}
+	
+	addDefaultTypes(table){
+		var alias = table.alias();
+		var schema = table.schema();
+		var fields = [];
+		for(var f of schema.columns()){
+			fields[f] = fields[alias+'.'+f] = schema.columnType(f);
+		}
+		this.defaultTypes(fields);
+		
+		return this;
+	}
+	
+	contain(){throw new NotImplementedException();}
+	
+	matching(){throw new NotImplementedException();}
+	
+	aliasField(field, alias = null){
+		var namespaced = field.indexOf('.') !== false;
+		var aliasedField = field;
+		
+		if(namespaced){
+			var [alias, field] = field.split('.');
+		}
+		
+		if(!alias){
+			alias = this.repository().alias();
+		}
+		
+		var key = sprintf('%s__%s', alias, field);
+		if(!namespaced){
+			aliasedField = alias + '.' + field;
+		}
+		var obj = {};
+		obj[key] = aliasedField;
+		
+		return obj;
+	}
+	
+	aliasFields(fields, defaultAlias = null){
+		var aliased = [];
+		for(var alias in fields){
+			var field = fields[alias];
+			if(isNumeric(alias) && typeof field === 'string'){
+				aliased.push(this.aliasField(field, defaultAlias));
+				continue;
+			}
+			aliased[alias] = field;
+		}
+		return aliased;
+	}
+	
+	applyOptions(options){
+		var valid = {
+			'fields': 'select',
+			'conditions': 'where',
+			'join': 'join',
+			'order': 'order',
+			'limit': 'limit',
+			'offset': 'offset',
+			'group': 'group',
+			'having': 'having',
+			'contain': 'contain',
+			'page': 'page'
+		};
+		
+		for(var option in options){
+			var values = options[option];
+			if(option in valid && !isEmpty(values)){
+				this[valid[option]](values);
+			}else{
+				this._options[option] = values;
+			}
+		}
+		
+		return this;
+	}
+	
+	sql(binder = null){
+		//this.triggerBeforeFind(
+		
+		this._transformQuery();
+		var sql = super.sql(binder);
+		return sql;
+	}
+	
+	_transformQuery(){
+		if(!this._dirty){
+			return;
+		}
+		
+		if(this._type === 'select'){
+			if('from' in this._parts && isEmpty(this._parts['from'])){
+				var parameters = {};
+				parameters[this._repository.alias()] = this._repository.table();
+				this.from(parameters);
+			}
+			this._addDefaultFields();
+			//this.eagerLoader().attachAssociations(this, this._repository, !this._hasFields);
+		}
+	}
+	
+	_addDefaultFields(){
+		var select = this.clause('select');
+		this._hasFields = true;
+		
+		if(!count(select) || this._autoFields === true){
+			this._hasFields = false;
+			this.select(this.repository().schema().columns());
+			select = this.clause('select');
+		}
+		
+		var aliased = this.aliasFields(select, this.repository().alias());
+		this.select(aliased, true);
+	}
+	
+	find(finder, options){
+		return this.repository().callFinder(finder, this, options);
+	}
+	
+	_dirty(){
+		this._results = null;
+		super._dirty();
+	}
+	
+	update(table = null){
+		table = this.repository().table();
+		return super.update(table);
+	}
+	
+	delete(table = null){
+		var repo = this.repository();
+		var parameters = {};
+		parameters[repo.alias()] = repo.table();
+		this.from(parameters);
+		return super.delete();
+	}
+	
+	insert(columns, types = []){
+		var table = this.repository().table();
+		this.into(table);
+		return super.insert(columns, types);
+	}
+	
+	
+	/*
+	 * QUERY TRAIT START
+	 */
+	repository(table = null){
+		if(table === null){
+			return this._repository;
+		}
+		this._repository = table;
+		return this;
+	}
+	
+	setResult(results){
+		this._results = results;
+		return this;
+	}
+	
+	getIterator(){
+		return this.all();
+	}
+	
+	_cache(){throw new NotImplementedException();}
+	
+	eagerLoader(value = null){
+		if(value === null){
+			return this._eagerLoaded;
+		}
+		this._eagerLoaded = value;
+		return this;
+	}
+	
+	_all(){
+		if(typeof this._results !== 'undefined' && this._results !== null){
+			return this._results;
+		}
+		
+		if(this._cache){
+			results = this._cache.fetch(this);
+		}
+		
+		if(typeof this._results === 'undefined' || this._results === null){
+			results = this._decorateResults(this._execute());
+			if(this._cache){
+				this._cache.store(this, results);
+			}
+		}
+		this._results = results;
+		return this._results;
+	}
+	
+	toArray(){
+		return this.all().toArray();
+	}
+	
+	mapReduce(){throw new NotImplementedException();}
+	
+	formatResults(){throw new NotImplementedException();}
+	
+	first(){throw new NotImplementedException();}
+	
+	firstOrFail(){throw new NotImplementedException();}
+	
+	getOptions(){throw new NotImplementedException();}
+	
+	_decorateResults(){throw new NotImplementedException();}
+	
+	_decoratorClass(){throw new NotImplementedException();}
+	/*
+	 * QUERY TRAIT STOP
+	 */
+	
 }
