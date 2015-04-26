@@ -58,6 +58,7 @@ export class QueryCompiler {
 		];
 		this._updateParts = ['update', 'set', 'where', 'epilog'];
 		this._deleteParts = ['delete', 'from', 'where', 'epilog'];
+		this._insertParts = ['insert', 'values', 'epilog'];
 		this._orderedUnion = true;
 	}
 	
