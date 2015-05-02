@@ -17,7 +17,7 @@
 
 //Types
 import {ClassNotFoundException} from './Exception/ClassNotFoundException'
-import {FatalException} from './Exception/FatalException'
+import {Exception} from './Exception/Exception'
 
 //Requires
 var fs = require('fs');
@@ -35,7 +35,7 @@ export var ClassLoader = new class {
 		try{
 			var loadedFile = require(path);
 		}catch(e){
-			throw new FatalException("File does not exist: "+path);
+			throw new Exception("File does not exist: "+path);
 		}
 		var expectedClassName = path.match(/([^\.\/]*)\.[^\.]*$/);
 		if(expectedClassName !== null)
@@ -53,7 +53,7 @@ export var ClassLoader = new class {
 	}
 	loadFolder(folder){
 		if(!fs.existsSync(folder))
-			throw new FatalException("Folder does not exist: "+folder);
+			throw new Exception("Folder does not exist: "+folder);
 		var classes = {};
 		var files = fs.readdirSync(folder);
 		for(var i = 0; i < files.length; i++)

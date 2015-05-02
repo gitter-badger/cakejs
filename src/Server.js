@@ -26,6 +26,7 @@ import proxy from './ExpressMiddleware/Proxy'
 
 //Singelton instances
 import {ControllerManager} from './Controller/ControllerManager'
+import {ProcessManager} from './Process/ProcessManager'
 import {Router} from './Routing/Router'
 import {Configure} from './Core/Configure'
 import {SessionManager} from './Session/SessionManager'
@@ -86,7 +87,8 @@ export class Server extends events.EventEmitter {
 	 */
 	async start(){		
 		//Preloads managers
-		await ControllerManager.load(path.resolve(Configure.get("CakeJS.app", path.resolve('.')),"Controller"));
+		try{await ControllerManager.load(path.resolve(Configure.get("CakeJS.app", path.resolve('.')),"Controller"));}catch(e){}
+		try{await ProcessManager.load(path.resolve(Configure.get("CakeJS.app", path.resolve('.')),"Process"));}catch(e){}
 		
 		//Build routes
 		await Router.initialize();
