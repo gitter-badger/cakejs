@@ -16,6 +16,6 @@
 //CakeJS.Process.Process
 
 export class Process {
-	init(){}
+	initialize(){}
 	start(){}	
 }
