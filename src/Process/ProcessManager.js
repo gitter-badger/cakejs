@@ -23,11 +23,25 @@ var fs = require('fs');
 
 export var ProcessManager = new class {
 	constructor(){
-		this._controllers = {};
+		this._processes = {};
+	}
+	get(key){
+		return this._processes[key];
 	}
 	async load(path){
 		var classes = await ClassLoader.loadFolder(path);
-		for(var key in classes)
-			this._controllers[key.substr(0,key.length-"Process.js".length)] = classes[key];
+		for(var key in classes){
+			this._processes[key.substr(0,key.length-"Process.js".length)] = new classes[key]();
+		}
+	}
+	async init(){
+		for(var key in this._processes){
+			await this._processes[key].init();
+		}
+	}
+	async start(){
+		for(var key in this._processes){
+			await this._processes[key].start();
+		}
 	}
 }

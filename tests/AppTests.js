@@ -187,6 +187,14 @@ class Tests{
 				.sql();
 		assert.equal(sql, 'DELETE FROM tables WHERE (column_c = :0 AND column_d = :1)', 'Was expecting a proper sql query');
 	}
+	async process_init(){
+		var process = CakeJS.Process.ProcessManager.get('Test');
+		assert.equal(process.keyA, 'valueA', 'Expected valueA in process.keyA');
+	}
+	async process_start(){
+		var process = CakeJS.Process.ProcessManager.get('Test');
+		assert.equal(process.keyB, 'valueB', 'Expected valueB in process.keyB');
+	}
 }
 
 

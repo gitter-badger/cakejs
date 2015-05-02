@@ -90,6 +90,7 @@ export class Server extends events.EventEmitter {
 		try{await ControllerManager.load(path.resolve(Configure.get("CakeJS.app", path.resolve('.')),"Controller"));}catch(e){}
 		try{await ProcessManager.load(path.resolve(Configure.get("CakeJS.app", path.resolve('.')),"Process"));}catch(e){}
 		
+		await ProcessManager.init();
 		//Build routes
 		await Router.initialize();
 
@@ -115,6 +116,7 @@ export class Server extends events.EventEmitter {
 		await new Promise(resolve => this._http.listen(Configure.get("Listen.port", 8080), () => {
 			resolve();
 		}));
+		await ProcessManager.start();
 	}
 	/**
 	 * Stops the CakeJS server

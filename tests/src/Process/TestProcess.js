@@ -13,9 +13,14 @@
  * @license     http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-//CakeJS.Process.Process
+//Uses
+var Process = CakeJS.Process.Process;
 
-export class Process {
-	init(){}
-	start(){}	
+export default class TestProcess extends Process {
+	init(){
+		this.keyA = "valueA";
+	}
+	start(){
+		this.keyB = "valueB";
+	}
 }
