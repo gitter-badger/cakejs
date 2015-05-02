@@ -90,7 +90,7 @@ export class Server extends events.EventEmitter {
 		try{await ControllerManager.load(path.resolve(Configure.get("CakeJS.app", path.resolve('.')),"Controller"));}catch(e){}
 		try{await ProcessManager.load(path.resolve(Configure.get("CakeJS.app", path.resolve('.')),"Process"));}catch(e){}
 		
-		await ProcessManager.init();
+		await ProcessManager.initialize();
 		//Build routes
 		await Router.initialize();
 

@@ -17,7 +17,7 @@
 var Process = CakeJS.Process.Process;
 
 export default class TestProcess extends Process {
-	init(){
+	initialize(){
 		this.keyA = "valueA";
 	}
 	start(){

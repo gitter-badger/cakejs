@@ -34,9 +34,9 @@ export var ProcessManager = new class {
 			this._processes[key.substr(0,key.length-"Process.js".length)] = new classes[key]();
 		}
 	}
-	async init(){
+	async initialize(){
 		for(var key in this._processes){
-			await this._processes[key].init();
+			await this._processes[key].initialize();
 		}
 	}
 	async start(){
