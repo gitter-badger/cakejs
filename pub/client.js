@@ -194,8 +194,10 @@ class Client {
 				return;
 			if(!(response.event in this._events))
 				return;
-			for(var callback of this._events[response.event])
-				callback.apply(null, response.arguments);
+			for(var i = 0; i < this._events[response.event].length; i++){
+				var callback = this._events[response.event][i];
+				callback.apply(callback, response.arguments);
+			}
 		});
 	}
 	_invoke(item){
