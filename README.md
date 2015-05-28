@@ -1,4 +1,4 @@
-# Next stop CakeFest 2015!
+# Workshop @ CakeFest 2015
 
 # CakeJS Framework
 
