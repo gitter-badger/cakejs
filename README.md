@@ -22,7 +22,7 @@ $ npm install cakejs
 ```
 
 ## Examples
-Example 1: https://github.com/Tiinusen/cakejs_example_1/blob/master/README.md
+Example 1: https://github.com/Tiinusen/cakejs_example_1
 
 ## Documentation and Examples
 
