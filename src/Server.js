@@ -71,7 +71,7 @@ export class Server extends events.EventEmitter {
 	 */
 	async config(config){
 		Configure.config(config);
-		SessionManager.config(Configure.get("Session.name", "cakejs_sessid"), Configure.get("Session.ttl", 1000*60*60*24));
+		SessionManager.config(Configure.get("Session.cookie", "cakejs_sessid"), Configure.get("Session.timeout", 60*24));
 		TableRegistry.config({
 			"path": path.resolve(Configure.get("CakeJS.app", path.resolve('.')),"Model")
 		});
@@ -97,7 +97,7 @@ export class Server extends events.EventEmitter {
 		//Starts the web related services
 		
 		this._app.use(cookieParser());
-		this._app.use(sessionParser(Configure.get("Session.name", "cakejs_sessid"), Configure.get("Session.ttl", 1000*60*60*24)));
+		this._app.use(sessionParser(Configure.get("Session.name", "cakejs_sessid"), Configure.get("Session.timeout", 1440)));
 		this.emit('use', this._app);
 		var javascriptLibraryContent = fs.readFileSync(path.resolve(__filename,'..','..','pub','client.js'));
 		this._app.get('/js/cakejs.js', (request, response) => {

@@ -27,6 +27,9 @@ export var ClassLoader = new class {
 	constructor(){
 		this._classes = {};
 	}
+	_loadRelative(){
+		
+	}
 	load(path){
 		if(!(/\.js$/.test(path)))
 			path += ".js";
