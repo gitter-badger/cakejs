@@ -1,6 +1,9 @@
 # CakeJS Framework
 
-[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.txt)
+[![npm](https://img.shields.io/npm/l/cakejs.svg?style=flat-square)](LICENSE)
+[![npm](https://img.shields.io/npm/v/cakejs.svg?style=flat-square)]()
+[![npm](https://img.shields.io/npm/dm/cakejs.svg?style=flat-square)]()
+
 
 CakeJS is a NodeJS framework intended to be used either standalone, remote webserver 
 or with CakePHP, This framework imitates CakePHP 3.x in many ways such as hierarchy,
@@ -12,6 +15,9 @@ This is a work in progress and since it's in a early phase, features gets implem
 but our current goal is to support Model-Controller structure with low performance impact and make
 projects scalable easy.
 
+## Major changes
+
+At the moment the master is very unstable, under many changes and improvements.
 
 ## Installation
 
@@ -21,37 +27,6 @@ $ npm install cakejs
 
 ## Examples
 Example 1: https://github.com/Tiinusen/cakejs_example_1
-
-## Documentation and Examples
-
-Documentation of how to properly use this framework and examples will be created shortly after Model and ORM support is added. So be patient. ETA probably two weeks from this change
-
-
-## Simple static webserver with cakejs and socketio
-
-```js
-require('cakejs');
-var cakejs = CakeJS.createServer();
-cakejs.config({
-	"Listen": {
-		"port": 8080
-	},
-	"CakeJS": {
-		"app": path.resolve(__filename,"..","src"),
-	},
-	"Static": {
-		"webroot": path.resolve(__filename,"..","webroot"),
-	}
-});
-cakejs.start();
-```
-
-Add this to index.html inside <b>\<head\></b><b>\</head\></b>
-
-```html
-<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
-<script type="text/javascript" src="/js/cakejs.js"></script>
-```
 
 ## Status
 Currently we are rewriting our prototype project to fit CakePHP 3.x standards
