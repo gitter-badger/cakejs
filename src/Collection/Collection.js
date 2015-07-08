@@ -16,14 +16,18 @@
 //CakeJS.Collection.Collection
 
 //Types
-import {InvalidParameterException} from '../Exception/InvalidParameterException'
-import {NotImplementedException} from '../Exception/NotImplementedException'
-import {CollectionInterface} from './CollectionInterface'
+import {InvalidParameterException} from '../Exception/InvalidParameterException';
+import {NotImplementedException} from '../Exception/NotImplementedException';
+import {CollectionInterface} from './CollectionInterface';
 
 //Utilities
-import extract from '../Utilities/extract'
-import clone from '../Utilities/clone'
-import count from '../Utilities/count'
+import extract from '../Utilities/extract';
+import clone from '../Utilities/clone';
+import count from '../Utilities/count';
+import deepMerge from '../Utilities/deepMerge';
+
+//Uses
+var util = require('util');
 
 export class Collection extends CollectionInterface{
 	constructor(object = {}){
@@ -42,6 +46,10 @@ export class Collection extends CollectionInterface{
 				this._data = object;
 			}
 		}
+	}
+	
+	inspect(){
+		return util.inspect(this._data);
 	}
 	
 	get length() {
@@ -353,6 +361,14 @@ export class Collection extends CollectionInterface{
 		return null;
 	}
 	
+	merge(...targets){
+		var collection = new Collection(this.toObject(true));
+		for(var target of targets){
+			collection = new Collection(deepMerge(collection.toObject(true),target.toObject(true)));
+		}
+		return collection;
+	}
+	
 	toList(cloneObject){
 		cloneObject = typeof cloneObject === 'boolean' ? cloneObject : false;
 		var array = [];
@@ -368,4 +384,5 @@ export class Collection extends CollectionInterface{
 		cloneObject = typeof cloneObject === 'boolean' ? cloneObject : false;
 		return cloneObject?clone(this._data):this._data;
 	}
+	
 }
