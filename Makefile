@@ -26,10 +26,17 @@ test-silent:
 	@babel --stage 0 --optional runtime --out-dir dist/tests tests > /dev/null
 	@mocha --bail --slow 300 --timeout 5000 --ui exports dist/tests > /dev/null	
 	
-test: build
-	@cp -R tests dist/tests
-	@babel --stage 0 --optional runtime --out-dir dist/tests tests > /dev/null
-	@mocha --bail --slow 300 --timeout 5000 --ui exports dist/tests
+test:
+ifneq ($(wildcard tests/test_app/dist/.*),)
+	@rm -r tests/test_app/dist
+endif
+	@mkdir tests/test_app/dist
+ifneq ($(wildcard dist/tests/.*),)
+	@rm -r dist/tests/*
+endif
+	@babel --stage 0 --optional runtime --out-dir dist/tests tests/TestCase > /dev/null
+	@babel --stage 0 --optional runtime --out-dir tests/test_app/dist/TestApp tests/test_app/TestApp > /dev/null
+	@mocha --bail --slow 300 --timeout 5000 --ui exports -r tests/bootstrap.js dist/tests
 
 define release
 	VERSION=`node -pe "require('./package.json').version"` && \
