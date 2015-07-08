@@ -13,7 +13,6 @@
  * @license     http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-require("../..");
 var assert = require("assert")
 var path = require('path');
 var fs = require('fs');
@@ -31,6 +30,13 @@ class Tests{
 				}
 			}
 		}
+	}
+	async bootstrap(){
+		var classes = CakeJS.Core.ClassLoader.loadFolder('Model/Entity');
+		console.log(classes);
+		//CakeJS.Core.ClassLoader.load('Controller', 'Controller');
+		//CakeJS.Core.ClassLoader.load('DriverManager', 'Database');
+		return true;
 	}
 	/*async development_tests() {
 		//var result = await CakeJS.Core.ClassLoader.load(path.resolve(__filename,"..","src/test.js"));
@@ -64,13 +70,6 @@ class Tests{
 			console.log(row);
 		});
 	}*/
-	async bootstrap(){
-		/*var classes = CakeJS.Core.ClassLoader.loadFolder('Model/Entity');
-		console.log(classes);*/
-		//CakeJS.Core.ClassLoader.load('Controller', 'Controller');
-		//CakeJS.Core.ClassLoader.load('DriverManager', 'Database');
-		return true;
-	}
 	/*async server_create(){
 		this._server = CakeJS.createServer();
 		this._server.config({
