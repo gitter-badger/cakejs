@@ -30,10 +30,10 @@ export var ClassLoader = new class {
 		this._classes = {};
 		this._folders = {};
 		this._config = new Collection({
-			"dir": "src",
-			"webroot": "webroot",
+			"dir": APP_DIR,
+			"webroot": WWW_ROOT,
 			"paths": {
-				"plugins": "plugins"
+				"plugins": ROOT+DS+'plugins'
 			}
 		});
 	}
@@ -52,10 +52,10 @@ export var ClassLoader = new class {
 		if(className.indexOf('.') !== -1){
 			var [plugin, className] = className.split('.');
 			className = path.resolve(ROOT,this._config.extract("paths.plugins"),plugin,relativePath,className);
-		}else if(fs.existsSync(path.resolve(ROOT,this._config.extract("dir"),relativePath,className)+".js")){
-			className = path.resolve(ROOT,this._config.extract("dir"),relativePath,className);
+		}else if(fs.existsSync(path.resolve(APP,'..',this._config.extract("dir"),relativePath,className)+".js")){
+			className = path.resolve(APP,'..',this._config.extract("dir"),relativePath,className);
 		}else{
-			className = path.resolve(LIB,relativePath,className);
+			className = path.resolve(CAKE,relativePath,className);
 		}
 		className = className+".js";
 		try{
@@ -94,9 +94,9 @@ export var ClassLoader = new class {
 			return this._folders[key];
 		}
 		if(plugin !== null){
-			var folderPath = path.resolve(ROOT,this._config.extract("paths.plugins"),plugin,relativePath);
+			var folderPath = path.resolve(APP,this._config.extract("paths.plugins"),plugin,relativePath);
 		}else{
-			var folderPath = path.resolve(ROOT,this._config.extract("dir"),relativePath);
+			var folderPath = path.resolve(APP,this._config.extract("dir"),relativePath);
 		}
 		if(!fs.existsSync(folderPath)){
 			throw new FolderMissingException(folderPath);
