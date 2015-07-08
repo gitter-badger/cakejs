@@ -79,12 +79,12 @@ export var SessionManager = new class {
 		if(this._config.extract("defaults") === null){
 			this._config.insert("defaults", this._defaultConfig.extract("defaults"))
 		}
-		if(fs.existsSync(path.resolve(__filename,"..","Network","Session",config.extract("handler.engine")))
-			config.insert("entityClass", this._config.extract("path")+"/"+Inflector.classify(name)+".js");
+/*		if(fs.existsSync(path.resolve(__filename,"..","Network","Session",config.extract("handler.engine")))
+			config.insert("entityClass", this._config.extract("path")+"/"+Inflector.classify(name)+".js"); 
 		else
 			config.insert("entityClass", path.resolve(Configure.get("CakeJS.app", path.resolve('.')),"Network","Session",config.extract("handler.engine")));
 		this._engine = ClassLoader.load(path.resolve(__filename,"..","Network","Session",this._handler_engine));
-		this._engine = new this._engine(TableRegistry.get());
+		this._engine = new this._engine(TableRegistry.get());*/
 	}
 	get keyName(){
 		if(this._config.extract("cookie") === null){
