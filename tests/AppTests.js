@@ -64,7 +64,14 @@ class Tests{
 			console.log(row);
 		});
 	}*/
-	async server_create(){
+	async bootstrap(){
+		/*var classes = CakeJS.Core.ClassLoader.loadFolder('Model/Entity');
+		console.log(classes);*/
+		//CakeJS.Core.ClassLoader.load('Controller', 'Controller');
+		//CakeJS.Core.ClassLoader.load('DriverManager', 'Database');
+		return true;
+	}
+	/*async server_create(){
 		this._server = CakeJS.createServer();
 		this._server.config({
 			"Listen": {
@@ -194,7 +201,7 @@ class Tests{
 	async process_start(){
 		var process = CakeJS.Process.ProcessManager.get('Test');
 		assert.equal(process.keyB, 'valueB', 'Expected valueB in process.keyB');
-	}
+	}*/
 }
 
 
