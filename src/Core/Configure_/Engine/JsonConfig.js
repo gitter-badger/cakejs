@@ -13,15 +13,29 @@
  * @license     http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-//CakeJS.Core.Configures.ConfigureEngineInterface
+//CakeJS.Core.Configures.Engine.JsonConfig
 
 //Types
-import {FatalException} from '../Exception/FatalException'
+import {Exception} from '../../Exception/Exception';
+import {ConfigureEngineInterface} from '../ConfigureEngineInterface';
 
 //Requires
 var fs = require('fs');
 
-export class ConfigureEngineInterface {
-	read(key){}
-	dump(key, data = {}){}
+export class JsonConfig extends ConfigureEngineInterface 
+{
+	_extension = '.json';
+	read(key)
+	{
+		var file = this._getFilePath(key, true);
+		try{
+			return JSON.parse(fs.readFileSync(file));
+		}catch(e){
+			throw new Exception("Could not parse file: "+file);
+		}
+	}
+	dump(key, data = {})
+	{
+		
+	}
 }

@@ -15,6 +15,9 @@
 
 //CakeJS.Core.ClassLoader
 
+//Singelton instances
+import {Configure} from './Configure';
+
 //Types
 import {ClassNotFoundException} from './Exception/ClassNotFoundException';
 import {FileMissingException} from './Exception/FileMissingException';
@@ -25,15 +28,16 @@ import {Collection} from '../Collection/Collection';
 var fs = require('fs');
 var path = require('path');
 
-export var ClassLoader = new class {
-	constructor(){
+export var ClassLoader = new class 
+{
+	constructor()
+	{
 		this._classes = {};
 		this._folders = {};
-		this._config = new Collection({
-			"dir": APP_DIR,
-			"webroot": WWW_ROOT,
-			"paths": {
-				"plugins": ROOT+DS+'plugins'
+		Configure.write('App',{
+			'dir': APP_DIR,
+			'paths': {
+				'plugins': require('path').resolve(ROOT, 'plugins')
 			}
 		});
 	}
@@ -44,16 +48,17 @@ export var ClassLoader = new class {
 	 * @param {string} className class to be loaded
 	 * @param {string|null} relativePath relative path there the class can be found
 	 */
-	loadClass(className, relativePath = null){
+	loadClass(className, relativePath = null)
+	{
 		var key = relativePath+"|"+className;
 		if(key in this._classes){
 			return this._classes[key];
 		}
 		if(className.indexOf('.') !== -1){
 			var [plugin, className] = className.split('.');
-			className = path.resolve(ROOT,this._config.extract("paths.plugins"),plugin,relativePath,className);
-		}else if(fs.existsSync(path.resolve(APP,'..',this._config.extract("dir"),relativePath,className)+".js")){
-			className = path.resolve(APP,'..',this._config.extract("dir"),relativePath,className);
+			className = path.resolve(ROOT, Configure.read("App.paths.plugins"),plugin,'src',relativePath,className);
+		}else if(fs.existsSync(path.resolve(APP,'..',Configure.read("App.dir"),relativePath,className)+".js")){
+			className = path.resolve(APP,'..',Configure.read("App.dir"),relativePath,className);
 		}else{
 			className = path.resolve(CAKE,relativePath,className);
 		}
@@ -88,15 +93,16 @@ export var ClassLoader = new class {
 	 * @param {string} relativePath relative path there the classes can be found
 	 * @param {string} plugin if specified relativePath will only apply to plugin/{plugin}/src
 	 */
-	loadFolder(relativePath, plugin = null){
+	loadFolder(relativePath, plugin = null)
+	{
 		var key = plugin+"|"+relativePath;
 		if(key in this._folders){
 			return this._folders[key];
 		}
 		if(plugin !== null){
-			var folderPath = path.resolve(APP,this._config.extract("paths.plugins"),plugin,relativePath);
+			var folderPath = path.resolve(APP,'..',Configure.read("App.paths.plugins"),plugin,'src',relativePath);
 		}else{
-			var folderPath = path.resolve(APP,this._config.extract("dir"),relativePath);
+			var folderPath = path.resolve(APP,'..',Configure.read("App.dir"),relativePath);
 		}
 		if(!fs.existsSync(folderPath)){
 			throw new FolderMissingException(folderPath);
