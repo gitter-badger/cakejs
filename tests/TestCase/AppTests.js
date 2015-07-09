@@ -13,28 +13,27 @@
  * @license     http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-var assert = require("assert")
 var path = require('path');
 var fs = require('fs');
 var filename = path.basename(__filename);
 
-class Tests{
-	constructor(){
-		var methods = Object.getOwnPropertyNames(Tests.prototype);
-		for(var i = 0; i < methods.length; i++){
-			if(["constructor"].indexOf(methods[i]) === -1){
-				if(["before", "after", "beforeEach"].indexOf(methods[i]) === -1){
-					this[filename.substr(0,filename.length-3)+"->"+methods[i].replace(new RegExp("\_", 'g'), "->")] = this[methods[i]];
-				}else{
-					this[methods[i]] = this[methods[i]];
-				}
-			}
-		}
-	}
-	async bootstrap(){
-		var classes = CakeJS.Core.ClassLoader.loadFolder('Model/Entity');
-		console.log(classes);
-		//CakeJS.Core.ClassLoader.load('Controller', 'Controller');
+//Uses
+var Configure = CakeJS.Core.Configure;
+var ClassLoader = CakeJS.Core.ClassLoader;
+var TestCase = CakeJS.Test.TestCase;
+
+export default new class AppTests extends TestCase
+{
+	testBootstrap_KeyValue()
+	{
+		var classTemplate = ClassLoader.loadFolder('Controller', 'TestPlugin');
+		assert.equal(1,5, 'buuu');
+		console.log(classTemplate);
+		//console.log(Configure.read());
+		//var classes = CakeJS.Core.ClassLoader.loadFolder('Model/Entity');
+		//console.log(classes);
+		//var classa = CakeJS.Core.ClassLoader.loadClass('TestController', 'Controller');
+		//console.log(classa);
 		//CakeJS.Core.ClassLoader.load('DriverManager', 'Database');
 		return true;
 	}
@@ -202,6 +201,3 @@ class Tests{
 		assert.equal(process.keyB, 'valueB', 'Expected valueB in process.keyB');
 	}*/
 }
-
-
-export default new Tests();

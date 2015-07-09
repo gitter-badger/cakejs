@@ -8,10 +8,13 @@ global.SESSIONS = require('path').resolve(TMP,'sessions');
 
 global.TEST_APP = require('path').resolve(ROOT,'test_app');
 
-global.APP = require('path').resolve(TEST_APP, 'dist', APP_DIR);
+global.APP = require('path').resolve(TEST_APP, APP_DIR);
 global.WWW_ROOT = require('path').resolve(TEST_APP, 'webroot');
 global.CONFIG = require('path').resolve(TEST_APP, 'config');
 
-require('..');
+require('../..');
 
-displayCakeConstants();
+CakeJS.Core.Configure.write('debug', true);
+CakeJS.Core.Configure.write('App.paths', {
+	'plugins': require('path').resolve(TEST_APP, 'Plugin')
+});
