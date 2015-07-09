@@ -48,7 +48,7 @@ function r(path){
 	content += "//Files"+"\n";
 	for(var i = 0; i < dir.length; i++){
 		var file = dir[i];
-		if(["index.js", "main.js"].indexOf(file) !== -1 || !fs.statSync(global.path.resolve(path, file)).isFile())
+		if(["index.js", "main.js", "basics.js"].indexOf(file) !== -1 || !fs.statSync(global.path.resolve(path, file)).isFile())
 			continue;
 		file = file.substr(0, file.length-3);
 		if(/^[a-z]/.test(file))
