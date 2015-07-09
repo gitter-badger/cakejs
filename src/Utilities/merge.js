@@ -15,9 +15,12 @@
 
 //CakeJS.Utilities.merge
 
+var clone = require('./clone');
+
 export default function merge(...args){
 	var newObject = {};
 	for(var arg of args){
+		arg = clone(arg);
 		for(var key in arg){
 			newObject[key] = arg[key];
 		}
