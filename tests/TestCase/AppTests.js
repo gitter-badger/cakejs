@@ -27,7 +27,6 @@ export default new class AppTests extends TestCase
 	testBootstrap_KeyValue()
 	{
 		var classTemplate = ClassLoader.loadFolder('Controller', 'TestPlugin');
-		assert.equal(1,5, 'buuu');
 		console.log(classTemplate);
 		//console.log(Configure.read());
 		//var classes = CakeJS.Core.ClassLoader.loadFolder('Model/Entity');
