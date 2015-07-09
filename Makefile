@@ -8,15 +8,11 @@ install:
 	@npm install > /dev/null
 
 build: clean index
-	@mkdir dist
-	@babel --stage 0 --optional runtime --out-dir dist/src src > /dev/null
-	@mkdir dist/pub
-	@browserify pub/client.js -t [ babelify --stage 0 ] --standalone client --outfile dist/pub/client.js
+	@rsync -ax --exclude dist --exclude tests --exclude node_modules --exclude Makefile --exclude LICENSE --exclude npm-debug.log --exclude package.json --exclude README.md --exclude utils * dist
+	@babel --stage 0 --optional runtime --out-dir dist/src dist/src > /dev/null
+	@browserify dist/webroot/js/* -t [ babelify --stage 0 ] --standalone client --outfile dist/webroot/js/*
 
 clean:
-ifneq ($(wildcard build/.*),)
-	@rm -r build
-endif
 ifneq ($(wildcard dist/.*),)
 	@rm -r dist
 endif
@@ -25,18 +21,20 @@ test-silent:
 	@cp -R tests dist/tests
 	@babel --stage 0 --optional runtime --out-dir dist/tests tests > /dev/null
 	@mocha --bail --slow 300 --timeout 5000 --ui exports dist/tests > /dev/null	
-	
+
+ifeq ($(wildcard dist/.*),)
+test: build
+else
 test:
-ifneq ($(wildcard tests/test_app/dist/.*),)
-	@rm -r tests/test_app/dist
-endif
-	@mkdir tests/test_app/dist
+endif	
 ifneq ($(wildcard dist/tests/.*),)
-	@rm -r dist/tests/*
+	@rm -r dist/tests
 endif
-	@babel --stage 0 --optional runtime --out-dir dist/tests tests/TestCase > /dev/null
-	@babel --stage 0 --optional runtime --out-dir tests/test_app/dist/TestApp tests/test_app/TestApp > /dev/null
-	@mocha --bail --slow 300 --timeout 5000 --ui exports -r tests/bootstrap.js dist/tests
+	@cp -R tests dist/tests
+	@babel --stage 0 --optional runtime --out-dir dist/tests/TestCase dist/tests/TestCase > /dev/null
+	@babel --stage 0 --optional runtime --out-dir dist/tests/test_app/TestApp dist/tests/test_app/TestApp > /dev/null
+	@babel --stage 0 --optional runtime --out-dir dist/tests/test_app/Plugin/TestPlugin/src dist/tests/test_app/Plugin/TestPlugin/src > /dev/null
+	@mocha --bail --slow 300 --timeout 5000 --ui exports -r dist/tests/bootstrap.js dist/tests/TestCase
 
 define release
 	VERSION=`node -pe "require('./package.json').version"` && \
