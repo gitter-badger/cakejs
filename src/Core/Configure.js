@@ -315,7 +315,7 @@ export var Configure = new class
      */
 	clear()
 	{
-		this._values = new Collection();
+		this._values = {};
 		return true;
 	}	
 }
