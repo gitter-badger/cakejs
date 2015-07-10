@@ -20,14 +20,16 @@ var filename = path.basename(__filename);
 //Uses
 var Configure = CakeJS.Core.Configure;
 var ClassLoader = CakeJS.Core.ClassLoader;
-var TestCase = CakeJS.Test.TestCase;
+var TestCase = CakeJS.TestSuite.TestCase;
 
-export default new class AppTests extends TestCase
+var test = new class AppTests extends TestCase
 {
-	testBootstrap_KeyValue()
+	
+	
+	testBootstrap()
 	{
-		var classTemplate = ClassLoader.loadFolder('Controller', 'TestPlugin');
-		console.log(classTemplate);
+		var classTemplate = ClassLoader.loadClass('TestPlugin.MyController', 'Controller');
+		this.assertType(classTemplate, 'function');
 		//console.log(Configure.read());
 		//var classes = CakeJS.Core.ClassLoader.loadFolder('Model/Entity');
 		//console.log(classes);
@@ -200,3 +202,4 @@ export default new class AppTests extends TestCase
 		assert.equal(process.keyB, 'valueB', 'Expected valueB in process.keyB');
 	}*/
 }
+module.exports = test.moduleExports();
