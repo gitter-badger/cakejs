@@ -33,7 +33,7 @@ export var Hash = new class
 	
 	get(obj, key, def)
 	{
-		return dotaccess.get(obj, key, def);
+		return clone(dotaccess.get(obj, key, def));
 	}
 	
 	remove(obj, key)
