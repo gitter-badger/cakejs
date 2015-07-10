@@ -15,21 +15,18 @@
 
 //CakeJS.Utilities.clone
 
-export default function clone(obj){
-	var copy;
-    if (null == obj || "object" != typeof obj) 
-		return obj;
-    if (obj instanceof Date) {
-        copy = new Date();
-        copy.setTime(obj.getTime());
-        return copy;
+export default function clone(from, to){
+	if (from == null || typeof from != "object") return from;
+    if (from.constructor != Object && from.constructor != Array) return from;
+    if (from.constructor == Date || from.constructor == RegExp || from.constructor == Function ||
+        from.constructor == String || from.constructor == Number || from.constructor == Boolean)
+        return new from.constructor(from);
+
+    to = to || new from.constructor();
+
+    for (var name in from)
+    {
+        to[name] = typeof to[name] == "undefined" ? clone(from[name], null) : to[name];
     }
-    if (obj instanceof Array) {
-        copy = [];
-        for (var i = 0, len = obj.length; i < len; i++) {
-            copy[i] = clone(obj[i]);
-        }
-        return copy;
-    }
-	return obj;
+    return to;
 }
