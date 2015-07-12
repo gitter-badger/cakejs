@@ -18,3 +18,12 @@ CakeJS.Core.Configure.write('debug', true);
 CakeJS.Core.Configure.write('App.paths', {
 	'plugins': require('path').resolve(TEST_APP, 'Plugin')
 });
+CakeJS.Core.Configure.write('Datasourcce', {
+	"default": {
+		"driver": "Mysql",
+		"host": "127.0.0.1",
+		"username": "test",
+		"password": "test",
+		"database": "test"
+	}
+});
