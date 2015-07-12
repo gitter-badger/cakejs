@@ -46,14 +46,16 @@ var bodyParser = require("body-parser");
 /**
  * @class
  */
-export class Server extends events.EventEmitter {
+export class Server extends events.EventEmitter 
+{
 	/**
 	 * Constructor
 	 * 
 	 * @param {string|object} Path to config or a json object containing the configuration
 	 * @extends events.EventEmitter
 	 */
-	constructor(config){
+	constructor(config)
+	{
 		super();
 		this._app = express();
 		this._http = http.Server(this._app);
@@ -69,28 +71,21 @@ export class Server extends events.EventEmitter {
 	 * @param {string|object} Path to config or a json object containing the configuration
 	 * @returns {void}
 	 */
-	async config(config){
-		Configure.config(config);
-		SessionManager.config(Configure.get("Session.cookie", "cakejs_sessid"), Configure.get("Session.timeout", 60*24));
-		TableRegistry.config({
-			"path": path.resolve(Configure.get("CakeJS.app", path.resolve('.')),"Model")
-		});
-		var datasources = Configure.get("Datasources", {});
-		for(var key in datasources){
-			await ConnectionManager.config(key, datasources[key]);
-		}
+	async config(config)
+	{
+		SessionManager.config(Configure.get("Session.cookie", "cakejs_sessid"), Configure.get("Session.timeout", 60*24));		
 	}
 	/**
 	 * Starts the CakeJS server
 	 * 
 	 * @returns {Promise}
 	 */
-	async start(){		
+	async start()
+	{		
 		//Preloads managers
-		try{await ControllerManager.load(path.resolve(Configure.get("CakeJS.app", path.resolve('.')),"Controller"));}catch(e){}
-		try{await ProcessManager.load(path.resolve(Configure.get("CakeJS.app", path.resolve('.')),"Process"));}catch(e){}
+		try{await ControllerManager.initialize();}catch(e){}
+		try{await ProcessManager.initialize();}catch(e){}
 		
-		await ProcessManager.initialize();
 		//Build routes
 		await Router.initialize();
 
@@ -123,10 +118,12 @@ export class Server extends events.EventEmitter {
 	 * 
 	 * @returns {Promise}
 	 */
-	async stop(){
+	async stop()
+	{
 		await new Promise(resolve => this._http.close(resolve));
 	}
 }
-export function createServer(){
+export function createServer()
+{
 	return new Server();
 }
