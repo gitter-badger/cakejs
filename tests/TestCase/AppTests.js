@@ -28,8 +28,9 @@ var test = new class AppTests extends TestCase
 	
 	testBootstrap()
 	{
-		var classTemplate = ClassLoader.loadClass('TestPlugin.MyController', 'Controller');
-		this.assertType(classTemplate, 'function');
+		//var classTemplate = ClassLoader.loadFolder('Controller');	
+		//console.log(classTemplate);
+		//this.assertType(classTemplate, 'function');
 		//console.log(Configure.read());
 		//var classes = CakeJS.Core.ClassLoader.loadFolder('Model/Entity');
 		//console.log(classes);
@@ -38,7 +39,8 @@ var test = new class AppTests extends TestCase
 		//CakeJS.Core.ClassLoader.load('DriverManager', 'Database');
 		return true;
 	}
-	/*async development_tests() {
+	async development_tests() {
+		return;
 		//var result = await CakeJS.Core.ClassLoader.load(path.resolve(__filename,"..","src/test.js"));
 		this._server = CakeJS.createServer();
 		this._server.config({
@@ -69,7 +71,7 @@ var test = new class AppTests extends TestCase
 		result.each((row) => {
 			console.log(row);
 		});
-	}*/
+	}
 	/*async server_create(){
 		this._server = CakeJS.createServer();
 		this._server.config({
