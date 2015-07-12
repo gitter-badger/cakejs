@@ -59,4 +59,19 @@ export var Hash = new class
 		}
 		return true;
 	}
+	
+	map(object, prefix = null, list = {})
+	{
+		if(prefix === null){
+			prefix = '';
+		}
+		for(var key in object){
+			if(typeof object[key] === 'object' && object[key].constructor === {}.constructor){
+				this.map(object[key], prefix+(prefix === '' ? '' : '.')+key, list);
+			}else{
+				list[prefix+(prefix === '' ? '' : '.')+key] = object[key];
+			}
+		}
+		return list;
+	}
 }
