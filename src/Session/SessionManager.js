@@ -31,8 +31,10 @@ import {MissingConfigException} from '../Exception/MissingConfigException';
 var fs = require('fs');
 var path = require('path');
 
-export var SessionManager = new class {
-	constructor(){
+export var SessionManager = new class 
+{
+	constructor()
+	{
 		this._defaultConfig = new Collection({
 			"defaults": "memory",
 			"handler": {
@@ -44,13 +46,15 @@ export var SessionManager = new class {
 		this._config = new Collection();
 		this._engine = null;
 	}
-	config(config){
+	config(config)
+	{		
 		new Collection(config).each((value, key) => {
 			this._config.insert(key, value);
 		});
 		this._engine = null;
 	}
-	get engine(){
+	get engine()
+	{
 		if(this._engine !== null){
 			return this._engine;
 		}
@@ -79,6 +83,8 @@ export var SessionManager = new class {
 		if(this._config.extract("defaults") === null){
 			this._config.insert("defaults", this._defaultConfig.extract("defaults"))
 		}
+		this._engine = ClassLoader.loadClass('','Network/Session');
+		this._engine = new this._engine();
 /*		if(fs.existsSync(path.resolve(__filename,"..","Network","Session",config.extract("handler.engine")))
 			config.insert("entityClass", this._config.extract("path")+"/"+Inflector.classify(name)+".js"); 
 		else
@@ -86,19 +92,22 @@ export var SessionManager = new class {
 		this._engine = ClassLoader.load(path.resolve(__filename,"..","Network","Session",this._handler_engine));
 		this._engine = new this._engine(TableRegistry.get());*/
 	}
-	get keyName(){
+	get keyName()
+	{
 		if(this._config.extract("cookie") === null){
 			this._config.insert("cookie", this._defaultConfig.extract("cookie"))
 		}
 		return this._config.extract("cookie");
 	}
-	get timeout(){
+	get timeout()
+	{
 		if(this._config.extract("timeout") === null){
 			this._config.insert("timeout", this._defaultConfig.extract("timeout"))
 		}
 		return this._config.extract("timeout");
 	}
-	get(idOrObject){
+	get(idOrObject)
+	{
 		if(typeof idOrObject === 'object'){
 			if(this.keyName in idOrObject){
 				idOrObject = idOrObject[this.keyName];
