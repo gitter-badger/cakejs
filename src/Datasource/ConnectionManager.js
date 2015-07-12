@@ -20,23 +20,51 @@ import {MissingConfigException} from '../Exception/MissingConfigException'
 import {AlreadyDefinedException} from '../Exception/AlreadyDefinedException'
 import {Connection} from '../Database/Connection'
 
-export var ConnectionManager = new class {
-	constructor(){
+export var ConnectionManager = new class 
+{
+	constructor()
+	{
 		this._configurations = {}
 		this._connections = {};
 	}
-	config(name, configuration){
-		if(name in this._configurations)
-			throw new AlreadyDefinedException("ConnectionMananger: "+name);
-		if(typeof configuration !== 'object')
+	
+	/**
+	 * Configures the datasource
+	 * 
+	 * @param {object|string} config Key or object
+	 * @param {object} value object containing config for datasource
+	 */
+	config(config, value = null)
+	{
+		if(value === null){
+			for(var key in config){
+				this.config(key, config[key]);
+			}
+			return true;
+		}
+		if(config in this._configurations){
+			throw new AlreadyDefinedException("ConnectionMananger: "+config);
+		}
+		if(typeof value !== 'object'){
 			throw new MissingConfigException();
-		this._configurations[name] = configuration;
+		}
+		this._configurations[config] = value;
+		return true;
 	}
-	get(name){
-		if(!(name in this._configurations))
+	
+	/**
+	 * Retreives the configuration of datasource
+	 * 
+	 * @param {string} name name of datasource
+	 */
+	get(name)
+	{
+		if(!(name in this._configurations)){
 			throw new MissingConfigException();
-		if(!(name in this._connections))
+		}
+		if(!(name in this._connections)){
 			this._connections[name] = new Connection(this._configurations[name]);
+		}
 		return this._connections[name];
 	}
 }();
