@@ -24,23 +24,28 @@ import {ClassLoader} from '../Core/ClassLoader'
 //Requires
 var fs = require('fs');
 
-export var ControllerManager = new class {
-	constructor(){
+export var ControllerManager = new class 
+{
+	constructor()
+	{
 		this._controllers = {};
 	}
-	load(path){
-		var classes = ClassLoader.loadFolder(path);
+	initialize()
+	{
+		var classes = ClassLoader.loadFolder('Controller');
 		for(var key in classes){
-			this._controllers[key.substr(0,key.length-"Controller.js".length)] = classes[key];
+			this._controllers[key.substr(0,key.length-"Controller".length)] = classes[key];
 		}
 	}
-	get(name){
+	get(name)
+	{
 		if(!(name in this._controllers)){
 			throw new MissingControllerException(name);
 		}
 		return new this._controllers[name]();
 	}
-	getControllerNames(){
+	getControllerNames()
+	{
 		var names = [];
 		for(var key in this._controllers){
 			names.push(key);
