@@ -21,26 +21,26 @@ import {ConnectionContainer} from '../WebSocket/ConnectionContainer'
 import {Collection} from '../Collection/Collection'
 
 //Function
-import uuid from '../Utilities/uuid'
+import uuid from '../Utilities/uuid';
 
 class SessionData {
 	constructor(session){
 		this.__session = session;
-		this.__collection = new Collection();
 	}
 	read(keyPath){
-		if(typeof keyPath !== 'string' || keyPath.trim() === '')
+		if(typeof keyPath !== 'string' || keyPath.trim() === ''){
 			throw new InvalidParameterException(keyPath, 'string');
-		var value = this.__collection.extract(keyPath);
-		if(typeof value === 'object' && value instanceof Collection)
-			return value.toObject(true);
-		return value;
+		}
+		return Hash.get(this.__session.engine.read(this.__session.key), keyPath);
 	}
-	write(keyPath, value){
-		if(typeof keyPath !== 'string' || keyPath.trim() === '')
+	write(keyPath, value = null){
+		if(typeof keyPath !== 'string' || keyPath.trim() === ''){
 			throw new InvalidParameterException(keyPath, 'string');
-		if(typeof value === 'undefined')
-			throw new InvalidParameterException(value, 'anything');
+		}
+		if(value === null){
+			throw new InvalidParameterException(keyPath, 'string');
+		}
+		return Hash.get(this.__session.engine.read(this.__session.key), keyPath);
 		this.__collection.insert(keyPath, value);
 		return true;
 	}
@@ -65,7 +65,7 @@ class SessionData {
 	}
 	destroy(){
 		//Not yet implemented properly
-		this.__collection = new Collection();
+		this.__session.dispose();
 	}
 	renew(){
 		this.__session.touch();
@@ -73,22 +73,29 @@ class SessionData {
 }
 
 export class Session {
-	constructor(ttl){
-		this.key = uuid(null, 'uuids');
+	constructor(engine, key){
+		this._engine = engine;
+		this._key = key;
 		this.data = new SessionData();
-		this._ttl = ttl;
-		this.expire = null;
 		this.touch();
-		this._disposed = false;
 		this.connections = new ConnectionContainer();
 	}
-	touch(ttl){
-		this.expire = new Date(new Date().getTime()+(typeof ttl === 'number'?ttl:this._ttl));
+	
+	get key()
+	{
+		return this._key;
 	}
+	
+	get engine()
+	{
+		return this._engine;
+	}
+	
+	touch(){
+		this.engine.write(this.key);
+	}
+	
 	dispose(){
-		this._disposed = true;
-	}
-	isDisposed(){
-		return this._disposed;
+		this.engine.destroy(this.key);
 	}
 }
