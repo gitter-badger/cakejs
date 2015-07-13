@@ -18,7 +18,7 @@ CakeJS.Core.Configure.write('debug', true);
 CakeJS.Core.Configure.write('App.paths', {
 	'plugins': require('path').resolve(TEST_APP, 'Plugin')
 });
-CakeJS.Core.Configure.write('Datasourcce', {
+CakeJS.Core.Configure.write('Datasources', {
 	"default": {
 		"driver": "Mysql",
 		"host": "127.0.0.1",
@@ -27,3 +27,6 @@ CakeJS.Core.Configure.write('Datasourcce', {
 		"database": "test"
 	}
 });
+CakeJS.Core.Configure.write('Web.port', 31337);
+CakeJS.Datasource.ConnectionManager.config(CakeJS.Core.Configure.consume('Datasources'));
+//CakeJS.Session.SessionManager.config(CakeJS.Core.Configure.consume('Session'));
