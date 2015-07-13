@@ -16,9 +16,9 @@
 //CakeJS.Session.SessionManager
 
 //Singelton instances
-import ClassLoader from '../Core/ClassLoader';
-import TableRegistry from '../ORM/TableRegistry';
-import Configure from '../Core/Configure';
+import {ClassLoader} from '../Core/ClassLoader';
+import {TableRegistry} from '../ORM/TableRegistry';
+import {Configure} from '../Core/Configure';
 
 //Types
 import {Session} from './Session';
@@ -30,6 +30,7 @@ import {MissingConfigException} from '../Exception/MissingConfigException';
 //Utilities
 import {Hash} from '../Utilities/Hash';
 import clone from '../Utilities/clone';
+import uuid from '../Utilities/uuid';
 
 //Requires
 var fs = require('fs');
@@ -49,6 +50,7 @@ export var SessionManager = new class
 		};
 		this._engine = null;
 	}
+	
 	config(config = null)
 	{		
 		if(config === null){
@@ -57,6 +59,7 @@ export var SessionManager = new class
 		this._config = Hash.merge(this._config, config);		
 		this._engine = null;
 	}
+	
 	get engine()
 	{
 		if(this._engine !== null){
@@ -77,15 +80,19 @@ export var SessionManager = new class
 		}
 		this._engine = ClassLoader.loadClass(Hash.get(this._config, 'handler.engine'),'Network/Session');
 		this._engine = new this._engine(TableRegistry.get(Hash.get(this._config, 'handler.model')));
+		return this._engine;
 	}
+	
 	get keyName()
 	{
 		return Hash.get(this._config, 'cookie');
 	}
+	
 	get timeout()
 	{
 		return Hash.get(this._config, 'timeout');
 	}
+	
 	get(idOrObject)
 	{
 		if(typeof idOrObject === 'object'){
@@ -93,13 +100,23 @@ export var SessionManager = new class
 				idOrObject = idOrObject[this.keyName];
 			}
 		}
+		
+		if(typeof idOrObject !== 'string' || !/^[0-9a-zA-Z]{1,40}$/.test(idOrObject)){
+			idOrObject = null;
+		}
+		
 		if(typeof idOrObject === 'string'){
 			if(idOrObject in this._sessions){
 				return this._sessions[idOrObject];
 			}
 		}
-		var session = new Session(this._ttl);
-		this._sessions[session.key] = session;
-		return session;
+		
+		if(idOrObject === null){
+			do{
+				idOrObject = uuid(null, 'uuids');
+			}while(this.engine.has(idOrObject));
+		}
+		
+		return new Session(idOrObject, idOrObject);
 	}
 };
