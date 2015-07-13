@@ -44,8 +44,6 @@ if(!('WWW_ROOT' in global)){
 if(!('CONFIG' in global)){
 	global.CONFIG = require('path').resolve(ROOT,'config');
 }
-global.CakeJS = require('./index');
-global.CAKE_VERSION = CakeJS.Core.Configure.version();
 global.displayCakeConstants = function()
 {
 	for(var key of ['APP', 'APP_DIR', 'CACHE', 'CAKE', 'CAKE_CORE_INCLUDE_PATH', 'CORE_PATH', 'CAKE_VERSION', 'DS', 'LOGS', 'ROOT', 'TESTS', 'TMP', 'WWW_ROOT']){
@@ -56,6 +54,8 @@ global.displayCakeConstants = function()
 		}
 	}
 };
+global.CakeJS = require('./index');
+global.CAKE_VERSION = CakeJS.Core.Configure.version();
 global.pluginSplit = function(name, dotAppend = false, plugin = null)
 {
 	if(name.indexOf('.') !== -1){
