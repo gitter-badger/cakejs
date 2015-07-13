@@ -26,44 +26,15 @@ var test = new class AppTests extends TestCase
 {
 	
 	
-	testBootstrap()
+	testClassloader()
 	{
-		//var classTemplate = ClassLoader.loadFolder('Controller');	
-		//console.log(classTemplate);
-		//this.assertType(classTemplate, 'function');
-		//console.log(Configure.read());
-		//var classes = CakeJS.Core.ClassLoader.loadFolder('Model/Entity');
-		//console.log(classes);
-		//var classa = CakeJS.Core.ClassLoader.loadClass('TestController', 'Controller');
-		//console.log(classa);
-		//CakeJS.Core.ClassLoader.load('DriverManager', 'Database');
+		ClassLoader.loadFolder('Controller');
 		return true;
 	}
-	async development_tests() {
-		return;
+	async testServer_Create() {
 		//var result = await CakeJS.Core.ClassLoader.load(path.resolve(__filename,"..","src/test.js"));
 		this._server = CakeJS.createServer();
-		this._server.config({
-			"Listen": {
-				"port": 31337
-			},
-			"CakeJS": {
-				"app": path.resolve(__filename,"..","src"),
-			},
-			"Static": {
-				"webroot": path.resolve(__filename,"..","webroot"),
-			},
-			"Datasources": {
-				"default": {
-					"driver": "Mysql",
-					"host": "127.0.0.1",
-					"username": "test",
-					"password": "test",
-					"database": "test"
-				}
-			}
-		});
-		
+				
 		var result = await CakeJS.ORM.TableRegistry
 				.get("table")
 				.find('all')
