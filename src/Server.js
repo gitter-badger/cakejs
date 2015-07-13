@@ -54,27 +54,14 @@ export class Server extends events.EventEmitter
 	 * @param {string|object} Path to config or a json object containing the configuration
 	 * @extends events.EventEmitter
 	 */
-	constructor(config)
+	constructor()
 	{
 		super();
 		this._app = express();
 		this._http = http.Server(this._app);
 		this._sio = socketio(this._http);
-		if(typeof config !== 'undefined')
-			this.config(config);
 	}
-	/**
-	 * Sets config for CakeJS
-	 * 
-	 * This methods set default values for missing keys
-	 * 
-	 * @param {string|object} Path to config or a json object containing the configuration
-	 * @returns {void}
-	 */
-	async config(config)
-	{
-		SessionManager.config(Configure.get("Session.cookie", "cakejs_sessid"), Configure.get("Session.timeout", 60*24));		
-	}
+	
 	/**
 	 * Starts the CakeJS server
 	 * 
@@ -92,26 +79,24 @@ export class Server extends events.EventEmitter
 		//Starts the web related services
 		
 		this._app.use(cookieParser());
-		this._app.use(sessionParser(Configure.get("Session.name", "cakejs_sessid"), Configure.get("Session.timeout", 1440)));
+		this._app.use(sessionParser(SessionManager.config()));
 		this.emit('use', this._app);
-		var javascriptLibraryContent = fs.readFileSync(path.resolve(__filename,'..','..','pub','client.js'));
-		this._app.get('/js/cakejs.js', (request, response) => {
-			response.writeHead(200, {'content-type': 'text/javascript'});
-			response.write(javascriptLibraryContent);
-			response.end();
-		});
-		if(Configure.get("Static") !== null){
+		if(Configure.read("Web.port") !== null){
+			var javascriptLibraryContent = fs.readFileSync(path.resolve(__filename,'..','..','webroot','js','client.js'));
+			this._app.get('/js/cakejs.js', (request, response) => {
+				response.writeHead(200, {'content-type': 'text/javascript'});
+				response.write(javascriptLibraryContent);
+				response.end();
+			});
 			this._app.use(bodyParser.urlencoded({ extended: false }));
-			this._app.use(_static(Configure.get("Static.webroot", "/var/www")));
-		}else if(Configure.get("Proxy") !== null){
-			this._app.use(proxy(Configure.get("Proxy.host", "127.0.0.1"), Configure.get("Proxy.port", 80)));
+			this._app.use(_static(WWW_ROOT));
 		}
 		this._sio.set('authorization', sessionParser());
 		this._sio.on('connection', socketIOConnection());
-		await new Promise(resolve => this._http.listen(Configure.get("Listen.port", 8080), () => {
+		await ProcessManager.start();
+		await new Promise(resolve => this._http.listen(Configure.read("Web.port"), () => {
 			resolve();
 		}));
-		await ProcessManager.start();
 	}
 	/**
 	 * Stops the CakeJS server
