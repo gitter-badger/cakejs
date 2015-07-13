@@ -16,11 +16,23 @@
 //Uses
 var Process = CakeJS.Process.Process;
 
-export default class TestProcess extends Process {
-	initialize(){
+export default class TestProcess extends Process 
+{
+	/**
+	 * Sets member variable keyA to valueA
+	 * this happens when ProcessManager initializes the process
+	 */
+	initialize()
+	{
 		this.keyA = "valueA";
 	}
-	start(){
+	
+	/**
+	 * Sets member variable keyA to valueA
+	 * this happens when ProcessManager starts the process
+	 */
+	start()
+	{
 		this.keyB = "valueB";
 	}
 }
