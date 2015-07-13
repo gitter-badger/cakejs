@@ -66,10 +66,10 @@ export class TestCase
 	 * @return {boolean} True
 	 * @throws {AssertionException} Throws if assertion fails
 	 */
-	assertEquals(a, b)
+	assertEquals(a, b, message)
 	{
 		if(a !== b){
-			throw new AssertionException(a, b);
+			this.fail(a, b, message);
 		}
 		return true;
 	}
@@ -90,22 +90,37 @@ export class TestCase
 		}
 		if(typeof type === 'string'){
 			if(typeof object !== type){
-				throw new AssertionException(typeof object, type);
+				this.fail(typeof object, type);
 			}
 			return true;
 		}
 		if(typeof object !== 'object'){
-			throw new AssertionException(typeof object, type.prototype.name);
+			this.fail(typeof object, type.prototype.name);
 		}else{
 			if((object instanceof type) !== true){
-				throw new AssertionException(object.constructor.name, type.prototype.name);
+				this.fail(object.constructor.name, type.prototype.name);
 			}
 			return true;
 		}
 	}
 	
 	/**
+	 * Throws a AssertionException
+	 * 
+	 * @throws {AssertionException} Exception related to assertion
+	 */
+	fail(actual, expected, message = null)
+	{
+		if(message === null){
+			throw new AssertionException(actual, expected);
+		}else{
+			throw new AssertionException(message);
+		}
+	}
+	
+	/**
 	 * Builds a object that will be passed to module.exports in test file
+	 * which is later used by mocha
 	 * 
 	 * @return {object} Object with all tests
 	 */
