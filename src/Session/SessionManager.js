@@ -27,6 +27,10 @@ import {Collection} from '../Collection/Collection';
 //Exceptions
 import {MissingConfigException} from '../Exception/MissingConfigException';
 
+//Utilities
+import {Hash} from '../Utilities/Hash';
+import clone from '../Utilities/clone';
+
 //Requires
 var fs = require('fs');
 var path = require('path');
@@ -35,22 +39,22 @@ export var SessionManager = new class
 {
 	constructor()
 	{
-		this._defaultConfig = new Collection({
+		this._config = {
 			"defaults": "memory",
 			"handler": {
 				"model": "sessions"
 			},
 			"cookie": "cakejs_sessid",
 			"timeout": 1440
-		});
-		this._config = new Collection();
+		};
 		this._engine = null;
 	}
-	config(config)
+	config(config = null)
 	{		
-		new Collection(config).each((value, key) => {
-			this._config.insert(key, value);
-		});
+		if(config === null){
+			return clone(this._config);
+		}
+		this._config = Hash.merge(this._config, config);		
 		this._engine = null;
 	}
 	get engine()
@@ -58,53 +62,29 @@ export var SessionManager = new class
 		if(this._engine !== null){
 			return this._engine;
 		}
-		if(this._config.extract("defaults") === null){
-			this._config.insert("defaults", this._defaultConfig.extract("defaults"))
-		}
-		if(this._config.extract("handler.engine") === null){
-			switch(this._config.extract("defaults").toLowerCase()){
+		if(!Hash.has(this._config, 'handler.engine')){
+			switch(Hash.get(this._config, 'defaults').toLowerCase()){
 				case "memory":
-					this._config.insert("handler.engine", "MemorySession");
+					this._config = Hash.insert(this._config, 'handler.engine', 'MemorySession');
 					break;
 				case "database":
-					this._config.insert("handler.engine", "DatabaseSession");
+					this._config = Hash.insert(this._config, 'handler.engine', 'DatabaseSession');					
 					break;
 				default:
 					throw new MissingConfigException();
 					break;
 			}
 		}
-		if(this._config.extract("handler.engine") === null){
-			this._config.insert("handler.engine", this._defaultConfig.extract("handler.engine"))
-		}
-		if(this._config.extract("handler.model") === null){
-			this._config.insert("handler.model", this._defaultConfig.extract("handler.model"))
-		}
-		if(this._config.extract("defaults") === null){
-			this._config.insert("defaults", this._defaultConfig.extract("defaults"))
-		}
-		this._engine = ClassLoader.loadClass('','Network/Session');
-		this._engine = new this._engine();
-/*		if(fs.existsSync(path.resolve(__filename,"..","Network","Session",config.extract("handler.engine")))
-			config.insert("entityClass", this._config.extract("path")+"/"+Inflector.classify(name)+".js"); 
-		else
-			config.insert("entityClass", path.resolve(Configure.get("CakeJS.app", path.resolve('.')),"Network","Session",config.extract("handler.engine")));
-		this._engine = ClassLoader.load(path.resolve(__filename,"..","Network","Session",this._handler_engine));
-		this._engine = new this._engine(TableRegistry.get());*/
+		this._engine = ClassLoader.loadClass(Hash.get(this._config, 'handler.engine'),'Network/Session');
+		this._engine = new this._engine(TableRegistry.get(Hash.get(this._config, 'handler.model')));
 	}
 	get keyName()
 	{
-		if(this._config.extract("cookie") === null){
-			this._config.insert("cookie", this._defaultConfig.extract("cookie"))
-		}
-		return this._config.extract("cookie");
+		return Hash.get(this._config, 'cookie');
 	}
 	get timeout()
 	{
-		if(this._config.extract("timeout") === null){
-			this._config.insert("timeout", this._defaultConfig.extract("timeout"))
-		}
-		return this._config.extract("timeout");
+		return Hash.get(this._config, 'timeout');
 	}
 	get(idOrObject)
 	{
