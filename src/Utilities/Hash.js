@@ -50,11 +50,8 @@ export var Hash = new class
 	
 	has(obj, key)
 	{
-		var value = typeof this.get(obj, key);
-		if(typeof value === 'undefined'){
-			return false;
-		}
-		if(value === null){
+		var value = this.get(obj, key);
+		if(typeof value === 'undefined' || value === null){
 			return false;
 		}
 		return true;
