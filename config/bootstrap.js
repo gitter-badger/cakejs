@@ -2,7 +2,11 @@ global.TIME_START = new Date();
 require('../src/basics.js');
 
 if(!CakeJS.Core.Configure.configured('default')){
-	CakeJS.Core.Configure.load('app');
+	try{
+		CakeJS.Core.Configure.load('app');
+	}catch(e){
+		
+	}
 }
 if(CakeJS.Core.Configure.check('Datasources')){
 	CakeJS.Datasource.ConnectionManager.config(CakeJS.Core.Configure.consume('Datasources'));
