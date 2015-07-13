@@ -225,7 +225,7 @@ export class Table {
 		}
 		
 		if(name !== null){
-			this._entityClass = ClassLoader.load(name);
+			this._entityClass = ClassLoader.loadClass(name, "Model/Entity");
 		}
 		
 		if(!this._entityClass){
