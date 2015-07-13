@@ -43,13 +43,18 @@ export var ClassLoader = new class
 	}
 	
 	/**
-	 * Method used to load a class dynamically from src path, Lib path or plugins/{plugin}/src path
+	 * Checks if class exists and can be loaded dynamically
 	 * 
 	 * @param {string} className class to be loaded
 	 * @param {string|null} relativePath relative path there the class can be found
 	 */
-	loadClass(className, relativePath = null)
+	classExists(className, relativePath = null)
 	{
+		if(relativePath === null || className.indexOf("/") !== -1){
+			relativePath = className.split("/");
+			className = relativePath.pop();
+			relativePath = relativePath.join("/");
+		}
 		var key = relativePath+"|"+className;
 		if(key in this._classes){
 			return this._classes[key];
@@ -63,6 +68,41 @@ export var ClassLoader = new class
 			className = path.resolve(CAKE,relativePath,className);
 		}
 		className = className+".js";
+		if(!fs.existsSync(path.resolve(APP,'..',Configure.read("App.dir"),relativePath,className))){
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * Method used to load a class dynamically from src path, Lib path or plugins/{plugin}/src path
+	 * 
+	 * @param {string} className class to be loaded
+	 * @param {string|null} relativePath relative path there the class can be found
+	 */
+	loadClass(className, relativePath = null)
+	{
+		if(relativePath === null || className.indexOf("/") !== -1){
+			relativePath = className.split("/");
+			className = relativePath.pop();
+			relativePath = relativePath.join("/");
+		}
+		var key = relativePath+"|"+className;
+		if(key in this._classes){
+			return this._classes[key];
+		}
+		if(className.indexOf('.') !== -1){
+			var [plugin, className] = className.split('.');
+			className = path.resolve(ROOT, Configure.read("App.paths.plugins"),plugin,'src',relativePath,className);
+		}else if(fs.existsSync(path.resolve(APP,'..',Configure.read("App.dir"),relativePath,className)+".js")){
+			className = path.resolve(APP,'..',Configure.read("App.dir"),relativePath,className);
+		}else{
+			className = path.resolve(CAKE,relativePath,className);
+		}
+		className = className+".js";
+		if(!fs.existsSync(path.resolve(APP,'..',Configure.read("App.dir"),relativePath,className))){
+			throw new FileMissingException(className);
+		}
 		try{
 			var loadedFile = require(className);
 		}catch(e){
