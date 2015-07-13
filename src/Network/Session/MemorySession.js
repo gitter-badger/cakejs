@@ -28,8 +28,10 @@ import {InvalidArgumentException} from '../../Exception/InvalidArgumentException
 //Requires
 var cookie = require("cookie");
 
-export class MemorySession extends SessionHandlerInterface {
-	constructor(config = {}){
+export class MemorySession extends SessionHandlerInterface 
+{
+	constructor(config)
+	{
 		super(config);
 		if(isEmpty(this._options)){
 			throw new InvalidArgumentException("The session configuration name to use is required");
@@ -38,19 +40,30 @@ export class MemorySession extends SessionHandlerInterface {
 	}
 	
 	/**
+	 * Method used to check if id is in memory session
+	 * 
+	 * @param {string} id The key of the value to read
+	 * @return {boolean} Exists
+	 */
+	has(id)
+	{
+		return (id in this._sessions);
+	}
+	
+	/**
 	 * Method used to read from a memory session
 	 * 
 	 * @param string id The key of the value to read
 	 * @return Collection
 	 */
-	read(id){
+	read(id)
+	{
 		if(!(id in this._sessions)){
 			this._sessions[id] = {};
 			this._sessions[id].data = data;
 			this._sessions[id].time = new Date().getTime();
 		}
 		return this._sessions[id].data.compile();
-		return new Collection();
 	}
 	
 	/**
@@ -60,11 +73,14 @@ export class MemorySession extends SessionHandlerInterface {
 	 * @param Collection data Collection of keys and values
 	 * @return boolean True for a successful write, false otherwise.
 	 */
-	write(id, data){
+	write(id, data = null)
+	{
 		if(!(id in this._sessions)){
 			this._sessions[id] = {};
 		}
-		this._sessions[id].data = data;
+		if(data !== null){
+			this._sessions[id].data = data;
+		}
 		this._sessions[id].time = new Date().getTime();
 	}
 	
@@ -74,7 +90,8 @@ export class MemorySession extends SessionHandlerInterface {
 	 * @param {int} ID that uniquely identifies session in memory
 	 * @return bool True for a successful delete, false otherwise
 	 */
-	destroy(id){
+	destroy(id)
+	{
 		delete this._sessions[id];
 		return true;
 	}
@@ -85,7 +102,8 @@ export class MemorySession extends SessionHandlerInterface {
 	 * @param {integer} maxlifetime Sessions that have not updated for the last maxlifetime seconds will be removed
 	 * @return bool True
 	 */
-	gc(maxlifetime = 0){
+	gc(maxlifetime = 0)
+	{
 		var time = new Date().getTime();
 		for(var key in this._sessions){
 			var session = this._sessions[key];
