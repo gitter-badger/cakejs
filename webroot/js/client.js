@@ -18,16 +18,20 @@ sio.on('error', function(error){
 	}
 });
 
-class Request {
-	constructor(args){
+class Request 
+{
+	constructor(args)
+	{
 		this.controller = null;
 		this.action = null;
 		this.arguments = [];
 		this.data = null;
 		var _args = new Array();
-		for(var key in args)
-			if(/^[0-9]{1,}$/.test(key))
+		for(var key in args){
+			if(/^[0-9]{1,}$/.test(key)){
 				_args.push(args[key]);
+			}
+		}
 		do{
 			var item = _args.shift();
 			if(typeof item === 'string'){
@@ -48,8 +52,9 @@ class Request {
 						this.action = item.action;
 						delete item.action;
 					}
-					for(var key in item)
+					for(var key in item){
 						this.arguments.push(item[key]);
+					}
 				}else{
 					this.data = item;
 				}
@@ -58,8 +63,10 @@ class Request {
 	}
 }
 
-class Item {
-	constructor(args, timeout){
+class Item 
+{
+	constructor(args, timeout)
+	{
 		this.index = itemIndexCounter++;
 		this.request = new Request(args);
 		this.timeout = typeof timeout === 'undefined' ? 60*1000 : timeout;
@@ -67,7 +74,8 @@ class Item {
 		this.reject = null;
 	}
 	_run(){return new Promise((resolve, reject) => {reject("Not Implemented");})}
-	run(){
+	run()
+	{
 		return new Promise((resolve, reject) => {
 			if(this.request.controller === null)
 				return reject("Post failed due to invalid controller name");
@@ -91,8 +99,10 @@ class Item {
 	}
 }
 
-class CallItem extends Item {
-	_run(){
+class CallItem extends Item 
+{
+	_run()
+	{
 		return new Promise((resolve, reject) => {
 			this.resolve = resolve;
 			this.reject = reject;
@@ -108,8 +118,10 @@ class CallItem extends Item {
 	}
 }
 
-class PostItem extends Item {
-	_run(){
+class PostItem extends Item 
+{
+	_run()
+	{
 		return new Promise((resolve, reject) => {
 			this.resolve = resolve;
 			this.reject = reject;
@@ -140,8 +152,10 @@ class PostItem extends Item {
 	}
 }
 
-class GetItem extends Item {
-	_run(){
+class GetItem extends Item 
+{
+	_run()
+	{
 		return new Promise((resolve, reject) => {
 			this.resolve = resolve;
 			this.reject = reject;
@@ -171,8 +185,10 @@ class GetItem extends Item {
 	}
 }
 
-class Client {
-	constructor(){
+class Client 
+{
+	constructor()
+	{
 		this._items = {};
 		this._events = {};
 		sio.on('WebSocketResponse', (response) => {
@@ -190,23 +206,27 @@ class Client {
 			}
 		});
 		sio.on('WebSocketEmit', (response) => {
-			if(!('event' in response))
+			if(!('event' in response)){
 				return;
-			if(!(response.event in this._events))
+			}
+			if(!(response.event in this._events)){
 				return;
+			}
 			for(var i = 0; i < this._events[response.event].length; i++){
 				var callback = this._events[response.event][i];
 				callback.apply(callback, response.arguments);
 			}
 		});
 	}
-	_invoke(item){
+	_invoke(item)
+	{
 		return new Promise((resolve, reject) => {
 			this._items[item.index] = item;
 			item.run().then(response => {
 				delete this._items[item.index];
-				if(response !== null && typeof response === 'object' && 'data' in response)
+				if(response !== null && typeof response === 'object' && 'data' in response){
 					resolve(response.data);
+				}
 				return resolve(response);
 			},error => {
 				delete this._items[item.index];
@@ -214,25 +234,31 @@ class Client {
 			});
 		});
 	}
-	call(){
+	call()
+	{
 		return this._invoke(new CallItem(arguments, 130*1000));
 	}
-	post(){
+	post()
+	{
 		return this._invoke(new PostItem(arguments, 20*1000));
 	}
-	get(){
+	get()
+	{
 		return this._invoke(new GetItem(arguments, 20*1000));
 	}
-	on(event, callback){
+	on(event, callback)
+	{
 		if(typeof event !== 'string')
 			throw "Expected first argument to be a string";
 		callback = typeof callback !== 'function' ? null : callback;
 		if(callback === null){
-			if(event in this._events)
+			if(event in this._events){
 				delete this._events[event];
+			}
 		}else{
-			if(!(event in this._events))
+			if(!(event in this._events)){
 				this._events[event] = [];
+			}
 			this._events[event].push(callback);			
 		}
 	}
