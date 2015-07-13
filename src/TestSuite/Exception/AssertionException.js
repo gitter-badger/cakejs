@@ -20,8 +20,12 @@ import {Exception} from '../../Core/Exception/Exception'
 
 export class AssertionException extends Exception
 {
-	constructor(expected, actual)
+	constructor(expected, actual = null)
 	{
-		super(expected+" == "+actual);
+		if(actual === null){
+			super(expected);
+		}else{
+			super(expected+" == "+actual);
+		}
 	}
 }
