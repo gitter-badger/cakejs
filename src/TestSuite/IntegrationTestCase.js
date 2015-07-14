@@ -167,7 +167,7 @@ export class IntegrationTestCase extends TestCase
      */
 	assertResponseClientException()
 	{
-		this._assertStatus(520, 520, 'Status code is not between 500 and 505');
+		this._assertStatus(520, 520, 'Status code is not between 520 and 520');
 	}
 	
 	/**
