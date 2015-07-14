@@ -20,7 +20,9 @@ import {InvalidParameterException} from '../Exception/InvalidParameterException'
 import {ConnectionContainer} from '../WebSocket/ConnectionContainer'
 import {Collection} from '../Collection/Collection'
 
-//Function
+//Utilities
+import {Hash} from '../Utilities/Hash';
+import clone from '../Utilities/clone';
 import uuid from '../Utilities/uuid';
 
 class SessionData 
@@ -36,12 +38,15 @@ class SessionData
 	 * @param {string} keyPath Dot notation path
 	 * @return {any} data from keyPath
 	 */
-	read(keyPath)
+	read(keyPath = null)
 	{
+		if(keyPath === null){
+			return this.__session.engine.read(this.__session.keyValue);
+		}
 		if(typeof keyPath !== 'string' || keyPath.trim() === ''){
 			throw new InvalidParameterException(keyPath, 'string');
 		}
-		return Hash.get(this.__session.engine.read(this.__session.key), keyPath);
+		return Hash.get(this.__session.engine.read(this.__session.keyValue), keyPath);
 	}
 	
 	/**
@@ -52,13 +57,19 @@ class SessionData
 	 */
 	write(keyPath, value = null)
 	{
+		if(typeof keyPath === 'object'){
+			var data = this.__session.engine.read(this.__session.keyValue);
+			data = Hash.merge(data, keyPath);
+			this.__session.engine.write(this.__session.keyValue, data);
+			return true;
+		}
 		if(typeof keyPath !== 'string' || keyPath.trim() === ''){
 			throw new InvalidParameterException(keyPath, 'string');
 		}
 		if(value === null){
 			throw new InvalidParameterException(keyPath, 'string');
 		}
-		this.__session.engine.write(this.__session.key, Hash.insert(this.__session.engine.read(this.__session.key), keyPath, value));
+		this.__session.engine.write(this.__session.keyValue, Hash.insert(this.__session.engine.read(this.__session.keyValue), keyPath, value));
 		return true;
 	}
 	
@@ -73,7 +84,7 @@ class SessionData
 		if(typeof keyPath !== 'string' || keyPath.trim() === ''){
 			throw new InvalidParameterException(keyPath, 'string');
 		}
-		this.__session.engine.write(this.__session.key, Hash.remove(this.__session.engine.read(this.__session.key), keyPath));
+		this.__session.engine.write(this.__session.keyValue, Hash.remove(this.__session.engine.read(this.__session.keyValue), keyPath));
 	}
 	
 	/**
@@ -103,7 +114,7 @@ class SessionData
 		if(typeof keyPath !== 'string' || keyPath.trim() === ''){
 			throw new InvalidParameterException(keyPath, 'string');
 		}
-		var object = this.__session.engine.read(this.__session.key);
+		var object = this.__session.engine.read(this.__session.keyValue);
 		return Hash.has(object, key);
 	}
 	
@@ -135,25 +146,35 @@ export class Session
 {		
 	/**
 	 * @param {SessionHandlerInterface} engine Session engine
-	 * @param {string} key Session key value
+	 * @param {string} keyValue Session key value
 	 */
-	constructor(engine, key)
+	constructor(engine, keyValue)
 	{
 		this._engine = engine;
-		this._key = key;
-		this.data = new SessionData();
+		this._keyValue = keyValue;
+		this.data = new SessionData(this);
 		this.touch();
 		this.connections = new ConnectionContainer();
 	}
 	
 	/**
-	 * Getter for _key
+	 * alias for data
+	 * 
+	 * @return {SessionData} data
+	 */
+	get session()
+	{
+		return this.data;
+	}
+	
+	/**
+	 * Getter for _keyValue
 	 * 
 	 * @return {string} Session Key Value
 	 */
-	get key()
+	get keyValue()
 	{
-		return this._key;
+		return this._keyValue;
 	}
 	
 	/**
@@ -173,7 +194,7 @@ export class Session
 	 */
 	touch()
 	{
-		this.engine.write(this.key);
+		this.engine.write(this.keyValue);
 	}
 	
 	/**
@@ -183,6 +204,6 @@ export class Session
 	 */
 	dispose()
 	{
-		this.engine.destroy(this.key);
+		this.engine.destroy(this.keyValue);
 	}
 }
