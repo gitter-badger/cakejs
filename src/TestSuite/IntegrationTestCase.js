@@ -94,6 +94,11 @@ export class IntegrationTestCase extends TestCase
 	{
 		var [url] = Router.url(url, true);
 		this._response = await this._client.get(url);
+		try{
+			this._response = JSON.parse(this._response);
+		}catch(e){
+			//Ignores parsing error in case of Html file
+		}
 	}
 	
 	/**
@@ -108,6 +113,11 @@ export class IntegrationTestCase extends TestCase
 	{
 		var [url] = Router.url(url, true);
 		this._response = await this._client.post(url, data);
+		try{
+			this._response = JSON.parse(this._response);
+		}catch(e){
+			//Ignores parsing error in case of Html file
+		}
 	}
 	
 	/**
