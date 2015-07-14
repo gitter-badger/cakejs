@@ -123,7 +123,7 @@ export class Client
 	{
 		return new Promise((resolve, reject) => {
 			try{
-				request.post(this._buildRequest(url), (err, response, body) => {
+				request.post(Hash.merge(this._buildRequest(url), {form: data}), (err, response, body) => {
 					if(err){
 						return reject(err);
 					}
