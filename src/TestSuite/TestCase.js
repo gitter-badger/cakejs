@@ -58,6 +58,11 @@ export class TestCase
 		}
 	}
 	
+	assertTextNotEquals(expected, result, message)
+	{
+		return true;
+	}
+	
 	/**
 	 * Compares a to b
 	 * 
@@ -168,6 +173,11 @@ export class TestCase
 		return true;
 	}	
 
+
+	/**
+	 * 
+	 */
+	
 	/**
 	 * Builds a object that will be passed to module.exports in test file
 	 * which is later used by mocha
