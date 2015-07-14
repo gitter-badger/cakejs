@@ -220,7 +220,7 @@ export class IntegrationTestCase extends TestCase
 		if(this._response === null){
 			this.fail("No response set, cannot assert status code. "+message);
 		}
-		this.assertEquals(content.trim(), this._response.trim(), message);
+		this.assertEquals(content, this._response, message);
 	}
 	
 	/**
