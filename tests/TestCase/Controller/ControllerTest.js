@@ -18,31 +18,53 @@ var IntegrationTestCase = CakeJS.TestSuite.IntegrationTestCase;
 
 var test = new class ControllerTest extends IntegrationTestCase
 {
+	/**
+	 * Tests index and return type string
+	 */
 	async testIndex()
 	{
 		await this.get({'controller': 'Test'});
 		this.assertResponseEquals('Value Index', 'Did not receive "Value Index"');
 	}
 	
+	/**
+	 * Tests return type boolean with value true
+	 */
 	async testReturn_True()
 	{
 		await this.get({'controller': 'test', 'action': 'returnTrue'});
 		this.assertResponseEquals(true, 'Did not receive true');
 	}
 	
+	/**
+	 * Tests return type boolean with value false
+	 */
 	async testReturn_False()
 	{
 		await this.get({'controller': 'test', 'action': 'returnFalse'});
 		this.assertResponseEquals(false, 'Did not receive false');
 	}
 	
+	/**
+	 * Tests throw error
+	 */
 	async testThrow_Error()
 	{
 		await this.get({'controller': 'test', 'action': 'throwError'});
 		this.assertResponseFailure();
-		//console.log(this._response);
-		//this.assertResponseEquals(false, 'Did not receive false');
+		this.assertResponseEquals('Internal Server Error', 'Did not receive expected "Internal Server Error"');
 	}
+	
+	/**
+	 * Tests throw error
+	 */
+	async testThrow_ClientError()
+	{
+		await this.get({'controller': 'test', 'action': 'throwClientError'});
+		this.assertResponseClientException();
+		this.assertResponseEquals({'custom': 'error'});
+	}
+	
 	/*
 	async routing(){
 		var response = await new Promise((resolve, reject) => require('request').get('http://127.0.0.1:31337/Test').on('error', error => {return reject(error);}).on('response',response => {
