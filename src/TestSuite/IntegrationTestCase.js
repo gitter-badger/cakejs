@@ -57,6 +57,7 @@ export class IntegrationTestCase extends TestCase
 		this._request = {};
 		this._response = null;
 		this._exception = null;
+		this._requestSession.session.destroy();
 		this._requestSession = null;
 	}
 	
@@ -181,6 +182,9 @@ export class IntegrationTestCase extends TestCase
 	 */
 	_assertStatus(min, max, message)
 	{
+		/**
+		 * @todo Improve here to use more asserts
+		 */
 		if(this._response === null){
 			this.fail("No response set, cannot assert status code.");
 		}
@@ -189,6 +193,10 @@ export class IntegrationTestCase extends TestCase
 			this.fail(min, max, message);
 		}
 	}
+	
+	/**
+	 * @todo Continue here
+	 */
 	
 	/**
      * Asserts content exists in the response body.
@@ -200,9 +208,67 @@ export class IntegrationTestCase extends TestCase
 	assertResponseEquals(content, message)
 	{
 		if(this._response === null){
-			this.fail("No response set, cannot assert status code.");
+			this.fail("No response set, cannot assert status code. "+message);
 		}
 		this.assertEquals(content.trim(), this._response.trim(), message);
+	}
+	
+	/**
+     * Asserts content exists in the response body.
+     *
+	 * @param {string} content The content to check for.
+     * @param {string} message The failure message that will be appended to the generated message.
+     * @return {void}
+     */
+	assertResponseContains(content, message = '')
+	{
+		if(this._response === null){
+			this.fail("No response set, cannot assert content. "+message);
+		}
+		this.assertContains(content, this._response, message);
+	}
+	
+	/**
+     * Assert content does not exist in the response body.
+     *
+	 * @param {string} content The content to check for.
+     * @param {string} message The failure message that will be appended to the generated message.
+     * @return {void}
+     */
+	assertResponseNotContains(content, message = '')
+	{
+		if(this._response === null){
+			this.fail("No response set, cannot assert content. "+message);
+		}
+		this.assertNotContains(content, this._response, message);
+	}
+	
+	/**
+     * Assert response content is not empty.
+     *
+     * @param {string} message The failure message that will be appended to the generated message.
+     * @return {void}
+     */
+	assertResponseNotEmpty(message = '')
+	{
+		if(this._response === null){
+			this.fail("No response set, cannot assert content. "+message);
+		}
+		this.assertNotEmpty(this._response, message);
+	}
+	
+	/**
+     * Assert response content is empty.
+     *
+     * @param {string} message The failure message that will be appended to the generated message.
+     * @return {void}
+     */
+	assertResponseEmpty(message = '')
+	{
+		if(this._response === null){
+			this.fail("No response set, cannot assert content. "+message);
+		}
+		this.assertEmpty(this._response, message);
 	}
 	
 	/**
