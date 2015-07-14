@@ -23,7 +23,7 @@ var test = new class IntegrationTestCaseTest extends IntegrationTestCase
 	 */
 	testHej()
 	{
-		this.assertLessThanOrEqual(1, 3);
+		
 	}
 }
 module.exports = test.moduleExports();
