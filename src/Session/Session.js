@@ -129,8 +129,6 @@ class SessionData
 }
 
 /**
- * @class Session
- * 
  * Contains session data and a engine
  */
 export class Session 
