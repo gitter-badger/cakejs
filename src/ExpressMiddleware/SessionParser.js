@@ -24,7 +24,7 @@ var cookie = require("cookie");
 class SessionParser {
 	use(request, response, next){
 		var session = SessionManager.get(request.cookies);
-		response.cookie(SessionManager.keyName, session.key, {maxAge: 365 * 24 * 60 * 60 * 1000});
+		response.cookie(SessionManager.keyName, session.keyValue, {maxAge: 365 * 24 * 60 * 60 * 1000});
 		request.session = session.data;
 		session.touch();
 		next();
