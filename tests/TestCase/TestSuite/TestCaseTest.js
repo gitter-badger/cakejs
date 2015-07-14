@@ -81,7 +81,7 @@ var test = new class TestCaseTest extends TestCase
 	/**
 	 * 
 	 */
-	testGreaterThanOrEqual()
+	testAssertGreaterThanOrEqual()
 	{
 		this.assertGreaterThanOrEqual(13, 37);
 	}
