@@ -18,12 +18,6 @@ var IntegrationTestCase = CakeJS.TestSuite.IntegrationTestCase;
 
 var test = new class IntegrationTestCaseTest extends IntegrationTestCase
 {
-	/**
-	 * Tests ClassLoader 
-	 */
-	testHej()
-	{
-		
-	}
+
 }
 module.exports = test.moduleExports();
