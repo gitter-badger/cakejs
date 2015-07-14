@@ -15,18 +15,29 @@
 
 //CakeJS.Core.Exception.Exception
 
-
-export class Exception{
+/**
+ * Base class for all custom exceptions
+ * may also be used standalone
+ * 
+ * @class Exception
+ */
+export class Exception
+{
 	/**
-	 * Error base class used as a parent for all exceptions
-	 * 
 	 * @constructor
 	 * @param {string} message Message to be thrown
 	 */
-	constructor (message) {
-		this.constructor.prototype.__proto__ = Error.prototype
+	constructor (message) 
+	{
 		Error.captureStackTrace(this, this.constructor)
-		this.name = this.constructor.name
-		this.message = message
+		this.name = this.constructor.name;
+		this.message = message;
 	}
 }
+
+/**
+ * This is a workaround to make Exception inherit Error
+ * without loosing it's own identity
+ */
+Exception.prototype = Object.create(Error.prototype);
+Exception.prototype.constructor = Exception;
