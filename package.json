@@ -33,7 +33,8 @@
     "inflected": "^1.1.6",
     "mysql2": "^0.15.5",
     "socket.io": "^1.3.5",
-    "sprintf-js": "^1.0.2"
+    "sprintf-js": "^1.0.2",
+    "tough-cookie": "^2.0.0"
   },
   "devDependencies": {
     "babelify": "^6.0.2",
