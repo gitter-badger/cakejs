@@ -17,6 +17,7 @@
 
 //Singelton instances
 import {Router} from '../Routing/Router';
+import {SessionManager} from '../Session/SessionManager';
 
 //Exceptions
 import {AssertionException} from './Exception/AssertionException';
@@ -32,14 +33,21 @@ export class IntegrationTestCase extends TestCase
 {
 	_client = new Client();
 	_session = {};
-	_cookie = {};
 	_response = null;
 	_exception = null;
 	_requestSession = null;
 	
+	setUp()
+	{
+		super.setUp();
+		this._requestSession = SessionManager.create();
+		this.cookie(SessionManager.keyName, this._requestSession.keyValue);
+	}
+	
 	/**
 	 * Executes after a test is performed
 	 * 
+	 * @override
 	 * @return {void}
 	 */
 	tearDown()
@@ -47,11 +55,20 @@ export class IntegrationTestCase extends TestCase
 		super.tearDown();
 		this._client = new Client();
 		this._request = {};
-		this._session = {};
-		this._cookie = {};
 		this._response = null;
 		this._exception = null;
 		this._requestSession = null;
+	}
+	
+	/**
+	 * Set session data
+	 * 
+	 * @param {string|object} keyOrObject keyPath for session data to be set or object containing many keys
+	 * @param {any} value Value to be set if keyOrObject is a keyPath
+	 */
+	session(keyOrObject, value = null)
+	{
+		this._requestSession.session.write(keyOrObject, value);
 	}
 	
 	/**
@@ -133,6 +150,16 @@ export class IntegrationTestCase extends TestCase
 	}
 	
 	/**
+     * Asserts that the response status code is a ClientException
+     *
+     * @return {void}
+     */
+	assertResponseClientException()
+	{
+		this._assertStatus(520, 520, 'Status code is not between 500 and 505');
+	}
+	
+	/**
      * Asserts a specific response status code.
      *
      * @param {integer} code Status code to assert.
@@ -176,5 +203,39 @@ export class IntegrationTestCase extends TestCase
 			this.fail("No response set, cannot assert status code.");
 		}
 		this.assertEquals(content.trim(), this._response.trim(), message);
+	}
+	
+	/**
+     * Asserts session contents
+     *
+     * @param {string} expected The expected contents.
+	 * @param {string} name The session key name.
+     * @param {string} message The failure message that will be appended to the generated message.
+     * @return {void}
+     */
+	assertSession(expected, name, message = '')
+	{
+		if(this._response === null){
+			this.fail("No response set, cannot assert status code.");
+		}
+		var result = this._requestSession.session.read(name);
+		this.assertEquals(expected, result, 'Cookie data differs. '+message);
+	}
+	
+	/**
+     * Asserts cookie values
+     *
+     * @param {string} expected The expected contents.
+	 * @param {string} name The cookie name.
+     * @param {string} message The failure message that will be appended to the generated message.
+     * @return {void}
+     */
+	assertCookie(expected, name, message = '')
+	{
+		if(this._response === null){
+			this.fail("No response set, cannot assert status code.");
+		}
+		var result = this._client.cookie(name);
+		this.assertEquals(expected, result, 'Cookie data differs. '+message);
 	}
 }
