@@ -51,6 +51,16 @@ export class Client
 	_headers = null;
 	
 	/**
+	 * Returns header from last request
+	 * 
+	 * @return {object} Header object
+	 */
+	get headers()
+	{
+		return this._headers;
+	}
+	
+	/**
 	 * Sets cookie, gets cookie or get cookies
 	 * 
 	 * @param {string|null} key Cookie name
