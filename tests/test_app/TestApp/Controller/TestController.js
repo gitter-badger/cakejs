@@ -17,23 +17,87 @@
 var ClientException = CakeJS.Controller.Exception.ClientException;
 var Controller = CakeJS.Controller.Controller;
 
-export default class TestController extends Controller {
-	index(){
+/**
+ * This controller is used by ControllerTest TestCase
+ * 
+ * @class TestController
+ */
+export default class TestController extends Controller 
+{	
+	/**
+	 * @return {string}
+	 */
+	index()
+	{
 		return "Value Index";
 	}
-	returnTrue(){
+	
+	/**
+	 * @return {null}
+	 */
+	returnTrue()
+	{
 		return true;
 	}
-	returnFalse(){
+	
+	/**
+	 * @return {boolean}
+	 */
+	returnFalse()
+	{
 		return false;
 	}
-	throwError(){
+	
+	/**
+	 * @return {boolean}
+	 */
+	returnNull()
+	{
+		return null;
+	}
+	
+	/**
+	 * @return {object}
+	 */
+	returnObject()
+	{
+		return {'key': 'value'};
+	}
+	
+	/**
+	 * @throws {null}
+	 */
+	throwError()
+	{
 		throw null;
 	}
-	throwClientError(){
+	
+	/**
+	 * @throws {ClientException}
+	 */
+	throwClientError()
+	{
 		throw new ClientException({"custom": "error"}); 
 	}
-	post(){
-		return this.request.data;
+	
+	/**
+	 * Throws if parameters missmatch expected value
+	 * 
+	 * @return {void}
+	 * @throws {null}
+	 */
+	passingParameters(paramA, paramB)
+	{
+		if(paramA !== 'paramA' || paramB !== 'paramB'){
+			throw null;
+		}
+	}
+	
+	/**
+	 * Throws if request.data missmatch expected value
+	 */
+	passingData()
+	{
+		console.log(this.request.data);
 	}
 }
