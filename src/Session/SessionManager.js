@@ -98,7 +98,7 @@ export var SessionManager = new class
 			id = uuid(null, 'uuids');
 		}while(this.engine.has(id));
 		
-		var session = new Session(this.engine, idOrObject);
+		var session = new Session(this.engine, id);
 		this._sessions[id] = session;
 		return session;
 	}
