@@ -13,20 +13,17 @@
  * @license     http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-//CakeJS.Core.Exception.Exception
+//Uses
+var IntegrationTestCase = CakeJS.TestSuite.IntegrationTestCase;
 
-
-export class Exception{
+var test = new class IntegrationTestCaseTest extends IntegrationTestCase
+{
 	/**
-	 * Testar detta
-	 * 
-	 * @constructor
-	 * @param {string} message Message to be thrown
+	 * Tests ClassLoader 
 	 */
-	constructor (message) {
-		this.constructor.prototype.__proto__ = Error.prototype
-		Error.captureStackTrace(this, this.constructor)
-		this.name = this.constructor.name
-		this.message = message
+	testHej()
+	{
+		this.assertLessThanOrEqual(1, 3);
 	}
 }
+module.exports = test.moduleExports();

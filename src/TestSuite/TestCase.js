@@ -117,7 +117,57 @@ export class TestCase
 			throw new AssertionException(message);
 		}
 	}
+
+	/**
+	 * Compares a to b
+	 * 
+	 * @param {any} a Value A
+	 * @param {any} b Value B
+	 * @return {boolean} True
+	 * @throws {AssertionException} Throws if assertion fails
+	 */
+	assertGreaterThanOrEqual(a, b, message = '')
+	{
+		if (!(a >= b)) {
+			this.fail(a + ' >= ' + b + ' '+ message);
+		}
+		return true;
+	}
 	
+	/**
+	 * Compares a to b
+	 * 
+	 * @param {any} a Value A
+	 * @param {any} b Value B
+	 * @return {boolean} True
+	 * @throws {AssertionException} Throws if assertion fails
+	 */
+	assertLessThanOrEqual(a, b, message = '')
+	{
+		if (!(a <= b)) {
+			this.fail(a + ' <= ' + b + ' ' + message);
+		}
+		return true;
+	}
+	
+	/**
+	 * Fails if the two variables, expected and actual, are 
+	 * not equal. 
+	 * 
+	 * @param {any} expected Value A
+	 * @param {any} actual Value B
+	 * @param {string} message Optional message to display on fail.
+	 * @return {boolean} True
+	 * @throws {AssertionException} Throws if assertion fails
+	 */
+	assertNotEquals(expected, actual, message = '')
+	{
+		if (expected === actual) {
+			this.fail(expected + ' !== ' + actual + ' ' + message);
+		}
+		return true;
+	}	
+
 	/**
 	 * Builds a object that will be passed to module.exports in test file
 	 * which is later used by mocha

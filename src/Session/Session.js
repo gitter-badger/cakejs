@@ -141,10 +141,12 @@ class SessionData
 
 /**
  * Contains session data and a engine
+ * @class
  */
 export class Session 
 {		
 	/**
+	 * @constructor
 	 * @param {SessionHandlerInterface} engine Session engine
 	 * @param {string} keyValue Session key value
 	 */

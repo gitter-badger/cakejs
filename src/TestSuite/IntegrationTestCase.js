@@ -182,9 +182,6 @@ export class IntegrationTestCase extends TestCase
 	 */
 	_assertStatus(min, max, message)
 	{
-		/**
-		 * @todo Improve here to use more asserts
-		 */
 		if(this._response === null){
 			this.fail("No response set, cannot assert status code.");
 		}
@@ -192,6 +189,9 @@ export class IntegrationTestCase extends TestCase
 		if(status < min || status > max){
 			this.fail(min, max, message);
 		}
+		
+		this.assertGreaterThanOrEqual(min, status, message);
+		this.assertLessThanOrEqual(max, status, message);
 	}
 	
 	/**
