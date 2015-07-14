@@ -23,57 +23,124 @@ import {Collection} from '../Collection/Collection'
 //Function
 import uuid from '../Utilities/uuid';
 
-class SessionData {
-	constructor(session){
+class SessionData 
+{
+	constructor(session)
+	{
 		this.__session = session;
 	}
-	read(keyPath){
+	
+	/**
+	 * Reads from session at keyPath
+	 * 
+	 * @param {string} keyPath Dot notation path
+	 * @return {any} data from keyPath
+	 */
+	read(keyPath)
+	{
 		if(typeof keyPath !== 'string' || keyPath.trim() === ''){
 			throw new InvalidParameterException(keyPath, 'string');
 		}
 		return Hash.get(this.__session.engine.read(this.__session.key), keyPath);
 	}
-	write(keyPath, value = null){
+	
+	/**
+	 * Writes to session at keyPath
+	 * 
+	 * @param {string} keyPath Dot notation path
+	 * @return {void}
+	 */
+	write(keyPath, value = null)
+	{
 		if(typeof keyPath !== 'string' || keyPath.trim() === ''){
 			throw new InvalidParameterException(keyPath, 'string');
 		}
 		if(value === null){
 			throw new InvalidParameterException(keyPath, 'string');
 		}
-		return Hash.get(this.__session.engine.read(this.__session.key), keyPath);
-		this.__collection.insert(keyPath, value);
+		this.__session.engine.write(this.__session.key, Hash.insert(this.__session.engine.read(this.__session.key), keyPath, value));
 		return true;
 	}
-	delete(keyPath){
-		if(typeof keyPath !== 'string' || keyPath.trim() === '')
+	
+	/**
+	 * Deletes session key
+	 * 
+	 * @param {string} keyPath Dot notation path
+	 * @return {void}
+	 */
+	delete(keyPath)
+	{
+		if(typeof keyPath !== 'string' || keyPath.trim() === ''){
 			throw new InvalidParameterException(keyPath, 'string');
-		this.__collection = this.__collection.reject((value, innerKey) => {
-			return keyPath === innerKey;
-		});
+		}
+		this.__session.engine.write(this.__session.key, Hash.remove(this.__session.engine.read(this.__session.key), keyPath));
 	}
-	consume(keyPath){
-		if(typeof keyPath !== 'string' || keyPath.trim() === '')
+	
+	/**
+	 * Reads data from keyPath and deletes it, returns value read
+	 * 
+	 * @param {string} keyPath Dot notation path
+	 * @return {any} data from keyPath
+	 */
+	consume(keyPath)
+	{
+		if(typeof keyPath !== 'string' || keyPath.trim() === ''){
 			throw new InvalidParameterException(keyPath, 'string');
+		}
 		var value = this.read(keyPath);
 		this.delete(keyPath);
 		return value;
 	}
-	check(key){
-		if(typeof keyPath !== 'string' || keyPath.trim() === '')
+	
+	/**
+	 * Checks if data is available at keyPath
+	 * 
+	 * @param {string} keyPath Dot notation path
+	 * @return {boolean} True if exists
+	 */
+	check(key)
+	{
+		if(typeof keyPath !== 'string' || keyPath.trim() === ''){
 			throw new InvalidParameterException(keyPath, 'string');
-		return this.read(key) !== null;
+		}
+		var object = this.__session.engine.read(this.__session.key);
+		return Hash.has(object, key);
 	}
-	destroy(){
-		//Not yet implemented properly
+	
+	/**
+	 * Deletes the session
+	 * 
+	 * @return {void}
+	 */
+	destroy()
+	{
 		this.__session.dispose();
 	}
-	renew(){
+	
+	/**
+	 * Renew the session by increasing expire time
+	 * 
+	 * @return {void}
+	 */
+	renew()
+	{
 		this.__session.touch();
 	}
 }
 
-export class Session {
-	constructor(engine, key){
+/**
+ * @class Session
+ * 
+ * Contains session data and a engine
+ */
+export class Session 
+{		
+	/**
+	 * @param {SessionHandlerInterface} engine Session engine
+	 * @param {string} key Session key value
+	 */
+	constructor(engine, key)
+	{
 		this._engine = engine;
 		this._key = key;
 		this.data = new SessionData();
@@ -81,21 +148,43 @@ export class Session {
 		this.connections = new ConnectionContainer();
 	}
 	
+	/**
+	 * Getter for _key
+	 * 
+	 * @return {string} Session Key Value
+	 */
 	get key()
 	{
 		return this._key;
 	}
 	
+	/**
+	 * Getter for _engine
+	 * 
+	 * @return {SessionHandlerInterface} Engine
+	 */
 	get engine()
 	{
 		return this._engine;
 	}
 	
-	touch(){
+	/**
+	 * Renew the session by increasing expire time
+	 * 
+	 * @return {void}
+	 */
+	touch()
+	{
 		this.engine.write(this.key);
 	}
 	
-	dispose(){
+	/**
+	 * Deletes session
+	 * 
+	 * @return {void}
+	 */
+	dispose()
+	{
 		this.engine.destroy(this.key);
 	}
 }

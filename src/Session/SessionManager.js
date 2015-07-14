@@ -38,18 +38,16 @@ var path = require('path');
 
 export var SessionManager = new class 
 {
-	constructor()
-	{
-		this._config = {
-			"defaults": "memory",
-			"handler": {
-				"model": "sessions"
-			},
-			"cookie": "cakejs_sessid",
-			"timeout": 1440
-		};
-		this._engine = null;
-	}
+	_config = {
+		"defaults": "memory",
+		"handler": {
+			"model": "sessions"
+		},
+		"cookie": "cakejs_sessid",
+		"timeout": 1440
+	};
+	_engine = null;
+	_sessions = {};
 	
 	config(config = null)
 	{		
@@ -93,6 +91,18 @@ export var SessionManager = new class
 		return Hash.get(this._config, 'timeout');
 	}
 	
+	create()
+	{
+		var id = null;
+		do{
+			id = uuid(null, 'uuids');
+		}while(this.engine.has(id));
+		
+		var session = new Session(this.engine, idOrObject);
+		this._sessions[id] = session;
+		return session;
+	}
+	
 	get(idOrObject)
 	{
 		if(typeof idOrObject === 'object'){
@@ -101,7 +111,7 @@ export var SessionManager = new class
 			}
 		}
 		
-		if(typeof idOrObject !== 'string' || !/^[0-9a-zA-Z]{1,40}$/.test(idOrObject)){
+		if(typeof idOrObject !== 'string' || !/^[0-9a-zA-Z\-]{1,40}$/.test(idOrObject)){
 			idOrObject = null;
 		}
 		
@@ -111,12 +121,6 @@ export var SessionManager = new class
 			}
 		}
 		
-		if(idOrObject === null){
-			do{
-				idOrObject = uuid(null, 'uuids');
-			}while(this.engine.has(idOrObject));
-		}
-		
-		return new Session(idOrObject, idOrObject);
+		return this.create();
 	}
 };
