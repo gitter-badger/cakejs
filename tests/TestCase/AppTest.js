@@ -23,7 +23,7 @@ var ClassLoader = CakeJS.Core.ClassLoader;
 var IntegrationTestCase = CakeJS.TestSuite.IntegrationTestCase;
 var Client = CakeJS.Network.Http.Client;
 
-var test = new class AppTests extends IntegrationTestCase
+var test = new class AppTest extends IntegrationTestCase
 {
 	/**
 	 * Tests ClassLoader 
