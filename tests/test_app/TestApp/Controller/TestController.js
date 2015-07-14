@@ -57,6 +57,14 @@ export default class TestController extends Controller
 	}
 	
 	/**
+	 * @return {void}
+	 */
+	returnVoid()
+	{
+		return;
+	}
+	
+	/**
 	 * @return {object}
 	 */
 	returnObject()
@@ -95,9 +103,17 @@ export default class TestController extends Controller
 	
 	/**
 	 * Throws if request.data missmatch expected value
+	 *
+	 * @return {void} 
+	 * @throws {null}
 	 */
 	passingData()
 	{
-		console.log(this.request.data);
+		if(this.request.data === null){
+			throw null;
+		}
+		if(this.request.data.keyA !== 'valueA' || this.request.data.keyB !== 'valueB'){
+			throw null;
+		}
 	}
 }
