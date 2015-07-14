@@ -173,10 +173,45 @@ export class TestCase
 		return true;
 	}	
 
-
 	/**
+	 * Asserts if function does throw any errors
 	 * 
+	 * @param {function} func Function that will be called
+	 * @param {string} message Optional message to display on fail.
+	 * @return {boolean} True
+	 * @throws {AssertionException} Throws if assertion fails
 	 */
+	assertThrowError(func, message = '')
+	{
+		try{
+			func();
+		}catch(e){
+			//Success
+			return true;
+		}
+		this.fail('Did not throw error. '+message);
+	}
+	
+	/**
+	 * Asserts if function does not throw any errors
+	 * 
+	 * @param {function} func Function that will be called
+	 * @param {string} message Optional message to display on fail.
+	 * @return {boolean} True
+	 * @throws {AssertionException} Throws if assertion fails
+	 */
+	assertNotThrowError(func, message = '')
+	{
+		try{
+			func();
+		}catch(e){
+			//Failure
+			this.fail('Did throw error. '+message);
+		}
+		return true;
+	}
+	
+	
 	
 	/**
 	 * Builds a object that will be passed to module.exports in test file
