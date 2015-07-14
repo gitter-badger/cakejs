@@ -21,26 +21,70 @@ import {Router} from '../../Routing/Router';
 //Exceptions
 import {Exception} from '../../Core/Exception/Exception';
 
+//Utilities
+import {Hash} from '../../Utilities/Hash';
+import clone from '../../Utilities/clone';
+
 //Uses
 var request = require('request');
 var tough = require('tough-cookie');
 
+/**
+ * Is used to make Http request, this class is also
+ * used in IntegrationTestCase
+ */
 export class Client
 {	
-	_cookies = {}
+	/**
+	 * @private
+	 */
+	_cookies = {};
+	
+	/**
+	 * @private
+	 */
 	_statusCode = null;
+	
+	/**
+	 * @private
+	 */
 	_headers = null;
 	
-	cookie(key, value)
+	/**
+	 * Sets cookie, gets cookie or get cookies
+	 * 
+	 * @param {string|null} key Cookie name
+	 * @param {string|null} value Cookie value
+	 * @return {void|string|object} Void, Cookie value or Cookies
+	 */
+	cookie(key = null, value = null)
 	{
-		this._cookies[key] = value;
+		if(key === null){
+			return clone(this._cookies);
+		}else if(value === null){
+			return Hash.get(this._cookies, key);
+		}else{
+			this._cookies[key] = value;
+		}
+		return true;
 	}
 	
+	/**
+	 * Gets status code
+	 * 
+	 * @return {integer} Status code
+	 */
 	statusCode()
 	{
 		return this._statusCode;
 	}
 	
+	/**
+	 * Performs a get request towards url
+	 * 
+	 * @param {string} url Url to homepage, relative or absolute
+	 * @return {string} Content
+	 */ 
 	get(url)
 	{
 		return new Promise((resolve, reject) => {
@@ -58,7 +102,14 @@ export class Client
 		});
 	}
 	
-	post(url, data)
+	/**
+	 * Performs a post request towards url
+	 * 
+	 * @param {string} url Url to homepage, relative or absolute
+	 * @param {object} data Form data to be posted with request
+	 * @return {string} Content
+	 */
+	post(url, data = {})
 	{
 		return new Promise((resolve, reject) => {
 			try{
@@ -75,6 +126,12 @@ export class Client
 		});
 	}
 	
+	/**
+	 * Helper method, runs after each request
+	 * 
+	 * @param {object} response Response object from request
+	 * @return {void}
+	 */
 	_afterRequest(response)
 	{
 		this._statusCode = response.statusCode;
@@ -87,6 +144,12 @@ export class Client
 		}
 	}
 	
+	/**
+	 * Runs before each request, builds request options
+	 * 
+	 * @param {string} url Url to homepage, relative or absolute
+	 * @return {object} Request options
+	 */
 	_buildRequest(url)
 	{
 		this._statusCode = null;
