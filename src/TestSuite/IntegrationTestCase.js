@@ -98,7 +98,11 @@ export class IntegrationTestCase extends TestCase
 		this._response = await this._client.get(url);
 		this._requested = true;
 		try{
-			this._response = JSON.parse(this._response);
+			if(this._response === ''){
+				this._response = undefined;
+			}else{
+				this._response = JSON.parse(this._response);
+			}
 		}catch(e){
 			//Ignores parsing error in case of Html file
 		}
@@ -118,7 +122,11 @@ export class IntegrationTestCase extends TestCase
 		this._response = await this._client.post(url, data);
 		this._requested = true;
 		try{
-			this._response = JSON.parse(this._response);
+			if(this._response === ''){
+				this._response = undefined;
+			}else{
+				this._response = JSON.parse(this._response);
+			}
 		}catch(e){
 			//Ignores parsing error in case of Html file
 		}
