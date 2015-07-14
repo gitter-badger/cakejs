@@ -59,8 +59,9 @@ var test = new class AppTests extends IntegrationTestCase
 	async testServer_Connection()
 	{
 		await this.get('/');
-		this.assertResponseOk();
-		this.assertResponseEquals(fs.readFileSync(path.resolve(WWW_ROOT, "index.html")).toString(), 'Unexpected content');
+		this.assertResponseOk(); 
+		this.assertResponseEquals(fs.readFileSync(path.resolve(WWW_ROOT, "index.html")).toString(), 'Unexpected content'); 
+		this.assertCookie(this._requestSession.keyValue, CakeJS.Session.SessionManager.keyName,'Session changed unexpectedly');
 	}
 }
 module.exports = test.moduleExports();
