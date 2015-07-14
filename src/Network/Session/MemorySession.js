@@ -60,10 +60,10 @@ export class MemorySession extends SessionHandlerInterface
 	{
 		if(!(id in this._sessions)){
 			this._sessions[id] = {};
-			this._sessions[id].data = data;
+			this._sessions[id].data = {};
 			this._sessions[id].time = new Date().getTime();
 		}
-		return this._sessions[id].data.compile();
+		return typeof this._sessions[id].data === 'undefined' ? {} : this._sessions[id].data;
 	}
 	
 	/**
@@ -77,6 +77,7 @@ export class MemorySession extends SessionHandlerInterface
 	{
 		if(!(id in this._sessions)){
 			this._sessions[id] = {};
+			this._sessions[id].data = {};
 		}
 		if(data !== null){
 			this._sessions[id].data = data;
@@ -107,7 +108,7 @@ export class MemorySession extends SessionHandlerInterface
 		var time = new Date().getTime();
 		for(var key in this._sessions){
 			var session = this._sessions[key];
-			if(session.expires < time - maxlifetime * 1000){
+			if(session.time < time - maxlifetime * 1000){
 				delete this._sessions[key];
 			}
 		}
