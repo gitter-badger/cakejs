@@ -19,12 +19,18 @@ var Controller = CakeJS.Controller.Controller;
 
 export default class TestController extends Controller {
 	index(){
+		return "Value Index";
+	}
+	returnTrue(){
 		return true;
 	}
-	error(){
+	returnFalse(){
+		return false;
+	}
+	throwError(){
 		throw null;
 	}
-	client_error(){
+	throwClientError(){
 		throw new ClientException({"custom": "error"}); 
 	}
 	post(){
