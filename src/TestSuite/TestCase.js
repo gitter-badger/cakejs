@@ -135,7 +135,21 @@ export class TestCase
 	 */
 	assertEquals(a, b, message)
 	{
-		if(a !== b){
+		try{
+			if(typeof a !== typeof b){
+				throw "Type missmatch";
+			}
+			switch(typeof a){
+				case "object":
+					assert(a, b);
+					break;
+				default:
+					if(a !== b){
+						throw "Value missmatch";
+					}
+					break;
+			}
+		}catch(e){
 			this.fail(a, b, message);
 		}
 		return true;
