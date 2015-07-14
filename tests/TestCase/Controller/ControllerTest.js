@@ -23,8 +23,17 @@ var test = new class ControllerTest extends IntegrationTestCase
 	 */
 	async testIndex()
 	{
-		await this.get({'controller': 'Test'});
+		await this.get({'controller': 'test'});
 		this.assertResponseEquals('Value Index', 'Did not receive "Value Index"');
+	}
+	
+	/**
+	 * Tests return value null
+	 */
+	async testReturn_Null()
+	{
+		await this.get({'controller': 'test', 'action': 'returnNull'});
+		this.assertResponseEquals(null, 'Did not receive null');
 	}
 	
 	/**
@@ -46,6 +55,15 @@ var test = new class ControllerTest extends IntegrationTestCase
 	}
 	
 	/**
+	 * Tests return type object with value {'key': 'value'}
+	 */
+	async testReturn_Object()
+	{
+		await this.get({'controller': 'test', 'action': 'returnObject'});
+		this.assertResponseEquals({'key': 'value'});
+	}
+	
+	/**
 	 * Tests throw error
 	 */
 	async testThrow_Error()
@@ -64,6 +82,24 @@ var test = new class ControllerTest extends IntegrationTestCase
 		this.assertResponseClientException();
 		this.assertResponseEquals({'custom': 'error'});
 	}
+	
+	/**
+	 * Tests parameter
+	 */
+	async testPassing_Parameters()
+	{
+		await this.get({'controller': 'test', 'action': 'passingParameters', 0: 'paramA', 1: 'paramB'});
+		this.assertResponseOk();
+		await this.get([{'controller': 'test', 'action': 'passingParameters'}, 'paramA', 'paramB']);
+		this.assertResponseOk();
+	}
+	
+	async testPassing_Data()
+	{
+		await this.get({'controller': 'test', 'action': 'passingData'}, {'keyA': 'valueA', 'keyB': 'valueB'});
+		this.assertResponseOk();
+	}
+	
 	
 	/*
 	async routing(){
