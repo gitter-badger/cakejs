@@ -58,9 +58,71 @@ export class TestCase
 		}
 	}
 	
+	/**
+	 * Test if two strings are different, ignoring differnces in new newlines.
+	 * Helpful for doing cross platform tests of blocks of text.
+	 * 
+	 * @param {string} expected The expected value.
+	 * @param {string} result The actual value.
+	 * @param {string} message An optional message to display on failure.
+	 */
 	assertTextNotEquals(expected, result, message)
 	{
+		expected = expected.replace('/(\r\n|\r)/g', '\n');
+		result = result.replace('/(\r\n|\r)/g', '\n');
+		
+		this.assertNotEquals(expected, result, message);
+		
 		return true;
+	}
+	
+	/**
+	 * Test if two strings match, ignoring differnces in new newlines.
+	 * Helpful for doing cross platform tests of blocks of text.
+	 * 
+	 * @param {string} expected The expected value.
+	 * @param {string} result The actual value.
+	 * @param {string} message An optional message to display on failure.
+	 */
+	assertTextEquals(expected, result, message)
+	{
+		expected = expected.replace('/(\r\n|\r)/g', '\n');
+		result = result.replace('/(\r\n|\r)/g', '\n');
+		
+		this.assertEquals(expected, result, message);
+		
+		return true;		
+	}
+	
+	/**
+	 * Test if the text begins with prefix, ignoring differences in newlines.
+	 * Helpful for doing coss platform tests of blocks of text.
+	 * 
+	 * @param {string} prefix The expected prefix.
+	 * @param {string} str The text to test.
+	 * @param {string} message An optional message to display on failure.
+	 */
+	assertTextStartsWith(prefix, str, message)
+	{
+		prefix = prefix.replace(/(\r\n|\r)/, '\n');
+		str = str.replace(/(\r\n|\r)/, '\n');
+		this.assertStringStartsWith(prefix, str, message);
+	}
+	
+	/**
+	 * Test if the text ends with prefix, ignoring differences in newlines.
+	 * Helpful for doing coss platform tests of blocks of text.
+	 * 
+	 * @param {string} postfix The expected postfix.
+	 * @param {string} str The text to test.
+	 * @param {string} message An optional message to display on failure.
+	 */
+	assertTextEndsWith(postfix, str, message)
+	{
+		postfix = postfix.replace(/(\r\n|\r)/, '\n');
+		str = str.replace(/(\r\n|\r)/, '\n');
+		
+		this.assertStringEndsWith(postfix, str, message);
 	}
 	
 	/**
@@ -126,15 +188,15 @@ export class TestCase
 	/**
 	 * Compares a to b
 	 * 
-	 * @param {any} a Value A
-	 * @param {any} b Value B
+	 * @param {any} expected Expected value
+	 * @param {any} actual Actual value
 	 * @return {boolean} True
 	 * @throws {AssertionException} Throws if assertion fails
 	 */
-	assertGreaterThanOrEqual(a, b, message = '')
+	assertGreaterThanOrEqual(expected, actual, message = '')
 	{
-		if (!(a >= b)) {
-			this.fail(a + ' >= ' + b + ' '+ message);
+		if (!(actual >= expected)) {
+			this.fail(actual + ' >= ' + expected + ' '+ message);
 		}
 		return true;
 	}
@@ -142,15 +204,15 @@ export class TestCase
 	/**
 	 * Compares a to b
 	 * 
-	 * @param {any} a Value A
-	 * @param {any} b Value B
+	 * @param {any} expected Expected value
+	 * @param {any} actual Actual value
 	 * @return {boolean} True
 	 * @throws {AssertionException} Throws if assertion fails
 	 */
-	assertLessThanOrEqual(a, b, message = '')
+	assertLessThanOrEqual(expected, actual, message = '')
 	{
-		if (!(a <= b)) {
-			this.fail(a + ' <= ' + b + ' ' + message);
+		if (!(actual <= expected)) {
+			this.fail(actual + ' <= ' + expected + ' ' + message);
 		}
 		return true;
 	}
@@ -211,7 +273,39 @@ export class TestCase
 		return true;
 	}
 	
+	/**
+	 * Fails if the string str does not start with prefix.
+	 * 
+	 * @param {string} prefix The expected start of the string.
+	 * @param {string} str The string to test.
+	 * @param {message} An optional message to display on fail.
+	 * 
+	 * @throws {AssertionException} Throws if assertion fails
+	 */
+	assertStringStartsWith(prefix, str, message)
+	{
+		if (str.substr(0, prefix.length) !== prefix) {
+			this.fail(str + ' should begin with ' + prefix);
+		}
+		return true;
+	}
 	
+	/**
+	 * Fails if the string str does not end with prefix.
+	 * 
+	 * @param {string} prefix The expected end of the string.
+	 * @param {string} str The string to test.
+	 * @param {message} An optional message to display on fail.
+	 * 
+	 * @throws {AssertionException} Throws if assertion fails
+	 */
+	assertStringEndsWith(postfix, str, message)
+	{
+		if(str.substr(str.length - postfix.length) !== postfix){
+			this.fail(str + ' should end with ' + postfix);
+		}
+		return true;
+	}
 	
 	/**
 	 * Builds a object that will be passed to module.exports in test file
