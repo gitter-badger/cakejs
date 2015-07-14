@@ -18,7 +18,7 @@
 
 export class Exception{
 	/**
-	 * Testar detta
+	 * Error base class used as a parent for all exceptions
 	 * 
 	 * @constructor
 	 * @param {string} message Message to be thrown
