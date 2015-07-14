@@ -34,6 +34,7 @@ export class IntegrationTestCase extends TestCase
 	_client = new Client();
 	_session = {};
 	_response = null;
+	_requested = false;
 	_exception = null;
 	_requestSession = null;
 	
@@ -56,6 +57,7 @@ export class IntegrationTestCase extends TestCase
 		this._client = new Client();
 		this._request = {};
 		this._response = null;
+		this._requested = false;
 		this._exception = null;
 		this._requestSession.session.destroy();
 		this._requestSession = null;
@@ -94,6 +96,7 @@ export class IntegrationTestCase extends TestCase
 	{
 		var [url] = Router.url(url, true);
 		this._response = await this._client.get(url);
+		this._requested = true;
 		try{
 			this._response = JSON.parse(this._response);
 		}catch(e){
@@ -113,6 +116,7 @@ export class IntegrationTestCase extends TestCase
 	{
 		var [url] = Router.url(url, true);
 		this._response = await this._client.post(url, data);
+		this._requested = true;
 		try{
 			this._response = JSON.parse(this._response);
 		}catch(e){
@@ -192,7 +196,7 @@ export class IntegrationTestCase extends TestCase
 	 */
 	_assertStatus(min, max, message)
 	{
-		if(this._response === null){
+		if(this._requested === false){
 			this.fail("No response set, cannot assert status code.");
 		}
 		var status = this._client.statusCode();
@@ -217,7 +221,7 @@ export class IntegrationTestCase extends TestCase
      */
 	assertResponseEquals(content, message)
 	{
-		if(this._response === null){
+		if(this._requested === false){
 			this.fail("No response set, cannot assert status code. "+message);
 		}
 		this.assertEquals(content, this._response, message);
@@ -232,7 +236,7 @@ export class IntegrationTestCase extends TestCase
      */
 	assertResponseContains(content, message = '')
 	{
-		if(this._response === null){
+		if(this._requested === false){
 			this.fail("No response set, cannot assert content. "+message);
 		}
 		this.assertContains(content, this._response, message);
@@ -247,7 +251,7 @@ export class IntegrationTestCase extends TestCase
      */
 	assertResponseNotContains(content, message = '')
 	{
-		if(this._response === null){
+		if(this._requested === false){
 			this.fail("No response set, cannot assert content. "+message);
 		}
 		this.assertNotContains(content, this._response, message);
@@ -261,7 +265,7 @@ export class IntegrationTestCase extends TestCase
      */
 	assertResponseNotEmpty(message = '')
 	{
-		if(this._response === null){
+		if(this._requested === false){
 			this.fail("No response set, cannot assert content. "+message);
 		}
 		this.assertNotEmpty(this._response, message);
@@ -275,7 +279,7 @@ export class IntegrationTestCase extends TestCase
      */
 	assertResponseEmpty(message = '')
 	{
-		if(this._response === null){
+		if(this._requested === false){
 			this.fail("No response set, cannot assert content. "+message);
 		}
 		this.assertEmpty(this._response, message);
@@ -291,7 +295,7 @@ export class IntegrationTestCase extends TestCase
      */
 	assertSession(expected, name, message = '')
 	{
-		if(this._response === null){
+		if(this._requested === false){
 			this.fail("No response set, cannot assert status code.");
 		}
 		var result = this._requestSession.session.read(name);
@@ -308,7 +312,7 @@ export class IntegrationTestCase extends TestCase
      */
 	assertCookie(expected, name, message = '')
 	{
-		if(this._response === null){
+		if(this._requested === false){
 			this.fail("No response set, cannot assert status code.");
 		}
 		var result = this._client.cookie(name);
