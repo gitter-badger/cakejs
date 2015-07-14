@@ -37,6 +37,11 @@ export class IntegrationTestCase extends TestCase
 	_exception = null;
 	_requestSession = null;
 	
+	/**
+	 * Executes after a test is performed
+	 * 
+	 * @return {void}
+	 */
 	tearDown()
 	{
 		super.tearDown();
@@ -49,17 +54,38 @@ export class IntegrationTestCase extends TestCase
 		this._requestSession = null;
 	}
 	
+	/**
+	 * Set cookie data
+	 * 
+	 * @param {string} name Cookie name
+	 * @param {string} value Cookie value
+	 */
 	cookie(name, value)
 	{
-		
+		this._client.cookie(name, value);
 	}
 	
+	/**
+	 * Performs a get request and stores the response
+	 * cookies and session
+	 * 
+	 * @param {string} url Url to request
+	 * @return {void}
+	 */
 	async get(url)
 	{
 		var [url] = Router.url(url, true);
 		this._response = await this._client.get(url);
 	}
 	
+	/**
+	 * Performs a get request and stores the response
+	 * cookies and session
+	 * 
+	 * @param {string} url Url to request
+	 * @param {object} data Object containing the post data
+	 * @return {void}
+	 */
 	async post(url, data = {})
 	{
 		var [url] = Router.url(url, true);
@@ -149,6 +175,6 @@ export class IntegrationTestCase extends TestCase
 		if(this._response === null){
 			this.fail("No response set, cannot assert status code.");
 		}
-		this.assertEquals(content, this._response, message);
+		this.assertEquals(content.trim(), this._response.trim(), message);
 	}
 }
