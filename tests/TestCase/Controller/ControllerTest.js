@@ -37,6 +37,15 @@ var test = new class ControllerTest extends IntegrationTestCase
 	}
 	
 	/**
+	 * Tests return value undefined
+	 */
+	async testReturn_Undefined()
+	{
+		await this.get({'controller': 'test', 'action': 'returnVoid'});
+		this.assertResponseEquals(undefined, 'Did not receive undefined');
+	}
+	
+	/**
 	 * Tests return type boolean with value true
 	 */
 	async testReturn_True()
@@ -94,63 +103,13 @@ var test = new class ControllerTest extends IntegrationTestCase
 		this.assertResponseOk();
 	}
 	
+	/**
+	 * Tests data
+	 */
 	async testPassing_Data()
 	{
-		await this.get({'controller': 'test', 'action': 'passingData'}, {'keyA': 'valueA', 'keyB': 'valueB'});
+		await this.post({'controller': 'test', 'action': 'passingData'}, {'keyA': 'valueA', 'keyB': 'valueB'});
 		this.assertResponseOk();
 	}
-	
-	
-	/*
-	async routing(){
-		var response = await new Promise((resolve, reject) => require('request').get('http://127.0.0.1:31337/Test').on('error', error => {return reject(error);}).on('response',response => {
-			resolve(response);
-		}));
-		assert.equal(response.statusCode, 200, "Was expecting a successful get");
-		var data = await new Promise((resolve, reject) => require('request').get('http://127.0.0.1:31337/Test').on('error', error => {return reject(error);}).on('data',data => {
-			resolve(data);
-		}));
-		try{
-			data = JSON.parse(data);
-		}catch(e){
-			throw new Error("Unable to parse data");
-		}
-		assert.equal(data, true, "The response was incorrect");
-	}
-	async routing_error_regular(){
-		var response = await new Promise((resolve, reject) => require('request').get('http://127.0.0.1:31337/Test/error').on('error', error => {return reject(error);}).on('response',response => {
-			resolve(response);
-		}));
-		assert.equal(response.statusCode, 500, "Was expecting a failure get");
-	}
-	async routing_error_client(){
-		var response = await new Promise((resolve, reject) => require('request').get('http://127.0.0.1:31337/Test/client_error').on('error', error => {return reject(error);}).on('response',response => {
-			resolve(response);
-		}));
-		assert.equal(response.statusCode, 520, "Was expecting a failure get");
-		var data = await new Promise((resolve, reject) => require('request').get('http://127.0.0.1:31337/Test/client_error').on('error', error => {return reject(error);}).on('data',data => {
-			resolve(data);
-		}));
-		assert.equal(data.toString(),'{"custom":"error"}', "Was expecting a json string");
-	}
-	async routing_post(){
-		var form = {
-			"keyA": "valueA",
-			"keyB": "valueB"
-		};
-		var response = await new Promise((resolve, reject) => require('request').post('http://127.0.0.1:31337/Test/post').form(form).on('error', error => {return reject(error);}).on('response',response => {
-			resolve(response);
-		}));
-		assert.equal(response.statusCode, 200, "Was expecting a successful get");
-		var data = await new Promise((resolve, reject) => require('request').post('http://127.0.0.1:31337/Test/post').form(form).on('error', error => {return reject(error);}).on('data',data => {
-			resolve(data);
-		}));
-		try{
-			data = JSON.parse(data);
-		}catch(e){
-			throw new Error("Unable to parse data");
-		}
-		assert.equal(JSON.stringify(data), JSON.stringify(form), "The response was incorrect");
-	}*/
 }
 module.exports = test.moduleExports();
