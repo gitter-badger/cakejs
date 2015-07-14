@@ -56,20 +56,11 @@ var test = new class AppTests extends IntegrationTestCase
 	 * Tests connection to see if Express is active
 	 * and can serve static content
 	 */
-	async testServer_Connection(){
-		//await this.get('/');
-		//this.assertResponseOk();
-		//var [url, query] = CakeJS.Routing.Router.url('/tiinusen/?hejsan=titta', true);
-		//console.log(url);
-		//console.log(query);
-		/*var response = await new Promise((resolve, reject) => require('request').get('http://127.0.0.1:31337/js/client.js').on('error', error => {return reject(error);}).on('response',response => {
-			resolve(response);
-		}));
-		assert.equal(response.statusCode, 200, "Was expecting a successful get");
-		var data = await new Promise((resolve, reject) => require('request').get('http://127.0.0.1:31337/').on('error', error => {return reject(error);}).on('data',data => {
-			resolve(data);
-		})); 
-		assert.equal(data.toString(), fs.readFileSync(path.resolve(WWW_ROOT, "index.html")), "The response was incorrect");*/
+	async testServer_Connection()
+	{
+		await this.get('/');
+		this.assertResponseOk();
+		this.assertResponseEquals(fs.readFileSync(path.resolve(WWW_ROOT, "index.html")).toString(), 'Unexpected content');
 	}
 }
 module.exports = test.moduleExports();
