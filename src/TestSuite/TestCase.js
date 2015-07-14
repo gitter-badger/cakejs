@@ -141,7 +141,7 @@ export class TestCase
 			}
 			switch(typeof a){
 				case "object":
-					assert(a, b);
+					assert.deepEqual(a, b);
 					break;
 				default:
 					if(a !== b){
@@ -150,6 +150,12 @@ export class TestCase
 					break;
 			}
 		}catch(e){
+			if(typeof a === 'object'){
+				a = JSON.stringify(a);
+			}
+			if(typeof b === 'object'){
+				b = JSON.stringify(b);
+			}
 			this.fail(a, b, message);
 		}
 		return true;
