@@ -23,11 +23,18 @@ import {Exception} from '../../Core/Exception/Exception';
 
 //Uses
 var request = require('request');
+var tough = require('tough-cookie');
 
 export class Client
 {	
-	_cookieJar = request.jar();
+	_cookies = {}
 	_statusCode = null;
+	_headers = null;
+	
+	cookie(key, value)
+	{
+		this._cookies[key] = value;
+	}
 	
 	statusCode()
 	{
@@ -41,8 +48,8 @@ export class Client
 				request.get(this._buildRequest(url), (err, response, body) => {
 					if(err){
 						return reject(err);
-					}
-					this._statusCode = response.statusCode;
+					}					
+					this._afterRequest(response);
 					resolve(body);
 				});
 			}catch(e){
@@ -50,6 +57,7 @@ export class Client
 			}
 		});
 	}
+	
 	post(url, data)
 	{
 		return new Promise((resolve, reject) => {
@@ -58,13 +66,25 @@ export class Client
 					if(err){
 						return reject(err);
 					}
-					this._statusCode = response.statusCode;
+					this._afterRequest(response);
 					resolve(body);
 				});
 			}catch(e){
 				reject(e);
 			}
 		});
+	}
+	
+	_afterRequest(response)
+	{
+		this._statusCode = response.statusCode;
+		this._headers = response.headers;
+		if('set-cookie' in this._headers){
+			for(var item of this._headers['set-cookie']){
+				var cookie = tough.Cookie.parse(item);
+				this.cookie(cookie.key, cookie.value);
+			}			
+		}
 	}
 	
 	_buildRequest(url)
@@ -75,6 +95,11 @@ export class Client
 		if(url === null){
 			throw new Exception("Bad url");
 		}
+		var cookieStr = [];
+		for(var key in this._cookies){
+			var value = this._cookies[key];
+			cookieStr.push(key+'='+value);
+		}
 		var headers = {
 			'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
 			'Accept-Language': 'en-US,en;q=0.8,sv;q=0.6',
@@ -83,12 +108,11 @@ export class Client
 			'DNT': '1',
 			'Host': url[2],
 			'Referer': url[2],
-			'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36'
+			'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36',
+			'Cookie': cookieStr.join('; ')
 		};
-
 		return {
 			url: url[0],
-			jar: this.cookieJar,
 			headers: headers,
 		};
 	}
