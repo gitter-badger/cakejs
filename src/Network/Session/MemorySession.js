@@ -13,11 +13,10 @@
  * @license     http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-//CakeJS.Network.Session.SessionHandlerInterface
+//CakeJS.Network.Session.MemorySession
 
 //Types
 import {SessionHandlerInterface} from './SessionHandlerInterface';
-import {Collection} from '../../Collection/Collection';
 
 //Utilities
 import isEmpty from '../../Utilities/isEmpty';
@@ -28,16 +27,14 @@ import {InvalidArgumentException} from '../../Exception/InvalidArgumentException
 //Requires
 var cookie = require("cookie");
 
+/**
+ * Stores session data into memory
+ * 
+ * @class MemorySession
+ */
 export class MemorySession extends SessionHandlerInterface 
 {
-	constructor(config)
-	{
-		super(config);
-		if(isEmpty(this._options)){
-			throw new InvalidArgumentException("The session configuration name to use is required");
-		}
-		this._sessions = {};
-	}
+	_sessions = {};
 	
 	/**
 	 * Method used to check if id is in memory session
@@ -53,8 +50,8 @@ export class MemorySession extends SessionHandlerInterface
 	/**
 	 * Method used to read from a memory session
 	 * 
-	 * @param string id The key of the value to read
-	 * @return Collection
+	 * @param {string} id The key of the value to read
+	 * @return {object}
 	 */
 	read(id)
 	{
@@ -69,9 +66,9 @@ export class MemorySession extends SessionHandlerInterface
 	/**
 	 * Method used to write to a memory session
 	 * 
-	 * @param string id The key of the value to read
-	 * @param Collection data Collection of keys and values
-	 * @return boolean True for a successful write, false otherwise.
+	 * @param {string} id The key of the value to read
+	 * @param {object} data object of keys and values
+	 * @return {boolean} True for a successful write, false otherwise.
 	 */
 	write(id, data = null)
 	{
@@ -88,8 +85,8 @@ export class MemorySession extends SessionHandlerInterface
 	/**
 	 * Method called on the destruction of a memory session
 	 * 
-	 * @param {int} ID that uniquely identifies session in memory
-	 * @return bool True for a successful delete, false otherwise
+	 * @param {integer} ID that uniquely identifies session in memory
+	 * @return {boolean} True for a successful delete, false otherwise
 	 */
 	destroy(id)
 	{
@@ -101,7 +98,7 @@ export class MemorySession extends SessionHandlerInterface
 	 * Removes expired sessions from the session container
 	 * 
 	 * @param {integer} maxlifetime Sessions that have not updated for the last maxlifetime seconds will be removed
-	 * @return bool True
+	 * @return {bool} True
 	 */
 	gc(maxlifetime = 0)
 	{
