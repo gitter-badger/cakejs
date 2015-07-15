@@ -22,19 +22,19 @@ import {SessionManager} from '../Session/SessionManager'
 var cookie = require("cookie");
 
 class SessionParser {
-	use(request, response, next){
-		var session = SessionManager.get(request.cookies);
+	async use(request, response, next){
+		var session = await SessionManager.get(request.cookies);
 		response.cookie(SessionManager.keyName, session.keyValue, {maxAge: 365 * 24 * 60 * 60 * 1000});
 		request.session = session.data;
 		session.touch();
 		next();
 	}
-	set(data, accept){
+	async set(data, accept){
 		if(typeof data === 'undefined' || !('headers' in data) || !('cookie' in data.headers) || (data.headers.cookie === null))
 			return accept("BAD", false);
 		try{
 			var cookies = cookie.parse(data.headers.cookie);
-			var session = SessionManager.get(cookies);
+			var session = await SessionManager.get(cookies);
 			data._session = session;
 			session.touch();
 		}catch(e){
