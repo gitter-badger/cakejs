@@ -21,10 +21,10 @@ CakeJS.Core.Configure.write('App.paths', {
 CakeJS.Core.Configure.write('Datasources', {
 	"default": {
 		"driver": "Mysql",
-		"host": "127.0.0.1",
+		"host": "localhost",
 		"username": "test",
 		"password": "test",
-		"database": "test"
+		"database": "cakejs_test"
 	}
 });
 CakeJS.Core.Configure.write('Web.port', 31337);

@@ -11,6 +11,8 @@
  * @copyright   Copyright (c) 2015 Tiinusen
  * @link        https://github.com/cakejsframework/cakejs
  * @license     http://www.opensource.org/licenses/mit-license.php MIT License
+ * @author      Tiinusen <tiinusen@cakejs.net>
+ * @author      Addelajnen <addelajnen@cakejs.net>
  */
 
 //Uses

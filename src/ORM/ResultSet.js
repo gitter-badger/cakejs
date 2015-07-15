@@ -19,17 +19,26 @@
 import {NotImplementedException} from '../Exception/NotImplementedException'
 
 //Types
-import {Collection} from '../Collection/Collection'
+import {CollectionInterface} from '../Collection/CollectionInterface'
 
-export class ResultSet extends Collection {
+export class ResultSet extends CollectionInterface 
+{
 	constructor(query, statement){
-		super(statement.results);
+		super();
 		var repository = query.repository();
 		this._query = query;
+		this._statement = statement;
 		var driver = this._query.repository();
 		this._driver = driver;
 		this._defaultTable = this._query.repository();
 		this._entityClass = repository.entityClass();
 		this._defaultAlias = this._defaultTable.alias();
 	}
+	
+	
+	first()
+	{
+		return this._statement.results[0];
+	}
+
 }
