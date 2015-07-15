@@ -16,8 +16,20 @@
 //Uses
 var TestCase = CakeJS.TestSuite.TestCase;
 
+/**
+ * TestCase for asserts. 
+ * 
+ * @class
+ */
 var test = new class TestCaseTest extends TestCase
 {
+	/**
+	 * Test assertContains.
+	 * 
+	 * @see {@link assertContains} for further information.
+	 * 
+	 * @return {void}
+	 */
 	testAssertContains()
 	{
 		// Case insensitive test.
@@ -32,6 +44,13 @@ var test = new class TestCaseTest extends TestCase
 		this.assertContains(128, [1, 2, 4, 8, 16, 32, 64, 128, 256]);
 	}
 	
+	/**
+	 * Test assertNotContains.
+	 * 
+	 * @see {@link assertNotContains} for further information.
+	 * 
+	 * @return {void}
+	 */
 	testAssertNotContains()
 	{
 		// Case insensitive test.
@@ -47,7 +66,11 @@ var test = new class TestCaseTest extends TestCase
 	}
 	
 	/**
-	 * Tests ClassLoader 
+	 * Test assertThrowError.
+	 * 
+	 * @see {@link assertThrowError} for further information.
+	 * 
+	 * @return {void}
 	 */
 	testAssertThrowError()
 	{
@@ -57,7 +80,11 @@ var test = new class TestCaseTest extends TestCase
 	}
 	
 	/**
-	 * Tests ClassLoader 
+	 * Test assertNotThrowError.
+	 * 
+	 * @see {@link assertNotThrowError} for further information.
+	 * 
+	 * @return {void}
 	 */
 	testAssertNotThrowError()
 	{
@@ -67,7 +94,11 @@ var test = new class TestCaseTest extends TestCase
 	}
 	
 	/**
+	 * Test assertTextNotEquals.
 	 * 
+	 * @see {@link assertTextNotEquals} for further information.
+	 * 
+	 * @return {void}
 	 */
 	testAssertTextNotEquals()
 	{
@@ -75,7 +106,11 @@ var test = new class TestCaseTest extends TestCase
 	}
 	
 	/**
+	 * Test assertTextEquals.
 	 * 
+	 * @see {@link assertTextEquals} for further information.
+	 * 
+	 * @return {void}
 	 */
 	testAssertTextEquals()
 	{
@@ -83,7 +118,11 @@ var test = new class TestCaseTest extends TestCase
 	}
 	
 	/**
+	 * Test assertTextStartsWith.
 	 * 
+	 * @see {@link assertTextStartsWith} for further information.
+	 * 
+	 * @return {void}
 	 */
 	testAssertTextStartsWith()
 	{
@@ -91,7 +130,11 @@ var test = new class TestCaseTest extends TestCase
 	}
 	
 	/**
+	 * Test assertStringStartsNotWith.
 	 * 
+	 * @see {@link assertStringStartsNotWith} for further information.
+	 * 
+	 * @return {void}
 	 */
 	testAssertStringStartsNotWith()
 	{
@@ -99,7 +142,11 @@ var test = new class TestCaseTest extends TestCase
 	}	
 	
 	/**
+	 * Test assertTextEndsWith.
 	 * 
+	 * @see {@link assertTextEndsWith} for further information.
+	 * 
+	 * @return {void}
 	 */
 	testAssertTextEndsWith()
 	{
@@ -107,7 +154,11 @@ var test = new class TestCaseTest extends TestCase
 	}
 	
 	/**
+	 * Test assertTextEndsNotWith.
 	 * 
+	 * @see {@link assertTextEndsNotWith} for further information.
+	 * 
+	 * @return {void}
 	 */
 	testAssertTextEndsNotWith()
 	{
@@ -115,7 +166,11 @@ var test = new class TestCaseTest extends TestCase
 	}
 	
 	/**
+	 * Test assertLessThanOrEqual.
 	 * 
+	 * @see {@link assertLessThanOrEqual} for further information.
+	 * 
+	 * @return {void}
 	 */
 	testAssertLessThanOrEqual()
 	{
@@ -123,7 +178,11 @@ var test = new class TestCaseTest extends TestCase
 	}
 	
 	/**
+	 * Test assertTextContains.
 	 * 
+	 * @see {@link assertTextContains} for further information.
+	 * 
+	 * @return {void}
 	 */
 	testAssertTextContains()
 	{
@@ -131,7 +190,11 @@ var test = new class TestCaseTest extends TestCase
 	}
 
 	/**
+	 * Test assertTextNotContains.
 	 * 
+	 * @see {@link assertTextNotContains} for further information.
+	 * 
+	 * @return {void}
 	 */
 	testAssertTextNotContains()
 	{
@@ -144,7 +207,11 @@ var test = new class TestCaseTest extends TestCase
 	}
 	
 	/**
+	 * Test assertGreaterThanOrEqual.
 	 * 
+	 * @see {@link assertGreaterThanOrEqual} for further information.
+	 * 
+	 * @return {void}
 	 */
 	testAssertGreaterThanOrEqual()
 	{
