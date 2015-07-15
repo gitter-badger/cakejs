@@ -15,18 +15,23 @@
 
 //CakeJS.Utilities.isArray
 
-export default function isArray(object){
-	if(object === null)
+export default function isArray(object)
+{
+	if(object === null){
 		return false;
+	}
 	
-	if(typeof object !== 'object')
+	if(typeof object !== 'object'){
 		return false;
+	}
 	
-	if(object instanceof Array)
+	if(object instanceof Array){
 		return true;
+	}
 	
-	if(Object.getPrototypeOf(object) === Object.prototype)
+	if(object.constructor.name === 'Object'){
 		return true;
+	}
 	
 	return false;
 }
