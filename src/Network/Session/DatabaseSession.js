@@ -141,6 +141,9 @@ export class DatabaseSession extends SessionHandlerInterface
 			delete item.created;
 			delete item.user_id;
 			delete item.id;
+			/**
+			 * @todo Broken, Test and fix
+			 */
 			var sql = await this._table
 				.query()
 				.update()
