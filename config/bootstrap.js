@@ -1,4 +1,3 @@
-global.TIME_START = new Date();
 require('../src/basics.js');
 
 if(!CakeJS.Core.Configure.configured('default')){
