@@ -2,6 +2,8 @@
  * Sets default global constants
  */
 
+require('./Core/functions.js');
+
 /*
  * Timing Definition Constants
  */
@@ -63,26 +65,5 @@ if(!('WWW_ROOT' in global)){
 if(!('CONFIG' in global)){
 	global.CONFIG = require('path').resolve(ROOT,'config');
 }
-global.displayCakeConstants = function()
-{
-	for(var key of ['APP', 'APP_DIR', 'CACHE', 'CAKE', 'CAKE_CORE_INCLUDE_PATH', 'CORE_PATH', 'CAKE_VERSION', 'DS', 'LOGS', 'ROOT', 'TESTS', 'TMP', 'WWW_ROOT']){
-		if(typeof global[key] === 'string'){
-			console.log(key+': "'+global[key]+'"');
-		}else if(typeof global[key] === 'undefined'){
-			console.log(key+': ""');
-		}
-	}
-};
 global.CakeJS = require('./index');
 global.CAKE_VERSION = CakeJS.Core.Configure.version();
-global.pluginSplit = function(name, dotAppend = false, plugin = null)
-{
-	if(name.indexOf('.') !== -1){
-		var parts = name.split('.', 2);
-		if(dotAppend){
-			parts[0] += '.';
-		}
-		return parts;
-	}
-	return [plugin, name];
-}
