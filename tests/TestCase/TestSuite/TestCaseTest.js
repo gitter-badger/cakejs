@@ -18,6 +18,34 @@ var TestCase = CakeJS.TestSuite.TestCase;
 
 var test = new class TestCaseTest extends TestCase
 {
+	testAssertContains()
+	{
+		// Case insensitive test.
+		this.assertContains('hello', 'hEllO WoRlD', '', true);
+		
+		// Case sensitive test, this time an error is expected.
+		this.assertThrowError(() => {
+			this.assertContains('hello', 'HELLO');
+		});
+		
+		// Not a string test.
+		this.assertContains(128, [1, 2, 4, 8, 16, 32, 64, 128, 256]);
+	}
+	
+	testAssertNotContains()
+	{
+		// Case insensitive test.
+		this.assertNotContains('hello', 'hi WoRlD', '', true);
+		
+		// Case sensitive test, this time an error is expected.
+		this.assertThrowError(() => {
+			this.assertNotContains('hello', 'HELLO', '', true);
+		});
+		
+		// Not a string test.
+		this.assertNotContains(128, [1, 2, 4, 8, 16, 32, 64, 127, 256]);
+	}
+	
 	/**
 	 * Tests ClassLoader 
 	 */
@@ -65,9 +93,25 @@ var test = new class TestCaseTest extends TestCase
 	/**
 	 * 
 	 */
+	testAssertStringStartsNotWith()
+	{
+		this.assertStringStartsNotWith('KakaJS', 'CakeJS was here');
+	}	
+	
+	/**
+	 * 
+	 */
 	testAssertTextEndsWith()
 	{
 		this.assertTextEndsWith('JS\r\n', 'CakeJS\n');
+	}
+	
+	/**
+	 * 
+	 */
+	testAssertTextEndsNotWith()
+	{
+		this.assertTextEndsNotWith('SJ\r\n', 'CakeJS\n');
 	}
 	
 	/**
@@ -81,10 +125,30 @@ var test = new class TestCaseTest extends TestCase
 	/**
 	 * 
 	 */
+	testAssertTextContains()
+	{
+		this.assertTextContains('error', 'there was 300 errors living in a syntax...')
+	}
+
+	/**
+	 * 
+	 */
+	testAssertTextNotContains()
+	{
+		this.assertTextNotContains('Error', '200 OK')
+		this.assertTextNotContains('eRRoR', '200 error');
+		this.assertThrowError(() => {
+			this.assertTextNotContains('Error', '404 Error')
+			this.assertTextNotContains('error', '404 Error', '', true);
+		});
+	}
+	
+	/**
+	 * 
+	 */
 	testAssertGreaterThanOrEqual()
 	{
 		this.assertGreaterThanOrEqual(13, 37);
-	}
-	
+	}	
 }
 module.exports = test.moduleExports();

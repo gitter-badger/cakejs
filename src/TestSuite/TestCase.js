@@ -108,7 +108,23 @@ export class TestCase
 		str = str.replace(/(\r\n|\r)/, '\n');
 		this.assertStringStartsWith(prefix, str, message);
 	}
-	
+
+
+	/**
+	 * Test if the text begins with prefix, ignoring differences in newlines.
+	 * Helpful for doing coss platform tests of blocks of text.
+	 * 
+	 * @param {string} prefix The expected prefix.
+	 * @param {string} str The text to test.
+	 * @param {string} message An optional message to display on failure.
+	 */
+	assertTextStartsNotWith(prefix, str, message)
+	{
+		prefix = prefix.replace(/(\r\n|\r)/, '\n');
+		str = str.replace(/(\r\n|\r)/, '\n');
+		this.assertStringStartsNotWith(prefix, str, message);
+	}
+		
 	/**
 	 * Test if the text ends with prefix, ignoring differences in newlines.
 	 * Helpful for doing coss platform tests of blocks of text.
@@ -123,6 +139,45 @@ export class TestCase
 		str = str.replace(/(\r\n|\r)/, '\n');
 		
 		this.assertStringEndsWith(postfix, str, message);
+	}
+	
+
+	/**
+	 * Test if the text ends with prefix, ignoring differences in newlines.
+	 * Helpful for doing coss platform tests of blocks of text.
+	 * 
+	 * @param {string} postfix The expected postfix.
+	 * @param {string} str The text to test.
+	 * @param {string} message An optional message to display on failure.
+	 */
+	assertTextEndsNotWith(postfix, str, message)
+	{
+		postfix = postfix.replace(/(\r\n|\r)/, '\n');
+		str = str.replace(/(\r\n|\r)/, '\n');
+		
+		this.assertStringEndsNotWith(postfix, str, message);
+	}
+	
+	/**
+	 * 
+	 */
+	assertTextContains(needle, haystack, message = '', ignoreCase = false)
+	{	
+		needle = needle.replace(/(\r\n|\r)/, '\n');
+		haystack = haystack.replace(/(\r\n|\r)/, '\n');
+		
+		this.assertContains(needle, haystack, message, ignoreCase);
+	}
+	
+	/**
+	 * 
+	 */
+	assertTextNotContains(needle, haystack, message = '', ignoreCase = false)
+	{	
+		needle = needle.replace(/(\r\n|\r)/, '\n');
+		haystack = haystack.replace(/(\r\n|\r)/, '\n');
+		
+		this.assertNotContains(needle, haystack, message, ignoreCase);
 	}
 	
 	/**
@@ -310,6 +365,24 @@ export class TestCase
 		return true;
 	}
 	
+	
+	/**
+	 * Fails if the string str does not start with prefix.
+	 * 
+	 * @param {string} prefix The expected start of the string.
+	 * @param {string} str The string to test.
+	 * @param {message} An optional message to display on fail.
+	 * 
+	 * @throws {AssertionException} Throws if assertion fails
+	 */
+	assertStringStartsNotWith(prefix, str, message)
+	{
+		if (str.substr(0, prefix.length) === prefix) {
+			this.fail(str + ' should not start with ' + prefix);
+		}
+		return true;
+	}
+
 	/**
 	 * Fails if the string str does not end with prefix.
 	 * 
@@ -324,6 +397,70 @@ export class TestCase
 		if(str.substr(str.length - postfix.length) !== postfix){
 			this.fail(str + ' should end with ' + postfix);
 		}
+		return true;
+	}
+	
+
+	/**
+	 * Fails if the string str does not end with prefix.
+	 * 
+	 * @param {string} prefix The expected end of the string.
+	 * @param {string} str The string to test.
+	 * @param {message} An optional message to display on fail.
+	 * 
+	 * @throws {AssertionException} Throws if assertion fails
+	 */
+	assertStringEndsNotWith(postfix, str, message)
+	{
+		if(str.substr(str.length - postfix.length) === postfix){
+			this.fail(str + ' should not end with ' + postfix);
+		}
+		return true;
+	}
+	
+	/**
+	 * Fails if the needle is not found in the haystack.
+	 * 
+	 * @param {mixed} needle The searched value.
+	 * @param {mixed} haystack The array.
+	 * @param {string} message An optional mnessage to be displayed on fail.
+	 * @param {boolean} ignoreCase If needle is a string and ignoreCase is set to true, the comparison is done in a case-sensitive manner.
+	 */
+	assertContains(needle, haystack, message = '', ignoreCase = false)
+	{
+		if (typeof needle === 'string' && ignoreCase) {
+			needle = needle.toLowerCase();
+		}
+		
+		if (typeof haystack === 'string' && ignoreCase) {
+			haystack = haystack.toLowerCase();
+		}
+		
+		this.assertNotEquals(haystack.indexOf(needle), -1);
+		
+		return true;
+	}
+	
+	/**
+	 * Fails if the needle is found in the haystack.
+	 * 
+	 * @param {mixed} needle The searched value.
+	 * @param {mixed} haystack The array.
+	 * @param {string} message An optional mnessage to be displayed on fail.
+	 * @param {boolean} ignoreCase If needle is a string and ignoreCase is set to true, the comparison is done in a case-sensitive manner.
+	 */
+	assertNotContains(needle, haystack, message = '', ignoreCase = false)
+	{
+		if (typeof needle === 'string' && ignoreCase) {
+			needle = needle.toLowerCase();
+		}
+		
+		if (typeof haystack === 'string' && ignoreCase) {
+			haystack = haystack.toLowerCase();
+		}
+		
+		this.assertEquals(haystack.indexOf(needle), -1);
+		
 		return true;
 	}
 	
