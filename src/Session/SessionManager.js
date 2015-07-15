@@ -77,7 +77,7 @@ export var SessionManager = new class
 			}
 		}
 		this._engine = ClassLoader.loadClass(Hash.get(this._config, 'handler.engine'),'Network/Session');
-		this._engine = new this._engine(TableRegistry.get(Hash.get(this._config, 'handler.model')));
+		this._engine = new this._engine(clone(this._config));
 		return this._engine;
 	}
 	
@@ -91,19 +91,19 @@ export var SessionManager = new class
 		return Hash.get(this._config, 'timeout');
 	}
 	
-	create()
+	async create()
 	{
 		var id = null;
 		do{
 			id = uuid(null, 'uuids');
-		}while(this.engine.has(id));
+		}while(await this.engine.has(id));
 		
 		var session = new Session(this.engine, id);
 		this._sessions[id] = session;
 		return session;
 	}
 	
-	get(idOrObject)
+	async get(idOrObject)
 	{
 		if(typeof idOrObject === 'object'){
 			if(this.keyName in idOrObject){
@@ -121,6 +121,6 @@ export var SessionManager = new class
 			}
 		}
 		
-		return this.create();
+		return await this.create();
 	}
 };
