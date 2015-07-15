@@ -473,18 +473,16 @@ export class TestCase
 	moduleExports()
 	{
 		var __this = this;
-		this.__tests = [];
 		var tests = {};
-		for(var methodName of Object.getOwnPropertyNames(Object.getPrototypeOf(this))){
+		for(let methodName of Object.getOwnPropertyNames(Object.getPrototypeOf(this))){
 			if(/^test/.test(methodName)){
 				var newMethodName = this.constructor.name+"."+methodName.substr(4).replace(new RegExp("\_", 'g'), ".");
-				this.__tests.push(methodName);
 				tests = Hash.insert(tests,newMethodName,function(){
 					return new Promise(async (resolve, reject) => {
 						try{
 							try{
 								await __this.setUp();
-								var response = await __this[__this.__tests.shift()].call(__this);							
+								var response = await __this[methodName].call(__this);							
 								await __this.tearDown();
 								resolve(response);
 							}catch(e){
