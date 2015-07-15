@@ -1,6 +1,25 @@
 /*
  * Sets default global constants
  */
+
+/*
+ * Timing Definition Constants
+ */
+
+global.TIME_START = new Date();
+global.MILLI_SECOND = 1;
+global.SECOND = MILLI_SECOND * 1000;
+global.MINUTE = 60 * SECOND;
+global.HOUR = 60 * MINUTE;
+global.DAY = 24 * HOUR;
+global.WEEK = 7 * DAY;
+global.MONTH = 30 * DAY;
+global.YEAR = 365 * DAY;
+
+/*
+ * Path related
+ */
+
 if(!('DS' in global)){
 	global.DS = '/';
 }
