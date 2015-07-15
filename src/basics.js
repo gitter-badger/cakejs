@@ -2,7 +2,7 @@
  * Sets default global constants
  */
 
-require('./Core/functions.js');
+require('./Core/functions');
 
 /*
  * Timing Definition Constants
