@@ -297,17 +297,17 @@ export class IntegrationTestCase extends TestCase
      * Asserts session contents
      *
      * @param {string} expected The expected contents.
-	 * @param {string} name The session key name.
+	 * @param {string} path The session key path.
      * @param {string} message The failure message that will be appended to the generated message.
      * @return {void}
      */
-	assertSession(expected, name, message = '')
+	assertSession(expected, path, message = '')
 	{
 		if(this._requested === false){
 			this.fail("No response set, cannot assert status code.");
 		}
-		var result = this._requestSession.session.read(name);
-		this.assertEquals(expected, result, 'Cookie data differs. '+message);
+		var result = this._requestSession.session.read(path);
+		this.assertEquals(expected, result, 'Session data differs. '+message);
 	}
 	
 	/**
