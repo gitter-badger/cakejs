@@ -32,7 +32,7 @@ var test = new class SessionTest extends IntegrationTestCase
 	 * Tests if controller receives session data
 	 */
 	async testGetKey(){
-		this.session('keyB', 'valueB');
+		await this.session('keyB', 'valueB');
 		await this.get({'controller': 'session', 'action': 'getKey'});
 		this.assertResponseOk();
 	}
