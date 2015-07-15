@@ -19,6 +19,24 @@ var IntegrationTestCase = CakeJS.TestSuite.IntegrationTestCase;
 var test = new class ControllerTest extends IntegrationTestCase
 {
 	/**
+	 * Tests if missing controller throws error
+	 */
+	async testMissing_Controller()
+	{
+		await this.get({'controller': 'missing'});
+		this.assertResponseError();
+	}
+	
+	/**
+	 * Tests if missing action throws error
+	 */
+	async testMissing_Action()
+	{
+		await this.get({'controller': 'test', 'action': 'missing'});
+		this.assertResponseError();
+	}
+	
+	/**
 	 * Tests index and return type string
 	 */
 	async testIndex()
