@@ -38,10 +38,10 @@ export class IntegrationTestCase extends TestCase
 	_exception = null;
 	_requestSession = null;
 	
-	setUp()
+	async setUp()
 	{
 		super.setUp();
-		this._requestSession = SessionManager.create();
+		this._requestSession = await SessionManager.create();
 		this.cookie(SessionManager.keyName, this._requestSession.keyValue);
 	}
 	
@@ -51,7 +51,7 @@ export class IntegrationTestCase extends TestCase
 	 * @override
 	 * @return {void}
 	 */
-	tearDown()
+	async tearDown()
 	{
 		super.tearDown();
 		this._client = new Client();
@@ -59,7 +59,7 @@ export class IntegrationTestCase extends TestCase
 		this._response = null;
 		this._requested = false;
 		this._exception = null;
-		this._requestSession.session.destroy();
+		await this._requestSession.session.destroy();
 		this._requestSession = null;
 	}
 	
