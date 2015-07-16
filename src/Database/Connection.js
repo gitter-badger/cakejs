@@ -93,8 +93,11 @@ export class Connection
 		return this.driver().compileQuery(query, generator)[1];
 	}
 	
-	describe()
+	describe(name = null)
 	{
-		return this._description;
+		if(name === null){
+			return this._description;
+		}
+		return this._description[name];
 	}
 }
