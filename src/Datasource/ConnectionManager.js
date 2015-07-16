@@ -15,18 +15,23 @@
 
 //CakeJS.Datasource.ConnectionManager
 
+//Exception
+import {Exception} from '../Core/Exception/Exception';
+
 //Types
-import {MissingConfigException} from '../Exception/MissingConfigException'
-import {AlreadyDefinedException} from '../Exception/AlreadyDefinedException'
-import {Connection} from '../Database/Connection'
+import {MissingConfigException} from '../Exception/MissingConfigException';
+import {AlreadyDefinedException} from '../Exception/AlreadyDefinedException';
+import {Connection} from '../Database/Connection';
+
+//Utilities
+import clone from '../Utilities/clone';
 
 export var ConnectionManager = new class 
 {
-	constructor()
-	{
-		this._configurations = {}
-		this._connections = {};
-	}
+	_configurations = {};
+	_connections = {};
+	_descriptions = {};	
+	_initialized = false;
 	
 	/**
 	 * Configures the datasource
@@ -66,5 +71,31 @@ export var ConnectionManager = new class
 			this._connections[name] = new Connection(this._configurations[name]);
 		}
 		return this._connections[name];
+	}
+	
+	async initialize()
+	{
+		if(this._initialized){
+			return;
+		}
+		for(var name in this._configurations){
+			var connection = await this.get(name);
+			this._descriptions[name] = await connection.driver().describe();
+		}
+		this._initialized = true;
+	}
+	
+	describe(name = null)
+	{
+		if(!this._initialized){
+			throw new Exception("ConnectionManager not initialized");
+		}
+		if(name === null){
+			return clone(this._descriptions);
+		}
+		if(!(name in this._descriptions)){
+			throw new Exception("Datasource missing");
+		}
+		return clone(this._descriptions[name]);
 	}
 }();
