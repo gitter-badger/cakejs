@@ -24,6 +24,7 @@ import {SessionHandlerInterface} from './SessionHandlerInterface';
 //Utilities
 import isEmpty from '../../Utilities/isEmpty';
 import {Hash} from '../../Utilities/Hash';
+import clone from '../../Utilities/clone';
 
 //Exceptions
 import {InvalidArgumentException} from '../../Exception/InvalidArgumentException';
@@ -76,24 +77,25 @@ export class DatabaseSession extends SessionHandlerInterface
 	 */
 	async read(id)
 	{
-		return;
-		console.log("Read");
 		var item = await this._table
 			.find()
 			.where({id: id})
-			.first();
+			.first();		
 		if(item === null){
 			item = {
 				id: id,
 				data: null,
-				expires: new Date(new Date().getTime()+this._timeout).format('mysqlDateTime'),
-				created: new Date().getTime().format('mysqlDateTime')
+				expires: new Date(new Date().getTime()+this._timeout),
+				created: new Date()
 			};
 			await this._table
 					.query()
 					.insert(['id', 'expires', 'created', 'data'])
 					.values(item)
 					.execute();
+			return {};
+		}
+		if(item.data === null){
 			return {};
 		}
 		return JSON.parse(item.data);
@@ -108,6 +110,7 @@ export class DatabaseSession extends SessionHandlerInterface
 	 */
 	async write(id, data = null)
 	{
+		try{
 		var item = await this._table
 			.find()
 			.where({id: id})
@@ -115,43 +118,34 @@ export class DatabaseSession extends SessionHandlerInterface
 		if(item === null){
 			item = {
 				id: id,
-				expires: new Date(new Date().getTime()+this._timeout).format('mysqlDateTime'),
-				created: new Date().format('mysqlDateTime'),
+				expires: new Date(new Date().getTime()+this._timeout),
+				created: new Date(),
 				data: null
 			};
 			if(data !== null){
 				item.data = JSON.stringify(data);
 			}
-			try{
-				await this._table
-					.query()
-					.insert(['id', 'expires', 'created', 'data'])
-					.values(item)
-					.execute();
-			}catch(e){
-				console.log(e);
-			}
+			await this._table
+				.query()
+				.insert(['id', 'expires', 'created', 'data'])
+				.values(item)
+				.execute();
 		}else{
 			if(data !== null){
 				item.data = JSON.stringify(data);
-			}else{
-				delete item.data;
 			}
 			item.expires = new Date(new Date().getTime()+this._timeout).format('mysqlDateTime');
-			delete item.created;
-			delete item.user_id;
-			delete item.id;
-			/**
-			 * @todo Broken, Test and fix
-			 */
-			var sql = await this._table
+			await this._table
 				.query()
 				.update()
 				.set(item)
 				.where({id: id})
-				.sql();
-				console.log(sql);
+				.execute();
 		}
+	}catch(e){
+		console.log(e);
+		throw e;
+	}
 	}
 	
 	/**

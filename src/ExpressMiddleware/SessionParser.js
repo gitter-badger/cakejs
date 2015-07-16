@@ -26,7 +26,7 @@ class SessionParser {
 		var session = await SessionManager.get(request.cookies);
 		response.cookie(SessionManager.keyName, session.keyValue, {maxAge: 365 * 24 * 60 * 60 * 1000});
 		request.session = session.data;
-		session.touch();
+		await session.touch();
 		next();
 	}
 	async set(data, accept){
@@ -36,7 +36,7 @@ class SessionParser {
 			var cookies = cookie.parse(data.headers.cookie);
 			var session = await SessionManager.get(cookies);
 			data._session = session;
-			session.touch();
+			await session.touch();
 		}catch(e){
 			return accept("BAD", false);
 		}

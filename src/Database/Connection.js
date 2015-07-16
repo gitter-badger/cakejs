@@ -66,10 +66,10 @@ export class Connection
 		return await this.driver().query.apply(this.driver(), args);
 	}
 	
-	query(sql)
+	async query(sql)
 	{
 		var statement = this.prepare(sql);
-		statement.execute();
+		await statement.execute();
 		return statement;
 	}
 	

@@ -23,15 +23,25 @@ var test = new class SessionTest extends IntegrationTestCase
 	/**
 	 * Tests if session key get set by controller
 	 */
+	async xtestSetKey(){		
+		await this.session('keyA', 'valueA');
+		await this.session('keyB', 'valueB');
+		this._requested = true;
+		await this.assertSession({'keyA': 'valueA', 'keyB': 'valueB'});
+	}
+	
+	/**
+	 * Tests if session key get set by controller
+	 */
 	async testSetKey(){		
 		await this.get({'controller': 'session', 'action': 'setKey'});
-		this.assertSession('valueA', 'keyA');
+		await this.assertSession({'keyA': 'valueA'});
 	}
 	
 	/**
 	 * Tests if controller receives session data
 	 */
-	async testGetKey(){
+	async xtestGetKey(){
 		await this.session('keyB', 'valueB');
 		await this.get({'controller': 'session', 'action': 'getKey'});
 		this.assertResponseOk();

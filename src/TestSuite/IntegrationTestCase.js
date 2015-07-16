@@ -40,7 +40,7 @@ export class IntegrationTestCase extends TestCase
 	
 	async setUp()
 	{
-		super.setUp();
+		await super.setUp();
 		this._requestSession = await SessionManager.create();
 		this.cookie(SessionManager.keyName, this._requestSession.keyValue);
 	}
@@ -53,13 +53,15 @@ export class IntegrationTestCase extends TestCase
 	 */
 	async tearDown()
 	{
-		super.tearDown();
+		await super.tearDown();
 		this._client = new Client();
 		this._request = {};
 		this._response = null;
 		this._requested = false;
 		this._exception = null;
-		await this._requestSession.session.destroy();
+		if(this._requestSession !== null){
+			await this._requestSession.session.destroy();
+		}
 		this._requestSession = null;
 	}
 	
@@ -69,9 +71,9 @@ export class IntegrationTestCase extends TestCase
 	 * @param {string|object} keyOrObject keyPath for session data to be set or object containing many keys
 	 * @param {any} value Value to be set if keyOrObject is a keyPath
 	 */
-	session(keyOrObject, value = null)
+	async session(keyOrObject, value = null)
 	{
-		this._requestSession.session.write(keyOrObject, value);
+		await this._requestSession.session.write(keyOrObject, value);
 	}
 	
 	/**
@@ -299,14 +301,14 @@ export class IntegrationTestCase extends TestCase
      * @param {string} expected The expected contents.
 	 * @param {string} path The session key path.
      * @param {string} message The failure message that will be appended to the generated message.
-     * @return {void}
+     * @return {Promise}
      */
-	assertSession(expected, path, message = '')
+	async assertSession(expected, path, message = '')
 	{
 		if(this._requested === false){
 			this.fail("No response set, cannot assert status code.");
 		}
-		var result = this._requestSession.session.read(path);
+		var result = await this._requestSession.session.read(path);
 		this.assertEquals(expected, result, 'Session data differs. '+message);
 	}
 	
