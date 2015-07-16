@@ -32,7 +32,7 @@ var test = new class QueryTest extends TestCase
 		this.assertEquals(entity.get('test1'), 3);
 		
 		entity.set('test2', 2, { guard: true });
-		entity.accessible({'test2', false);
+		entity.accessible('test2', false);
 		entity.set('test2', 5);
 		this.assertEquals(entity.get('test2'), 5);
 	}
