@@ -215,7 +215,8 @@ export class Query extends Database.Query {
 		}
 		
 		if(typeof this._results === 'undefined' || this._results === null){
-			var results = this._decorateResults(await this._execute());
+			var results = await this._execute();
+			results = this._decorateResults(results);
 			if(typeof this._cache !== 'undefined' && this._cache !== null){
 				this._cache.store(this, results);
 			}

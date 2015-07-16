@@ -38,7 +38,7 @@ class SessionData
 	 * @param {string} keyPath Dot notation path
 	 * @return {any} data from keyPath
 	 */
-	read(keyPath = null)
+	async read(keyPath = null)
 	{
 		if(keyPath === null){
 			return this.__session.engine.read(this.__session.keyValue);
@@ -46,7 +46,8 @@ class SessionData
 		if(typeof keyPath !== 'string' || keyPath.trim() === ''){
 			throw new InvalidParameterException(keyPath, 'string');
 		}
-		return Hash.get(this.__session.engine.read(this.__session.keyValue), keyPath);
+		var object = await this.__session.engine.read(this.__session.keyValue);
+		return Hash.get(object, keyPath);
 	}
 	
 	/**
@@ -55,12 +56,12 @@ class SessionData
 	 * @param {string} keyPath Dot notation path
 	 * @return {void}
 	 */
-	write(keyPath, value = null)
+	async write(keyPath, value = null)
 	{
 		if(typeof keyPath === 'object'){
-			var data = this.__session.engine.read(this.__session.keyValue);
+			var data = await this.__session.engine.read(this.__session.keyValue);
 			data = Hash.merge(data, keyPath);
-			this.__session.engine.write(this.__session.keyValue, data);
+			await this.__session.engine.write(this.__session.keyValue, data);
 			return true;
 		}
 		if(typeof keyPath !== 'string' || keyPath.trim() === ''){
@@ -69,7 +70,8 @@ class SessionData
 		if(value === null){
 			throw new InvalidParameterException(keyPath, 'string');
 		}
-		this.__session.engine.write(this.__session.keyValue, Hash.insert(this.__session.engine.read(this.__session.keyValue), keyPath, value));
+		var object = await this.__session.engine.read(this.__session.keyValue);
+		await this.__session.engine.write(this.__session.keyValue, Hash.insert(object, keyPath, value));
 		return true;
 	}
 	
@@ -79,12 +81,13 @@ class SessionData
 	 * @param {string} keyPath Dot notation path
 	 * @return {void}
 	 */
-	delete(keyPath)
+	async delete(keyPath)
 	{
 		if(typeof keyPath !== 'string' || keyPath.trim() === ''){
 			throw new InvalidParameterException(keyPath, 'string');
 		}
-		this.__session.engine.write(this.__session.keyValue, Hash.remove(this.__session.engine.read(this.__session.keyValue), keyPath));
+		var object = await this.__session.engine.read(this.__session.keyValue);
+		await this.__session.engine.write(this.__session.keyValue, Hash.remove(object, keyPath));
 	}
 	
 	/**
@@ -93,13 +96,13 @@ class SessionData
 	 * @param {string} keyPath Dot notation path
 	 * @return {any} data from keyPath
 	 */
-	consume(keyPath)
+	async consume(keyPath)
 	{
 		if(typeof keyPath !== 'string' || keyPath.trim() === ''){
 			throw new InvalidParameterException(keyPath, 'string');
 		}
-		var value = this.read(keyPath);
-		this.delete(keyPath);
+		var value = await this.read(keyPath);
+		await this.delete(keyPath);
 		return value;
 	}
 	
@@ -109,12 +112,12 @@ class SessionData
 	 * @param {string} keyPath Dot notation path
 	 * @return {boolean} True if exists
 	 */
-	check(key)
+	async check(key)
 	{
 		if(typeof keyPath !== 'string' || keyPath.trim() === ''){
 			throw new InvalidParameterException(keyPath, 'string');
 		}
-		var object = this.__session.engine.read(this.__session.keyValue);
+		var object = await this.__session.engine.read(this.__session.keyValue);
 		return Hash.has(object, key);
 	}
 	
@@ -123,9 +126,9 @@ class SessionData
 	 * 
 	 * @return {void}
 	 */
-	destroy()
+	async destroy()
 	{
-		this.__session.dispose();
+		await this.__session.dispose();
 	}
 	
 	/**
@@ -133,9 +136,9 @@ class SessionData
 	 * 
 	 * @return {void}
 	 */
-	renew()
+	async renew()
 	{
-		this.__session.touch();
+		await this.__session.touch();
 	}
 }
 
@@ -155,7 +158,6 @@ export class Session
 		this._engine = engine;
 		this._keyValue = keyValue;
 		this.data = new SessionData(this);
-		this.touch();
 		this.connections = new ConnectionContainer();
 	}
 	
@@ -194,9 +196,9 @@ export class Session
 	 * 
 	 * @return {void}
 	 */
-	touch()
+	async touch()
 	{
-		this.engine.write(this.keyValue);
+		await this.engine.write(this.keyValue);
 	}
 	
 	/**
@@ -204,8 +206,8 @@ export class Session
 	 * 
 	 * @return {void}
 	 */
-	dispose()
+	async dispose()
 	{
-		this.engine.destroy(this.keyValue);
+		await this.engine.destroy(this.keyValue);
 	}
 }

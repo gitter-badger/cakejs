@@ -105,6 +105,7 @@ export class Mysql extends Driver{
 							inner_resolve([rows, fields]);
 						});
 					}catch(error){
+						console.log("MySQL Error: "+error);
 						return inner_reject(error);
 					}
 				});
@@ -114,9 +115,9 @@ export class Mysql extends Driver{
 			}
 		});
 	}
-	query(sql){
+	async query(sql){
 		var statement = this.prepare(sql);
-		statement.execute();
+		await statement.execute();
 		return statement;
 	}
 	oldprepare(query){

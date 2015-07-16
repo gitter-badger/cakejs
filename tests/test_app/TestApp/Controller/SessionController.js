@@ -16,6 +16,7 @@
 //Uses
 var ClientException = CakeJS.Controller.Exception.ClientException;
 var Controller = CakeJS.Controller.Controller;
+var delay = CakeJS.Utilities.delay;
 
 /**
  * This controller is used by SessionTest TestCase
@@ -29,9 +30,9 @@ export default class SessionController extends Controller
 	 * 
 	 * @return {void}
 	 */
-	setKey()
+	async setKey()
 	{
-		this.request.session().write("keyA", "valueA");
+		await this.request.session().write("keyA", "valueA");
 	}
 	
 	/**
@@ -40,9 +41,10 @@ export default class SessionController extends Controller
 	 * @return {void}
 	 * @throws {null}
 	 */
-	getKey()
+	async getKey()
 	{
-		if(this.request.session().read("keyB") !== 'valueB'){
+		var value = await this.request.session().read("keyB");
+		if(value !== 'valueB'){
 			throw null;
 		}
 	}

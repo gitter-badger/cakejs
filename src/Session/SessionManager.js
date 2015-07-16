@@ -94,9 +94,10 @@ export var SessionManager = new class
 	async create()
 	{
 		var id = null;
-		do{
+		do{			
 			id = uuid(null, 'uuids');
-		}while(await this.engine.has(id));
+			var has = await this.engine.has(id);
+		}while(has);
 		
 		var session = new Session(this.engine, id);
 		this._sessions[id] = session;
