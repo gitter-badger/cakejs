@@ -220,4 +220,35 @@ export class Mysql extends Driver{
 			return query;*/
 		};
 	}
+	
+	/**
+	 * This method is used to describe all tables inside database
+	 */
+	async describe(){
+		var description = {
+			_tables: [],
+		};
+		try{
+			var result = await this.execute("SHOW TABLES");
+			
+			for(var item of result[0]){
+				for(var key in item){
+					var tableName = item[key];
+					var table = {
+						_columns: [],
+					};
+					description._tables.push(tableName);
+					var iresult = await this.execute("SHOW FULL COLUMNS FROM `"+tableName+"`");
+					for(var column of iresult[0]){
+						table._columns.push(column.Field);
+						table[column.Field] = column;
+					}
+					description[tableName] = table;
+				}
+			}
+		}catch(e){
+			console.log(e);
+		}
+		return description;
+	}
 }
