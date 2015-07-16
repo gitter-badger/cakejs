@@ -23,7 +23,7 @@ var test = new class SessionTest extends IntegrationTestCase
 	/**
 	 * Tests if session key get set by controller
 	 */
-	async xtestSetKey(){		
+	async testSetKey(){		
 		await this.session('keyA', 'valueA');
 		await this.session('keyB', 'valueB');
 		this._requested = true;
@@ -33,7 +33,7 @@ var test = new class SessionTest extends IntegrationTestCase
 	/**
 	 * Tests if session key get set by controller
 	 */
-	async testSetKey(){		
+	async testRemote_SetKey(){		
 		await this.get({'controller': 'session', 'action': 'setKey'});
 		await this.assertSession({'keyA': 'valueA'});
 	}
@@ -41,7 +41,7 @@ var test = new class SessionTest extends IntegrationTestCase
 	/**
 	 * Tests if controller receives session data
 	 */
-	async xtestGetKey(){
+	async testRemote_GetKey(){
 		await this.session('keyB', 'valueB');
 		await this.get({'controller': 'session', 'action': 'getKey'});
 		this.assertResponseOk();
