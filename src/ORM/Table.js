@@ -16,26 +16,27 @@
 //CakeJS.ORM.Table
 
 //Exception
-import {MissingEntityException} from './Exception/MissingEntityException'
+import {MissingEntityException} from './Exception/MissingEntityException';
+import {FinderNotFoundException} from './Exception/FinderNotFoundException';
 
 //Types
-import {FinderNotFoundException} from './Exception/FinderNotFoundException'
-import {Collection} from '../Collection/Collection'
-import {Query} from './Query'
+import {Collection} from '../Collection/Collection';
+import {Query} from './Query';
 
 //Singelton instances
-import {ClassLoader} from '../Core/ClassLoader'
+import {ClassLoader} from '../Core/ClassLoader';
 
 //Utilities
-import {Inflector} from '../Utilities/Inflector'
-import isEmpty from '../Utilities/isEmpty'
-import isArray from '../Utilities/isArray'
-import toArray from '../Utilities/toArray'
-import count from '../Utilities/count'
+import {Inflector} from '../Utilities/Inflector';
+import isEmpty from '../Utilities/isEmpty';
+import isArray from '../Utilities/isArray';
+import toArray from '../Utilities/toArray';
+import count from '../Utilities/count';
+import {Marshaller} from './Marshaller'
 
 export class Table {
 	constructor(config){
-		config = new Collection(config);
+		config = new Collection(config);	
 		this._hasOne = [];
 		this._hasMany = [];
 		this._belongsTo = [];
@@ -233,26 +234,34 @@ export class Table {
 	}
 	
 	/**
-	 * TODO: fix support for data and options.
+	 * TODO: comments.
 	 */
-	newEntity(data = null, options = [])
+	marshaller() 
 	{
-		if (data === null) {
-			var entityClass = this.entityClass();
-			console.log(this.registryAlias());
-			return new entityClass({ registryAlias: this.registryAlias() });
-		}
+		return new Marshaller(this);
 	}
 	
-	patchEntity(entity, data, options)
-	{
-		// Simple patchEntity test
-		for (var key in entity) {
-			if (key in data)
-				entity.set(key, data[key]);
+	/**
+	 * TODO: comments.
+	 */
+	newEntity(data = null, options = [])
+	{				
+		if (data === null) {
+			var entityClass = this.entityClass();
+			return new entityClass({ registryAlias: this.registryAlias() });
 		}
 		
-		return entity;
+		let marshaller = this.marshaller();
+		
+		return marshaller.one(data, options);
+	}
+	
+	/**
+	 * TODO: comments
+	 */
+	patchEntity(entity, data, options)
+	{		
+		return this.marshaller().merge(entity, data, options);
 	}
 	
 	query(){
