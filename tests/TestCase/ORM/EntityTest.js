@@ -27,13 +27,14 @@ var test = new class QueryTest extends TestCase
 	{
 		var entity = new CakeJS.ORM.Entity();
 		
-		entity.set('test1', 3, { guard: true });
-		entity.test1 = 6;
-		this.assertEquals(entity.test1, 3);
+		entity.set('test1', 3);
+
+		this.assertEquals(entity.get('test1'), 3);
 		
-		entity.set('test2', 2, { guard: false });
-		entity.test2 = 5;
-		this.assertEquals(entity.test2, 5);
+		entity.set('test2', 2, { guard: true });
+		entity.accessible({'test2', false);
+		entity.set('test2', 5);
+		this.assertEquals(entity.get('test2'), 5);
 	}
 
 	/**
@@ -51,8 +52,8 @@ var test = new class QueryTest extends TestCase
 		
 		var entity = this.Customers.newEntity(expected);
 		
-		this.assertTextEquals(entity.name, expected.name);
-		this.assertTextEquals(entity.phone, expected.phone);
+		this.assertTextEquals(entity.get('name'), expected.name);
+		this.assertTextEquals(entity.get('phone'), expected.phone);
 	}
 	
 	/**
@@ -71,8 +72,8 @@ var test = new class QueryTest extends TestCase
 		var entity = this.Customers.newEntity();
 		entity = this.Customers.patchEntity(entity, expected);
 		
-		this.assertTextEquals('Cake', entity.name);
-		this.assertTextEquals('010-12345', entity.phone);		
+		this.assertTextEquals('Cake', entity.get('name'));
+		this.assertTextEquals('010-12345', entity.get('phone'));
 	}
 	
 	/**
