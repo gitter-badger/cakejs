@@ -20,7 +20,10 @@ var TestCase = CakeJS.TestSuite.TestCase;
 
 var test = new class QueryTest extends TestCase
 {
-	testEntity_guards()
+	/**
+	 * 
+	 */
+	testEntity_setAndGet()
 	{
 		var entity = new CakeJS.ORM.Entity();
 		
@@ -31,6 +34,66 @@ var test = new class QueryTest extends TestCase
 		entity.set('test2', 2, { guard: false });
 		entity.test2 = 5;
 		this.assertEquals(entity.test2, 5);
+	}
+
+	/**
+	 * 
+	 * @type type
+	 */
+	testEntity_newEntity()
+	{
+		var expected = {
+			name: 'Cake',
+			phone: '010-12345'
+		};
+		
+		this.Customers = CakeJS.ORM.TableRegistry.get('Customers');
+		
+		var entity = this.Customers.newEntity(expected);
+		
+		this.assertTextEquals(entity.name, expected.name);
+		this.assertTextEquals(entity.phone, expected.phone);
+	}
+	
+	/**
+	 * 
+	 * @type type
+	 */
+	testEntity_patchEntity()
+	{
+		var expected = {
+			name: 'Cake',
+			phone: '010-12345'
+		};
+		
+		this.Customers = CakeJS.ORM.TableRegistry.get('Customers');
+		
+		var entity = this.Customers.newEntity();
+		entity = this.Customers.patchEntity(entity, expected);
+		
+		this.assertTextEquals('Cake', entity.name);
+		this.assertTextEquals('010-12345', entity.phone);		
+	}
+	
+	/**
+	 * 
+	 */
+	testEntity_unsetProperty()
+	{
+		let key = 'TestProperty';
+		let value = 94;
+		
+		let customers = CakeJS.ORM.TableRegistry.get('Customers').newEntity();
+		
+		customers.set(key, value);
+		console.log('assertTrue');
+		this.assertTrue(customers.has(key));
+		console.log('assertEquals');
+		this.assertEquals(customers.get(key), value);
+		
+		customers.unsetProperty(key);
+		console.log('assertFalse');
+		this.assertFalse(customers.has(key));
 	}
 }
 module.exports = test.moduleExports();
