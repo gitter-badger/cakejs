@@ -261,6 +261,32 @@ export class TestCase
 	}
 
 	/**
+	 * Fails if expected evaluates to false.
+	 * 
+	 * @param {any} expected Expected value
+	 * @return {string} message Optional message to be displayed on fail.
+	 * 	 
+	 * @throws {AssertionException} Throws if assertion fails
+	 */
+	assertTrue(expected, message)
+	{
+		this.assertEquals(expected, true, message);		
+	}
+	
+	/**
+	 * Fails if expected evaluates to true.
+	 * 
+	 * @param {any} expected Expected value
+	 * @return {string} message Optional message to be displayed on fail.
+	 * 	 
+	 * @throws {AssertionException} Throws if assertion fails
+	 */
+	assertFalse(expected, message)
+	{
+		this.assertEquals(expected, false, message);
+	}
+	
+	/**
 	 * Compares a to b
 	 * 
 	 * @param {any} expected Expected value
