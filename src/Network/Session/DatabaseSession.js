@@ -110,7 +110,6 @@ export class DatabaseSession extends SessionHandlerInterface
 	 */
 	async write(id, data = null)
 	{
-		try{
 		var item = await this._table
 			.find()
 			.where({id: id})
@@ -142,10 +141,6 @@ export class DatabaseSession extends SessionHandlerInterface
 				.where({id: id})
 				.execute();
 		}
-	}catch(e){
-		console.log(e);
-		throw e;
-	}
 	}
 	
 	/**
@@ -156,11 +151,11 @@ export class DatabaseSession extends SessionHandlerInterface
 	 */
 	async destroy(id)
 	{
-		/*await this._table
+		await this._table
 				.query()
 				.delete()
 				.where({id: id})
-				.execute();*/
+				.execute();
 		return true;
 	}
 	
@@ -172,13 +167,7 @@ export class DatabaseSession extends SessionHandlerInterface
 	 */
 	gc(maxlifetime = 0)
 	{
-		var time = new Date().getTime();
-		for(var key in this._sessions){
-			var session = this._sessions[key];
-			if(session.time < time - maxlifetime * 1000){
-				delete this._sessions[key];
-			}
-		}
+		//Not yet implemented
 		return true;
 	}
 }
