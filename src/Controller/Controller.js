@@ -15,11 +15,14 @@
 
 //CakeJS.Controller.Controller
 
-export class Controller {
-	constructor(){
+export class Controller 
+{
+	constructor()
+	{
 		
 	}
-	initialize(){
+	initialize()
+	{
 		
 	}
 }
