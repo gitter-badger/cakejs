@@ -32,9 +32,7 @@ export default class SessionController extends Controller
 	 */
 	async setKey()
 	{
-		console.log("BEGIN WITH setKey Controller");
 		await this.request.session().write("keyA", "valueA");
-		console.log("DONE WITH setKey Controller");
 	}
 	
 	/**
