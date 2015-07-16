@@ -26,8 +26,14 @@ import {DriverManager} from './DriverManager'
 //Utilities
 import clone from '../Utilities/clone'
 
-export class Connection{
-	constructor(config){
+export class Connection
+{
+	
+	_description = null;
+	
+	constructor(config)
+	
+	{
 		this._config = config;
 		
 		var driver = '';
@@ -37,7 +43,8 @@ export class Connection{
 		this.driver(driver, config);
 	}
 	
-	driver(driver = null, config = {}){
+	driver(driver = null, config = {})
+	{
 		if(driver === null){
 			return this._driver;
 		}
@@ -47,28 +54,33 @@ export class Connection{
 		return this._driver
 	}
 	
-	config(){
+	config()
+	{
 		return this._configuration;
 	}
 	
-	async oldQuery(sql){
+	async oldQuery(sql)
+	{
 		if(typeof args[0] !== 'string')
 			throw new InvalidParameterException(args[0], "string");
 		return await this.driver().query.apply(this.driver(), args);
 	}
 	
-	query(sql){
+	query(sql)
+	{
 		var statement = this.prepare(sql);
 		statement.execute();
 		return statement;
 	}
 	
-	prepare(sql){
+	prepare(sql)
+	{
 		var statement = this._driver.prepare(sql);
 		return statement;
 	}
 	
-	async run(query){
+	async run(query)
+	{
 		var statement = this.prepare(query);
 		query.valueBinder().attachTo(statement);
 		await statement.execute();
@@ -76,7 +88,13 @@ export class Connection{
 		return statement;
 	}
 	
-	compileQuery(query, generator){
+	compileQuery(query, generator)
+	{
 		return this.driver().compileQuery(query, generator)[1];
+	}
+	
+	describe()
+	{
+		return this._description;
 	}
 }
