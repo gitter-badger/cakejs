@@ -479,6 +479,7 @@ export class TestCase
 				var newMethodName = this.constructor.name+"."+methodName.substr(4).replace(new RegExp("\_", 'g'), ".");
 				tests = Hash.insert(tests,newMethodName,function(){
 					return new Promise(async (resolve, reject) => {
+						await CakeJS.createServerSingelton();
 						try{
 							try{
 								await __this.setUp();
