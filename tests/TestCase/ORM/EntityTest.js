@@ -86,13 +86,10 @@ var test = new class QueryTest extends TestCase
 		let customers = CakeJS.ORM.TableRegistry.get('Customers').newEntity();
 		
 		customers.set(key, value);
-		console.log('assertTrue');
 		this.assertTrue(customers.has(key));
-		console.log('assertEquals');
 		this.assertEquals(customers.get(key), value);
 		
 		customers.unsetProperty(key);
-		console.log('assertFalse');
 		this.assertFalse(customers.has(key));
 	}
 }
