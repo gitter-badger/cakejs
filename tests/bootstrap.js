@@ -24,9 +24,10 @@ CakeJS.Core.Configure.write('Datasources', {
 		"host": "localhost",
 		"username": "test",
 		"password": "test",
-		"database": "cakejs_test"
+		"database": "test"
 	}
 });
 CakeJS.Core.Configure.write('Web.port', 31337);
+CakeJS.Core.Configure.write('Session.defaults', 'database');
 CakeJS.Datasource.ConnectionManager.config(CakeJS.Core.Configure.consume('Datasources'));
-//CakeJS.Session.SessionManager.config(CakeJS.Core.Configure.consume('Session'));
+CakeJS.Session.SessionManager.config(CakeJS.Core.Configure.consume('Session'));
