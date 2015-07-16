@@ -39,6 +39,7 @@ class Static {
 			if(!(route.action in controller))
 				throw new MissingActionException(route.action);
 			try{
+				await controller.initialize();
 				var result = await controller[route.action].apply(controller, route.params);
 				response.writeHead(200, {'Content-Type': 'application/json'});
 				if(typeof result !== 'undefined')

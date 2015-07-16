@@ -213,15 +213,12 @@ export class Table {
 	
 	entityClass(name = null){
 		if(name === null && !this._entityClass) {
-			var _default = path.resolve(__filename,'..','Entity');
+			var _default = 'Entity';
 			var self = this.constructor.name;
-			var parts = self.split('\\');
-			if(self === 'Table' || count(parts) < 3){
-				this._entityClass = _default;
+			if(self === 'Table'){
+				this._entityClass = ClassLoader.loadClass(_default, "Model/Entity");
 				return this._entityClass;
 			}
-			//var alias = parts.pop();
-			//alias = Inflector.singularize(alias.replace('Entity',''))
 		}
 		
 		if(name !== null){
@@ -235,6 +232,29 @@ export class Table {
 		return this._entityClass;
 	}
 	
+	/**
+	 * TODO: fix support for data and options.
+	 */
+	newEntity(data = null, options = [])
+	{
+		if (data === null) {
+			var entityClass = this.entityClass();
+			console.log(this.registryAlias());
+			return new entityClass({ registryAlias: this.registryAlias() });
+		}
+	}
+	
+	patchEntity(entity, data, options)
+	{
+		// Simple patchEntity test
+		for (var key in entity) {
+			if (key in data)
+				entity.set(key, data[key]);
+		}
+		
+		return entity;
+	}
+	
 	query(){
 		return new Query(this.connection(), this);
 	}
@@ -244,6 +264,7 @@ export class Table {
 		query.select();
 		return this.callFinder(type, query, options);
 	}
+	
 	findAll(query, options){
 		return query;
 	}

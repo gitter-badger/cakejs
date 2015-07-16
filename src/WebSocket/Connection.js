@@ -60,6 +60,7 @@ export class Connection {
 				controller.request.data = request.data;
 				if(!(route.action in controller))
 					throw new MissingActionException(route.action);
+				await controller.initialize();
 				var result = await controller[route.action].apply(controller, route.params);
 				if(typeof result !== 'undefined')
 					response.data = result;
