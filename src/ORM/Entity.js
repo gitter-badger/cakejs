@@ -21,6 +21,8 @@ export class Entity
 	 * Constructor.
 	 * 
 	 * @constructor
+	 * 
+	 * @return {void}
 	 */
 	constructor(properties = [], options = [])
 	{
@@ -79,7 +81,11 @@ export class Entity
 	}
 	
 	/**
+	 * Get a property.
 	 * 
+	 * @param {string} property The property to get.
+	 * 
+	 * @return {mixed} The property value.
 	 */
 	get(property)
 	{
@@ -90,7 +96,11 @@ export class Entity
 	}
 	
 	/**
+	 * Check if property exists.
 	 * 
+	 * @param {string} property The property to check.
+	 * 
+	 * @return {boolean} Returns true if it exists otherwise false.
 	 */
 	has(property)
 	{
@@ -98,17 +108,16 @@ export class Entity
 	}
 	
 	/**
+	 * Delete a property.
 	 * 
+	 * @param {string} property The property to delete.
+	 * 
+	 * @return {void}
 	 */
 	unsetProperty(property)
 	{
 		if (this.has(property)) {
 			delete this._properties[property];
 		}
-	}
-	
-	toArray()
-	{
-		return [];
 	}
 }
