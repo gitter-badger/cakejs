@@ -81,6 +81,7 @@ export var ConnectionManager = new class
 		for(var name in this._configurations){
 			var connection = await this.get(name);
 			this._descriptions[name] = await connection.driver().describe();
+			connection._description = this._descriptions[name];
 		}
 		this._initialized = true;
 	}
