@@ -72,6 +72,7 @@ export class Server extends events.EventEmitter
 		//Preloads managers
 		try{await ControllerManager.initialize();}catch(e){}
 		try{await ProcessManager.initialize();}catch(e){}
+		try{await ConnectionManager.initialize();}catch(e){}
 		
 		//Build routes
 		await Router.initialize();
@@ -111,4 +112,19 @@ export class Server extends events.EventEmitter
 export function createServer()
 {
 	return new Server();
+}
+var __test_server = null;
+export function createServerSingelton()
+{
+	return new Promise(async (resolve, reject) => {
+		try{
+			if(__test_server === null){
+				__test_server = new Server();
+				await __test_server.start();
+			}
+			resolve(__test_server);
+		}catch(e){
+			reject(e);
+		}
+	});
 }
