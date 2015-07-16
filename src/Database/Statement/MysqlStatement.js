@@ -18,14 +18,29 @@
 //Types
 import {PDOStatement} from './PDOStatement';
 
-export class MysqlStatement extends PDOStatement{
-	async execute(params = null){
+export class MysqlStatement extends PDOStatement
+{
+	_results = [];
+	async execute(params = null)
+	{
 		try{
 			var results = await this._driver.execute(this._statement, this._columns);
-			this.results = results[0];
+			var results = results[0];
+			for(var mysqlRow of results){
+				var newRow = {};
+				for(var key in mysqlRow){
+					newRow[key] = mysqlRow[key];
+				}
+				this._results.push(newRow);
+			}
 		}catch(e){
 			
 		}
 		return this;
+	}
+	
+	get results()
+	{
+		return this._results;
 	}
 }
