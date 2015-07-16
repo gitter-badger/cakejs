@@ -22,9 +22,9 @@ export class Entity
 	 * 
 	 * @constructor
 	 */
-	constructor()
+	constructor(properties = [], options = [])
 	{
-		this._fields = {};
+		this._properties = {};
 		this._dirty = false;
 	}
 	
@@ -49,7 +49,7 @@ export class Entity
 	set(property, value, options)
 	{		
 		var setter = false;
-		var guard = true;
+		var guard = false;
 		
 		if (typeof options === 'object') {
 			setter = ('setter' in options) ? options.setter : setter;
@@ -58,43 +58,57 @@ export class Entity
 		
 		Object.defineProperty(this, property, {
 			set: (value) => {
-				console.log('SET');
-						var exists = (property in this._fields);
-						console.log((exists && !this._fields[property].guard));
-						if (exists && !this._fields[property].guard) {							
-							this._fields[property] = {
-								value: value,
-								setter: setter,
-								guard: guard
-							};
-						}
-					},
+				if (!this.has(property) || !this._properties[property].guard) {							
+					this._properties[property] = {
+						value: value,
+						setter: setter,
+						guard: guard
+					};
+				}
+			},
 			get: () => {					
-				console.log('GET');
-					return this._fields[property].value;
+				return this._properties[property].value;
 			}
 		});
 		
-		this._fields[property] = {
+		this._properties[property] = {
 			value: value,
 			setter: setter,
 			guard: guard
 		};
 	}
-/*	
+	
+	/**
+	 * 
+	 */
 	get(property)
 	{
+		if (this.has(property))
+			return this._properties[property].value;
+		
+		return undefined;
 	}
 	
+	/**
+	 * 
+	 */
 	has(property)
 	{
-		return (property in this):
+		return (property in this._properties);
 	}
 	
+	/**
+	 * 
+	 */
 	unsetProperty(property)
 	{
-		if (this.has(property))
-			this[property] = undefined;
+		if (this.has(property)) {
+			delete this._properties[property];
+		}
 	}
-	*/
+	
+	toArray()
+	{
+		return [];
+	}
 }
