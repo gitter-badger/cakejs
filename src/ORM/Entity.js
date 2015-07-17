@@ -38,7 +38,7 @@ export class Entity
 		this._properties = {};
 		this._dirty = {};
 		this._errors = {};
-		this._accessible = {};
+		this._accessible = { '*': true };
 		this._original = {};
 		this._new = true;
 	}
@@ -85,7 +85,7 @@ export class Entity
 		
 		for (let key in property) {
 			let value = property[key];
-			if (('guard' in options && options['guard'] === true) && !this.accessible(key)) {
+			if (('guard' in options && options['guard'] === true) && this.accessible(key) === false) {
 				continue;
 			}
 			
@@ -100,7 +100,9 @@ export class Entity
 				continue;
 			}
 			
-			// TODO: Fix setters.
+			/**
+			 * @todo: fix setters.
+			 */
 			
 			this._properties[key] = value;
 			
@@ -199,6 +201,20 @@ export class Entity
 	}
 	
 	/**
+	 * 
+	 */
+	extract(properties, onlyDirty = false)
+	{
+		let result = {};
+		for (let property of properties) {
+			if (!onlyDirty || this.dirty(property)) {
+				result[property] = this.get(property);
+			}
+		}
+		return result;
+	}
+	
+	/**
 	 * Mark property as dirty.
 	 */
 	dirty(property = null, isDirty = null)
@@ -249,7 +265,7 @@ export class Entity
 		if (set === null || set === undefined) {
 			let value = (property in this._accessible) ? this._accessible[property] : null
 			
-			return (((value === null || value === undefined) && ('*' in this._accessible && this._accessible['*'].length > 0)) || value);
+			return (((value === null || value === undefined) && ('*' in this._accessible && this._accessible['*'] === true)) || value);
 		}
 		
 		if (property === '*') {
