@@ -83,7 +83,9 @@ var test = new class QueryTest extends TestCase
 	async testEntity_saveAndLoadEntities()
 	{
 		this.Customers = CakeJS.ORM.TableRegistry.get('Customers');
-		let entities = await this.Customers.find('all').all();
+		let entities = await this.Customers.find('all').first();
+		//entities.set('testar', 1);
+		console.log(entities);
 		
 		let entity = this.Customers.newEntity();
 		
@@ -91,6 +93,23 @@ var test = new class QueryTest extends TestCase
 		this.assertTrue(await this.Customers.save(entity));
 	}
 	
+	/**
+	 * 
+	 */
+	async testEntity_toArray()
+	{
+		this.Customers = CakeJS.ORM.TableRegistry.get('Customers');
+		let entities = await this.Customers.find('all').all();		
+	}
+	
+	/**
+	 * 
+	 */
+	async testEntity_count()
+	{
+		let results = await this.Customers.find('all').all();
+		let count = results.count();
+	}
 	/**
 	 * 
 	 */
