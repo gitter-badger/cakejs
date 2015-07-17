@@ -311,6 +311,10 @@ export class Table {
 					' table, it has no primary key.');
 		}
 		
+		if (!('id' in data) || (data['id'] === null)) {
+			data['id'] = uuid(null);
+		}
+		
 		// Extract all keys.
 		let keys = [];
 		for (let key in data) {
@@ -319,8 +323,9 @@ export class Table {
 			}
 		}
 		
-		data['id'] = uuid(null);
-
+		console.log(keys);
+		console.log(data);
+			
 		// Execute SQL statement.
 		let statement = await this.query().insert(keys).values(data).execute();		
 	}
