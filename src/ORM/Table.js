@@ -298,7 +298,17 @@ export class Table {
 		}
 		
 		let data = entity.extract(description._columns, true);
-		await this._insert(entity, data);
+		
+		var entityCheck = null;
+		if (('id' in data) && data.id !== null) {
+			entityCheck = await this.find().where({id: data.id}).first();
+		}
+		
+		if(entityCheck === null){
+			await this._insert(entity, data);
+		}else{
+			await this._update(entity, data);
+		}
 		
 		return true;
 	}
@@ -322,12 +332,29 @@ export class Table {
 				keys.push(key);
 			}
 		}
-		
-		console.log(keys);
-		console.log(data);
-			
+					
 		// Execute SQL statement.
 		let statement = await this.query().insert(keys).values(data).execute();		
+	}
+	
+	async _update(entity, data)
+	{
+		let primary = this.primaryKey();
+		if (primary === null) {
+			throw new RuntimeException('Cannot insert row in ' + this.table() + 
+					' table, it has no primary key.');
+		}
+		
+		// Extract all keys.
+		let keys = [];
+		for (let key in data) {
+			if (data.hasOwnProperty(key)) {
+				keys.push(key);
+			}
+		}
+					
+		// Execute SQL statement.
+		let statement = await this.query().update().set(data).where({id: data.id}).execute();		
 	}
 	
 	find(type = 'all', options = {}){
