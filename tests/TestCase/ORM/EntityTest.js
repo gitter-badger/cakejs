@@ -110,6 +110,19 @@ var test = new class QueryTest extends TestCase
 		let results = await this.Customers.find('all').all();
 		let count = results.count();
 	}
+	
+	/**
+	 * 
+	 */
+	
+	async testEntity_newId()
+	{
+		this.Customers = CakeJS.ORM.TableRegistry.get('Customers');
+		let entity = this.Customers.newEntity();
+		entity = this.Customers.patchEntity(entity, { id: '12345', name: 'Cake', phone: '010-12345' });
+		this.assertTrue(await this.Customers.save(entity));		
+	}
+	
 	/**
 	 * 
 	 */
