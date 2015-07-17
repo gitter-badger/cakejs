@@ -219,10 +219,6 @@ export class IntegrationTestCase extends TestCase
 	}
 	
 	/**
-	 * @todo Continue here
-	 */
-	
-	/**
      * Asserts content exists in the response body.
      *
      * @param {string} content The content to check for.
