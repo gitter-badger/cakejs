@@ -33,7 +33,7 @@ export class Entity
 	 * 
 	 * @return {void}
 	 */
-	constructor(properties = [], options = [])
+	constructor(properties = null, options = [])
 	{
 		this._properties = {};
 		this._dirty = {};
@@ -41,6 +41,12 @@ export class Entity
 		this._accessible = { '*': true };
 		this._original = {};
 		this._new = true;
+		
+		if (properties !== null) {
+			for (let key in properties) {
+				this.set(key, properties[key]);
+			}			
+		}
 	}
 	
 	/**
@@ -65,8 +71,9 @@ export class Entity
 	{	
 		let guard = false;
 		
-		if (options === undefined)
+		if (options === undefined) {
 			options = {};
+		}
 		
 		let isString = (typeof property === 'string');
 		if (isString && property !== '') {
@@ -135,11 +142,16 @@ export class Entity
 			value = this._properties[property];
 		}
 
-		// TODO: Fix setters.
+		/**
+		 * @todo: Fix setters.
+		 */
 		
 		return value;
 	}
 	
+	/**
+	 * 
+	 */
 	getOriginal(property)
 	{
 		if (typeof property !== 'string' || property.length === 0) {
@@ -235,18 +247,25 @@ export class Entity
 		
 		this._dirty[property] = true;
 		
-		if (property in this._errors)
+		if (property in this._errors) {
 			delete this._errors[property];
+		}
 		
 		return true;
 	}
 	
+	/**
+	 * 
+	 */
 	clean()
 	{
 		this._dirty = [];
 		this._errors = [];
 	}
 	
+	/**
+	 * 
+	 */
 	isNew(persisted = null)
 	{
 		if (persisted === null) {
@@ -260,12 +279,19 @@ export class Entity
 		}
 	}
 	
+	/**
+	 * 
+	 */
 	accessible(property, set)
 	{
 		if (set === null || set === undefined) {
-			let value = (property in this._accessible) ? this._accessible[property] : null
+			let value = (property in this._accessible) ? 
+				this._accessible[property] : null
 			
-			return (((value === null || value === undefined) && ('*' in this._accessible && this._accessible['*'] === true)) || value);
+			return (((value === null || value === undefined) 
+					&& ('*' in this._accessible 
+					&& this._accessible['*'] === true)) 
+					|| value);
 		}
 		
 		if (property === '*') {
