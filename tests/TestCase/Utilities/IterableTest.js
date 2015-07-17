@@ -25,20 +25,26 @@ var Iterable = CakeJS.Utilities.Iterable;
  */
 class Customers extends Iterable
 {
-	constructor()
-	{
-		super();		
-	}
-	
-	addCustomer(id, name, title)
-	{
-		super.set(id, { id: id, name: name, title: title });
-	}	
-	
-	getCustomer(id)
-	{
-		return super.get(id);
-	}
+    constructor()
+    {
+        super();
+        
+        this.customers = {};
+    }
+
+    set(id, name, title)
+    {
+        this.customers[id] = { id: id, name: name, title: title };
+    }	
+    
+    get(id) {
+        return this.customers[id];
+    }
+
+    toObject()
+    {
+        return this.customers;
+    }
 }
 
 /**
@@ -63,9 +69,9 @@ var test = new class IterableTest extends TestCase {
 		}
 		
 		// Set customer.
-		customers.addCustomer(expected.id, expected);
+		customers.set(expected.id, expected);
 		
-		let customer = customers.getCustomer(expected.id);
+		let customer = customers.get(expected.id);
 		this.assertEquals(customer.id, expected.id);
 	}
 	
@@ -93,12 +99,12 @@ var test = new class IterableTest extends TestCase {
 		
 		// Add som test customers.
 		for (let i = 0; i < expected.length; i++) {
-			customers.addCustomer(expected[i].id, expected[i].name, expected[i].title);
+			customers.set(expected[i].id, expected[i].name, expected[i].title);
 		}
 		
 		// Test if looping trough our customers work as expected.
 		let index = 0; // Index of the expected data.
-		for (let [customerId, customer] of customers.items()) {
+		for (let [customerId, customer] of customers) {
 			this.assertTextEquals(customerId, expected[index].id);
 			this.assertTextEquals(JSON.stringify(customer), JSON.stringify(expected[index]));
 			index++;

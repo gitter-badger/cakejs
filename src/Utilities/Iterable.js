@@ -15,7 +15,7 @@
  */
 
 // Exceptions
-import {InvalidArgumentException} from '../Exception/InvalidArgumentException';
+import {NotImplementedException} from '../Exception/NotImplementedException';
 
 /**
  * Iterable class.
@@ -24,45 +24,53 @@ import {InvalidArgumentException} from '../Exception/InvalidArgumentException';
  */
 export class Iterable
 {
-	/**
-	 * Constructor.
-	 * 
-	 * @constructor
-	 */
-	constructor()
-	{
-		this._items = [];
-	}
-	
-	/**
-	 * 
-	 */
-	set(key, value)
-	{
-		this._items[key] = value;
-	}
-	
-	/**
-	 * 
-	 */
-	get(key)
-	{
-		if (!(key in this._items)) {
-			return null;
-		}
-		
-		return this._items[key];
-	}
-	
-	/**
-	 * Using generator to loop trough items.
-	 */
-	*items()
-	{
-		for (let item in this._items) {
-			if (Object.prototype.hasOwnProperty.call(this._items, item)) {
-				yield [item, this._items[item]];
-			}
-		}
-	}
+    /**
+     * 
+     */
+    constructor()
+    {
+    }
+    
+    /**
+     * 
+     */
+    next()
+    {
+        let object = this.toObject();
+        let keys = Reflect.ownKeys(object);
+        let keyIndex = 0;
+        
+        return {
+            [Symbol.iterator]() {
+                return this;
+            },
+            
+            next() {
+                if (keyIndex < keys.length) {
+                    let key = keys[keyIndex];
+                    ++keyIndex;
+                    
+                    return { value: [key, object[key]] };
+                } else {
+                    return { done: true };
+                }
+            }
+        }
+    }
+    
+    /**
+     * 
+     */
+    toObject()
+    {
+        throw new NotImplementedException();
+    }
+    
+    /**
+     * 
+     */
+    [Symbol.iterator]()
+    {
+        return this.next();
+    }	
 }
