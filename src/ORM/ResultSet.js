@@ -33,12 +33,42 @@ export class ResultSet extends CollectionInterface
 		this._defaultTable = this._query.repository();
 		this._entityClass = repository.entityClass();
 		this._defaultAlias = this._defaultTable.alias();
+		this._count = null;
 	}
 	
 	
 	first()
 	{
-		return this._statement.results[0];
+		if (this._statement.results.length === 0) {
+			return null;
+		}
+		
+		return new this._entityClass(this._statement.results[0]);
 	}
-
+	
+	count()
+	{
+		return this._statement.results.length;
+	}
+	
+	toList()
+	{
+		return this.toArray();
+	}
+	
+	toArray()
+	{
+		let result = [];
+		
+		for (var i = 0; i < this._statement.results.length; i++) {
+			result.push(new this._entityClass(this._statement.results[i]));
+		}
+		
+		return result;
+	}
+	
+	toObject()
+	{
+		return this.toArray();		
+	}
 }
