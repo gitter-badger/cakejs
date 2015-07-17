@@ -33,6 +33,7 @@ import isArray from '../Utilities/isArray';
 import toArray from '../Utilities/toArray';
 import count from '../Utilities/count';
 import {Marshaller} from './Marshaller'
+import uuid from '../Utilities/uuid'
 
 export class Table {
 	constructor(config){
@@ -266,6 +267,62 @@ export class Table {
 	
 	query(){
 		return new Query(this.connection(), this);
+	}
+	
+	async load()
+	{
+		
+	}
+	
+	async save(entity, options = {})
+	{
+		options['atomic'] = true;
+		options['associated'] = true;
+		options['checkRules'] = true;
+		options['checkExisting'] = true;
+		options['_primary'] = true;
+		
+		if (entity.isNew() === false && entity.dirty() === false) {
+			return entity;
+		}
+		
+		return await this._processSave(entity, options);
+	}
+	
+	async _processSave(entity, options)
+	{
+		let description = this.connection().describe(this.table());
+		let columns = {};
+		for (let columnName of description._columns) {
+			let column = description[columnName];
+		}
+		
+		let data = entity.extract(description._columns, true);
+		await this._insert(entity, data);
+		
+		return true;
+	}
+	
+	async _insert(entity, data)
+	{
+		let primary = this.primaryKey();
+		if (primary === null) {
+			throw new RuntimeException('Cannot insert row in ' + this.table() + 
+					' table, it has no primary key.');
+		}
+		
+		// Extract all keys.
+		let keys = [];
+		for (let key in data) {
+			if (data.hasOwnProperty(key)) {
+				keys.push(key);
+			}
+		}
+		
+		data['id'] = uuid(null);
+
+		// Execute SQL statement.
+		let statement = await this.query().insert(keys).values(data).execute();		
 	}
 	
 	find(type = 'all', options = {}){
