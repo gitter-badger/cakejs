@@ -31,10 +31,11 @@ var test = new class QueryTest extends TestCase
 
 		this.assertEquals(entity.get('test1'), 3);
 		
-		entity.set('test2', 2, { guard: true });
+		entity.set('test2', 2);
 		entity.accessible('test2', false);
-		entity.set('test2', 5);
-		this.assertEquals(entity.get('test2'), 5);
+		
+		entity.set('test2', 5, { guard: true });
+		this.assertEquals(entity.get('test2'), 2);
 	}
 
 	/**
@@ -74,6 +75,20 @@ var test = new class QueryTest extends TestCase
 		
 		this.assertTextEquals('Cake', entity.get('name'));
 		this.assertTextEquals('010-12345', entity.get('phone'));
+	}
+	
+	/**
+	 * 
+	 */
+	async testEntity_saveAndLoadEntities()
+	{
+		this.Customers = CakeJS.ORM.TableRegistry.get('Customers');
+		let entities = await this.Customers.find('all').all();
+		
+		let entity = this.Customers.newEntity();
+		
+		entity = this.Customers.patchEntity(entity, { name: 'Cake', phone: '010-12345' });
+		this.assertTrue(await this.Customers.save(entity));
 	}
 	
 	/**
