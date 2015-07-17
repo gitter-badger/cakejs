@@ -18,38 +18,57 @@
 //Uses
 var TestCase = CakeJS.TestSuite.TestCase;
 
-var test = new class QueryTest extends TestCase
+//
+var TableRegistry = CakeJS.ORM.TableRegistry;
+
+var test = new class EntityTest extends TestCase
 {
 	/**
 	 * 
 	 */
-	testEntity_setAndGet()
+	test_Properties_SetAndGet()
 	{
 		var entity = new CakeJS.ORM.Entity();
 		
-		entity.set('test1', 3);
+		entity.phone = 3;
+		entity.accessible('phone', false);
+		
+		entity.set('phone', 5, {'guard': true});
 
-		this.assertEquals(entity.get('test1'), 3);
-		
-		entity.set('test2', 2);
-		entity.accessible('test2', false);
-		
-		entity.set('test2', 5, { guard: true });
-		this.assertEquals(entity.get('test2'), 2);
+		this.assertEquals(entity.phone, 3);
 	}
 
+
+	/**
+	 * 
+	 */
+	test_Properties_Unset()
+	{
+		let key = 'TestProperty';
+		let value = 94;
+		
+		let customers = TableRegistry.get('Customers').newEntity();
+		
+		customers.set(key, value);
+		this.assertTrue(customers.has(key));
+		this.assertEquals(customers.get(key), value);
+		
+		customers.unsetProperty(key);
+		this.assertFalse(customers.has(key));
+	}
+	
 	/**
 	 * 
 	 * @type type
 	 */
-	testEntity_newEntity()
+	test_Table_NewEntity()
 	{
 		var expected = {
 			name: 'Cake',
 			phone: '010-12345'
 		};
 		
-		this.Customers = CakeJS.ORM.TableRegistry.get('Customers');
+		this.Customers = TableRegistry.get('Customers');
 		
 		var entity = this.Customers.newEntity(expected);
 		
@@ -61,14 +80,14 @@ var test = new class QueryTest extends TestCase
 	 * 
 	 * @type type
 	 */
-	testEntity_patchEntity()
+	test_Table_PatchEntity()
 	{
 		var expected = {
 			name: 'Cake',
 			phone: '010-12345'
 		};
 		
-		this.Customers = CakeJS.ORM.TableRegistry.get('Customers');
+		this.Customers = TableRegistry.get('Customers');
 		
 		var entity = this.Customers.newEntity();
 		entity = this.Customers.patchEntity(entity, expected);
@@ -76,15 +95,36 @@ var test = new class QueryTest extends TestCase
 		this.assertTextEquals('Cake', entity.get('name'));
 		this.assertTextEquals('010-12345', entity.get('phone'));
 	}
+
+
+	/**
+	 * 
+	 */
+	async test_Table_Count()
+	{
+		let results = await this.Customers.find('all').all();
+		let count = results.count();
+	}
 	
 	/**
 	 * 
 	 */
-	async testEntity_saveAndLoadEntities()
+	
+	async test_Table_NewId()
 	{
-		this.Customers = CakeJS.ORM.TableRegistry.get('Customers');
+		this.Customers = TableRegistry.get('Customers');
+		let entity = this.Customers.newEntity();
+		entity = this.Customers.patchEntity(entity, { id: '12345', name: 'Cake', phone: '010-12345' });
+		this.assertTrue(await this.Customers.save(entity));		
+	}
+	
+	/**
+	 * 
+	 */
+	async test_Table_SaveAndLoadEntities()
+	{
+		this.Customers = TableRegistry.get('Customers');
 		let entities = await this.Customers.find('all').first();
-		//entities.set('testar', 1);
 		
 		let entity = this.Customers.newEntity();
 		
@@ -95,49 +135,12 @@ var test = new class QueryTest extends TestCase
 	/**
 	 * 
 	 */
-	async testEntity_toArray()
+	async testToArray()
 	{
-		this.Customers = CakeJS.ORM.TableRegistry.get('Customers');
+		this.Customers = TableRegistry.get('Customers');
 		let entities = await this.Customers.find('all').all();		
 	}
 	
-	/**
-	 * 
-	 */
-	async testEntity_count()
-	{
-		let results = await this.Customers.find('all').all();
-		let count = results.count();
-	}
 	
-	/**
-	 * 
-	 */
-	
-	async testEntity_newId()
-	{
-		this.Customers = CakeJS.ORM.TableRegistry.get('Customers');
-		let entity = this.Customers.newEntity();
-		entity = this.Customers.patchEntity(entity, { id: '12345', name: 'Cake', phone: '010-12345' });
-		this.assertTrue(await this.Customers.save(entity));		
-	}
-	
-	/**
-	 * 
-	 */
-	testEntity_unsetProperty()
-	{
-		let key = 'TestProperty';
-		let value = 94;
-		
-		let customers = CakeJS.ORM.TableRegistry.get('Customers').newEntity();
-		
-		customers.set(key, value);
-		this.assertTrue(customers.has(key));
-		this.assertEquals(customers.get(key), value);
-		
-		customers.unsetProperty(key);
-		this.assertFalse(customers.has(key));
-	}
 }
 module.exports = test.moduleExports();
