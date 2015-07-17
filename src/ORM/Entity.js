@@ -44,7 +44,7 @@ export class Entity
 		
 		if (properties !== null) {
 			for (let key in properties) {
-				this.set(key, properties[key]);
+				this.set(key, properties[key]);				
 			}			
 		}
 	}
@@ -92,6 +92,7 @@ export class Entity
 		
 		for (let key in property) {
 			let value = property[key];
+			
 			if (('guard' in options && options['guard'] === true) && this.accessible(key) === false) {
 				continue;
 			}
@@ -102,22 +103,19 @@ export class Entity
 				this._original[key] = this._properties[key];
 			}
 			
-			if (!options['setter']) {
-				this._properties[key] = value;
-				continue;
+			if (this.hasOwnProperty(key) === false) {
+				Object.defineProperty(this, key, {
+					set: (x) => { this.set(key, x); },
+					get: () => { return this._properties[key]; }
+				});				
 			}
 			
-			/**
-			 * @todo: fix setters.
-			 */
+			if ('setter' in options && options['setter'] !== true) {
+				this._properties[key] = value;
+				continue;
+			}						
 			
 			this._properties[key] = value;
-			
-			Object.defineProperty(this, key, {
-				set: (x) => { this.set(key, x); },
-				get: () => { return this._properties[key]; }
-			});
-			
 		}
 		
 		return this;
@@ -137,7 +135,7 @@ export class Entity
 		}
 		
 		let value = null;
-		
+
 		if (property in this._properties) {
 			value = this._properties[property];
 		}
