@@ -77,28 +77,25 @@ export class DatabaseSession extends SessionHandlerInterface
 	 */
 	async read(id)
 	{
-		var item = await this._table
+		var entity = await this._table
 			.find()
 			.where({id: id})
 			.first();		
-		if(item === null){
-			item = {
+		if(entity === null){
+			var entity = this._table.newEntity();
+			entity = this._table.patchEntity(entity, {
 				id: id,
-				data: null,
 				expires: new Date(new Date().getTime()+this._timeout),
 				created: new Date()
-			};
-			await this._table
-					.query()
-					.insert(['id', 'expires', 'created', 'data'])
-					.values(item)
-					.execute();
+			});
+			if(await this._table.save(entity) !== true){
+				process.exit(0);
+			}			
+		}
+		if(entity.get('data') === null){
 			return {};
 		}
-		if(item.data === null){
-			return {};
-		}
-		return JSON.parse(item.data);
+		return JSON.parse(entity.get('data'));
 	}
 	
 	/**
@@ -110,37 +107,24 @@ export class DatabaseSession extends SessionHandlerInterface
 	 */
 	async write(id, data = null)
 	{
-		var item = await this._table
+		var entity = await this._table
 			.find()
 			.where({id: id})
 			.first();
-		if(item === null){
-			item = {
+		if(entity === null){
+			entity = this._table.newEntity();
+			entity = this._table.patchEntity(entity, {
 				id: id,
-				expires: new Date(new Date().getTime()+this._timeout),
-				created: new Date(),
-				data: null
-			};
-			if(data !== null){
-				item.data = JSON.stringify(data);
-			}
-			await this._table
-				.query()
-				.insert(['id', 'expires', 'created', 'data'])
-				.values(item)
-				.execute();
-		}else{
-			if(data !== null){
-				item.data = JSON.stringify(data);
-			}
-			item.expires = new Date(new Date().getTime()+this._timeout).format('mysqlDateTime');
-			await this._table
-				.query()
-				.update()
-				.set(item)
-				.where({id: id})
-				.execute();
+				created: new Date()
+			});
 		}
+		entity.set('expires', new Date(new Date().getTime()+this._timeout).format('mysqlDateTime'));
+		if(data !== null){
+			entity.set('data', JSON.stringify(data));
+		}
+		if(await this._table.save(entity) !== true){
+			process.exit(0);
+		}			
 	}
 	
 	/**
