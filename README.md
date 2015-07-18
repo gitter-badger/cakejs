@@ -19,6 +19,8 @@ projects scalable easy.
 
 At the moment the master is very unstable, under many changes and improvements.
 
+Old version on NMP, and will change as soon as next release is ready
+
 ## Installation
 
 ```bash
