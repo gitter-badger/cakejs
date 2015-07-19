@@ -84,6 +84,7 @@ class Console
                     }
                 } else {
                     this.describe(plugin, parameters);
+                    break;
                 }
             }
         }

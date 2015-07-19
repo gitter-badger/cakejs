@@ -30,19 +30,27 @@ export class Command
             'parameters': {}
         };
         
-        
+        let autoIndex = 0;
         for (let i = 0; i < this.parameters.length; i++) {
             let parameter = this.parameters[i];
             
-            let index = argv.indexOf(parameter.name);
-            if (index !== -1) {
-                let value = argv[index+1];
+            if ('auto' in parameter && parameter.auto === true) {
+                let value = null;
+                if (autoIndex < argv.length)
+                    value = argv[autoIndex];
                 result.parameters[parameter.name] = (value === undefined) ? null : value;
+                autoIndex++;
             } else {
-                if (!('optional' in parameter) || parameter.optional === false) {
-                    result.errors.push(parameter);
+                let index = argv.indexOf(parameter.name);
+                if (index !== -1) {
+                    let value = argv[index+1];
+                    result.parameters[parameter.name] = (value === undefined) ? null : value;
                 } else {
-                    result.parameters[parameter.name] = null;
+                    if (!('default' in parameter)) {
+                        result.errors.push(parameter);
+                    } else {
+                        result.parameters[parameter.name] = parameter.default;                        
+                    }
                 }
             }
         }

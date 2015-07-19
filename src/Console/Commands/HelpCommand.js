@@ -16,11 +16,12 @@ export class HelpCommand extends Command
     {
         this.setName('help');
         this.setDescription('Display help.');
-        this.setManual('To use a plugin with an argument you type the argument followed by its value, for example help plugin test will display help for the plugin test.')
+        this.setManual('TODO: Detailed help.')
         this.setParameter({
            'name': 'plugin',
            'optional': true,
            'description': 'Display help for a specific plugin.',
+           'auto': true
         });
     }
     
@@ -32,7 +33,7 @@ export class HelpCommand extends Command
                 engine.out('[%COMMAND%' + plugins[plugin].getName() + '%RESET%] - ' + plugins[plugin].getDescription());
             }
             engine.out('');
-            engine.out('For additional help type: %EM%help plugin <plugin>%RESET%.');
+            engine.out('For additional help type: %EM%help <command>%RESET%.');
         } else {
             let plugins = engine.getPlugins();
             if (parameters.plugin in plugins) {
