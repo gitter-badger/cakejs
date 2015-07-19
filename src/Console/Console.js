@@ -81,7 +81,7 @@ class Console
             if (plugin in this.configuration.plugins.plugins) {
                 let parameters = this.configuration.plugins.plugins[plugin].prepare(this.argv.slice(1));
                 if (parameters.errors.length === 0) {
-                    this.configuration.plugins.plugins[plugin].execute(this, parameters.parameters);
+                    this.configuration.plugins.plugins[plugin].execute(this, parameters.parameters, parameters.values);
                 } else {
                     this.describe(this.configuration.plugins.plugins[plugin], parameters);
                 }
@@ -100,27 +100,49 @@ class Console
             this.out('Use %COMMAND%help%RESET% to list all commands.');
         }
     }
+    
     describe(plugin, parameters)
     {
         let usage = 'Usage: %COMMAND%' + plugin.getName() + '%RESET% ';
-        let optional = '';
-        let required = '';
+        
         for (let i = 0; i < plugin.getParameterCount(); i++) {
             let parameter = plugin.getParameter(i);
             
+            let parameterStart = '';
+            let parameterEnd = '';
             if (!('optional' in parameter ) || parameter.optional === false) {
-                required += '<%REQUIRED%' + parameter.name + '%RESET%> ';
+                parameterStart = '<%REQUIRED%';
+                parameterEnd = '%RESET%> ';
             } else {
-                optional += '[:%OPTIONAL%' + parameter.name + ' VALUE%RESET%] ';                
+                parameterStart = '[%OPTIONAL%'
+                parameterEnd = '%RESET%] ';
+            }
+            
+            if (!('type' in parameter) || parameter.type === 'parameter') {
+                parameterStart += ':' + parameter.name;
+            }
+            
+            if ('length' in parameter && parameter.length > 0) {
+                if (!('type' in parameter) || parameter.type === 'parameter') {
+                    parameterStart += ' ';
+                }
+                for (let j = 0; j < parameter.length; j++) {
+                    parameterStart += '(' + parameter.name + j + ')';
+                    if (j+1 < parameter.length)
+                        parameterStart += ' ';
+                }   
+            } 
+            
+            usage += parameterStart + parameterEnd;
+        }
+        this.out(usage);
+
+        if (parameters.errors.length > 0) {
+            this.out('The command [%COMMAND%' + plugin.getName() + '%RESET%] was expecting more parameters:');
+            for (let i = 0; i < parameters.errors.length; i++) {
+                this.out(' * <%REQUIRED%' + parameters.errors[i].name + '%RESET%> - ' + parameters.errors[i].description);
             }
         }
-        
-        this.out(usage + optional + required);
-
-        this.out('The command [%COMMAND%' + plugin.getName() + '%RESET%] was expecting more parameters:');
-        for (let i = 0; i < parameters.errors.length; i++) {
-            this.out(' * <%REQUIRED%' + parameters.errors[i].name + '%RESET%> - ' + parameters.errors[i].description);
-        }        
     }
     
     out(text)

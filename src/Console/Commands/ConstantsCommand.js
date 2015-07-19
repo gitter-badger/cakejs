@@ -20,12 +20,12 @@ export class ConstantsCommand extends Command
         this.setParameter({
            'name': 'bootstrap',
            'optional': true,
-           'description': 'Override default bootstrap.',
-           'auto': true
+           'type': 'parameter',
+           'description': 'Override default bootstrap.'
         });
     }
     
-    execute(engine, parameters)
+    execute(engine, parameters, values)
     {
         let bootstrapFile = '';
         if (parameters.bootstrap !== null) {
@@ -34,6 +34,7 @@ export class ConstantsCommand extends Command
             bootstrapFile = require('path').resolve(process.cwd(), 'bootstrap.js');
         }
         
+        engine.out('Trying to load "%EM%' + bootstrapFile + '%RESET%".');
         if (require('fs').existsSync(bootstrapFile)) {
             require(bootstrapFile);
             

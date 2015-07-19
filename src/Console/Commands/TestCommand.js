@@ -27,23 +27,36 @@ export class TestCommand extends Command
         this.setParameter({
            'name': 'param_a',
            'optional': true,
+           'length': 3,
+           'type': 'parameter',
            'description': 'Optional A.'
         });        
         this.setParameter({
            'name': 'param_b',
            'optional': false,
+           'length': 2,
+           'type': 'value',
            'description': 'Optional B.'
         });        
 
         this.setParameter({
            'name': 'param_c',
            'optional': true,
+           'type': 'parameter',
            'description': 'Optional C.'
         });        
     }
     
-    execute(engine, parameters)
+    execute(engine, parameters, values)
     {        
+        console.log('param_a');
+        console.log(parameters.param_a);
+        console.log('param_b');
+        console.log(values.param_b);
+        console.log('param_c');
+        console.log(parameters.param_c);
+        
+        
         engine.out('Not implemented yet...');
         /*
         if (this.loadBootstrap(engine, path.resolve(process.cwd(), parameters.bootstrap))) {

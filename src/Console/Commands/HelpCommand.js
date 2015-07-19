@@ -20,27 +20,28 @@ export class HelpCommand extends Command
         this.setParameter({
            'name': 'detailed',
            'optional': true,
+           'type': 'value',
            'description': 'Display detailed help for a specific command.'
         });
     }
     
-    execute(engine, parameters)
+    execute(engine, parameters, values)
     {
-        if (parameters.detailed === null) {
+        if (values.detailed === null) {
             let plugins = engine.getPlugins();
             for (let plugin in plugins) {
                 engine.out('[%COMMAND%' + plugins[plugin].getName() + '%RESET%] - ' + plugins[plugin].getDescription());
             }
             engine.out('');
-            engine.out('Use %COMMAND%help%RESET% :detailed COMMAND for detailed help.');
+            engine.out('Use %COMMAND%help%RESET% [command] for detailed help.');
         } else {
             let plugins = engine.getPlugins();
-            if (parameters.detailed in plugins) {
-                engine.out('[%COMMAND%' + plugins[parameters.detailed].getName() + '%RESET%] - ' + plugins[parameters.detailed].getDescription());
+            if (values.detailed in plugins) {
+                engine.out('[%COMMAND%' + plugins[values.detailed].getName() + '%RESET%] - ' + plugins[values.detailed].getDescription());
                 engine.out('==========');
-                engine.out(plugins[parameters.detailed].getManual());
+                engine.out(plugins[values.detailed].getManual());
             } else {
-                engine.out('Unknown command "%ERROR%' + parameters.detailed + '%RESET%".');
+                engine.out('Unknown command "%ERROR%' + values.detailed + '%RESET%".');
             }
         }
         
