@@ -18,30 +18,29 @@ export class HelpCommand extends Command
         this.setDescription('Display help.');
         this.setManual('TODO: Detailed help.')
         this.setParameter({
-           'name': 'plugin',
+           'name': 'detailed',
            'optional': true,
-           'description': 'Display help for a specific plugin.',
-           'auto': true
+           'description': 'Display detailed help for a specific command.'
         });
     }
     
     execute(engine, parameters)
     {
-        if (parameters.plugin === null) {
+        if (parameters.detailed === null) {
             let plugins = engine.getPlugins();
             for (let plugin in plugins) {
                 engine.out('[%COMMAND%' + plugins[plugin].getName() + '%RESET%] - ' + plugins[plugin].getDescription());
             }
             engine.out('');
-            engine.out('For additional help type: %EM%help <command>%RESET%.');
+            engine.out('Use %COMMAND%help%RESET% :detailed COMMAND for detailed help.');
         } else {
             let plugins = engine.getPlugins();
-            if (parameters.plugin in plugins) {
-                engine.out('[%COMMAND%' + plugins[parameters.plugin].getName() + '%RESET%] - ' + plugins[parameters.plugin].getDescription());
+            if (parameters.detailed in plugins) {
+                engine.out('[%COMMAND%' + plugins[parameters.detailed].getName() + '%RESET%] - ' + plugins[parameters.detailed].getDescription());
                 engine.out('==========');
-                engine.out(plugins[parameters.plugin].getManual());
+                engine.out(plugins[parameters.detailed].getManual());
             } else {
-                engine.out('Unknown command "%ERROR%' + parameters.plugin + '%RESET%".');
+                engine.out('Unknown command "%ERROR%' + parameters.detailed + '%RESET%".');
             }
         }
         

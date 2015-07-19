@@ -25,9 +25,20 @@ export class TestCommand extends Command
         this.setDescription('Run tests.');
         this.setManual('Run Mocha tests...')
         this.setParameter({
-           'name': 'bootstrap',
-           'default': '.',
-           'description': 'The bootstrap to use.'
+           'name': 'param_a',
+           'optional': true,
+           'description': 'Optional A.'
+        });        
+        this.setParameter({
+           'name': 'param_b',
+           'optional': false,
+           'description': 'Optional B.'
+        });        
+
+        this.setParameter({
+           'name': 'param_c',
+           'optional': true,
+           'description': 'Optional C.'
         });        
     }
     

@@ -30,31 +30,36 @@ export class Command
             'parameters': {}
         };
         
-        let autoIndex = 0;
+        let requiredIndex = 0;
         for (let i = 0; i < this.parameters.length; i++) {
             let parameter = this.parameters[i];
             
-            if ('auto' in parameter && parameter.auto === true) {
-                let value = null;
-                if (autoIndex < argv.length)
-                    value = argv[autoIndex];
-                result.parameters[parameter.name] = (value === undefined) ? null : value;
-                autoIndex++;
-            } else {
-                let index = argv.indexOf(parameter.name);
+            if ('optional' in parameter && parameter.optional === true) {
+                let index = argv.indexOf(':' + parameter.name);
                 if (index !== -1) {
-                    let value = argv[index+1];
-                    result.parameters[parameter.name] = (value === undefined) ? null : value;
-                } else {
-                    if (!('default' in parameter)) {
-                        result.errors.push(parameter);
-                    } else {
-                        result.parameters[parameter.name] = parameter.default;                        
+                    if (requiredIndex < index+1) {
+                        requiredIndex = index+2;
                     }
+                    result.parameters[parameter.name] = (i+1 < argv.length) ? argv[i+1] : null;
+                } else {
+                    result.parameters[parameter.name] = null;
                 }
             }
         }
         
+        for (let i = 0; i < this.parameters.length; i++) {
+            let parameter = this.parameters[i];
+            
+            if (!('optional' in parameter) || parameter.optional === false) {
+                if (requiredIndex < argv.length) {
+                    result.parameters[parameter.name] = argv[requiredIndex];
+                    requiredIndex++;
+                } else {
+                    result.errors.push(parameter);
+                }
+            }
+        }
+                
         return result;
     }
     
@@ -91,5 +96,12 @@ export class Command
     setParameter(parameter)
     {
         this.parameters.push(parameter);
+    }
+    
+    getParameterCount() {
+        return this.parameters.length;
+    }
+    getParameter(index) {
+        return this.parameters[index];
     }
 }
