@@ -1,1 +1,2 @@
-babel-node --stage 0 cake.js @$
+babel-node --stage 0 ../src/Console/Command.js
+babel-node --stage 0 ../src/Console/Console.js $@
