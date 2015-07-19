@@ -15,8 +15,16 @@
 
 //CakeJS.Controller.Exception.ClientException
 
-export class ClientException{
-	constructor(data){
+/**
+ * This class is throwed when a object or primitive
+ * shall be passed to the client
+ * 
+ * @class ClientException
+ */
+export class ClientException
+{
+	constructor(data)
+	{
 		this.data = data;
 	}
 }

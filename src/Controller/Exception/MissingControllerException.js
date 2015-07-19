@@ -15,11 +15,16 @@
 
 //CakeJS.Controller.Exception.MissingControllerException
 
-//Types
+//Exception
 import {Exception} from '../../Core/Exception/Exception'
 
-export class MissingControllerException extends Exception{
-	constructor(controller){
+/**
+ * @class MissingControllerException
+ */
+export class MissingControllerException extends Exception
+{
+	constructor(controller)
+	{
 		super("Controller "+controller+" does not exist");
 	}
 }
