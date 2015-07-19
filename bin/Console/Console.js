@@ -55,8 +55,8 @@ class Console
                 }
             },
             'version': {
-                'major': 1,
-                'minor': 0,
+                'major': 0,
+                'minor': 1,
                 'patch': 0
             }            
         };
@@ -181,18 +181,23 @@ class Console
      */
     out(text)
     {
-        if (typeof text === 'string' && this.configuration.colors.enabled === true) {
-            for (let key in this.configuration.colors.theme) {
-                let color = this.configuration.colors.theme[key];
-                let code = this.configuration.colors.colors[color];
-                
-                let regexp = new RegExp('(\%' + key.toUpperCase() + '\%)', 'g');
-                                
-                text = text.replace(regexp, code);
+        if (typeof text === 'string') { 
+            if (this.configuration.colors.enabled === true) {
+                for (let key in this.configuration.colors.theme) {
+                    let color = this.configuration.colors.theme[key];
+                    let code = this.configuration.colors.colors[color];
+
+                    let regexp = new RegExp('(\%' + key.toUpperCase() + '\%)', 'g');
+
+                    text = text.replace(regexp, code);
+                }   
+            } else {
+                let regexp = new RegExp('(\%[A-Za-z0-9]+\%)', 'gi');
+                text = text.replace(regexp, '');
             }
-        }
-        
-        console.log(text);
+            
+            console.log(text);
+        }    
     }
     
     /**
@@ -217,6 +222,15 @@ class Console
     getVersion()
     {
         return this.configuration.version.major + '.' + this.configuration.version.minor + '.' + this.configuration.version.patch;
+    }
+    
+    /**
+     * 
+     */
+    setColoring(enabled) 
+    {
+        this.out('Setting coloring to [%EM%' + enabled + '%RESET%].');
+        this.configuration.colors.enabled = enabled;
     }
 }
 

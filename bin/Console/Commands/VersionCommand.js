@@ -34,6 +34,8 @@ export class VersionCommand extends Command
      */
     configure(engine)
     {
+        super.configure(engine);
+        
         this.setName('version');
         this.setDescription('Output version information and exit.');
         this.setManual('Output a detailed version information for the installed CakeJS console and terminate the application.')
@@ -42,8 +44,10 @@ export class VersionCommand extends Command
     /**
      * 
      */
-    execute(engine, parameters)
+    execute(engine, parameters, values)
     {
+        super.execute(engine, parameters, values);
+        
         engine.out('Your current CakeJS console is version %EM%' + engine.getVersion() + '%RESET%');
         engine.out('Major part is %EM%' + engine.getConfiguration().version.major + '%RESET%');
         engine.out('Minor part is %EM%' + engine.getConfiguration().version.minor + '%RESET%');

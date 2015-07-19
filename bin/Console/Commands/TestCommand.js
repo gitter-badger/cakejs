@@ -33,7 +33,6 @@ export class TestCommand extends Command
         super();
         
         this.files = {};
-        this.mocha = new Mocha();
     }
     
     /**
@@ -41,57 +40,82 @@ export class TestCommand extends Command
      */
     configure(engine)
     {
+        super.configure(engine);
+        
         this.setName('test');
         this.setDescription('Run tests.');
         this.setManual('Run Mocha tests...')
         this.setParameter({
-           'name': 'param_a',
+           'name': 'bootstrap',
            'optional': true,
-           'length': 3,
+           'length': 0,
+           'default': '.',
            'type': 'parameter',
-           'description': 'Optional A.'
+           'description': 'Path to bootstap.'
         });        
+        
         this.setParameter({
-           'name': 'param_b',
-           'optional': false,
-           'length': 2,
-           'type': 'value',
-           'description': 'Optional B.'
-        });        
-
-        this.setParameter({
-           'name': 'param_c',
+           'name': 'filter',
            'optional': true,
+           'length': 1,
+           'default': null,
            'type': 'parameter',
-           'description': 'Optional C.'
-        });        
+           'description': 'Only run tests matching a regexp.'
+        });
     }
     
     /**
      * 
      */
     execute(engine, parameters, values)
-    {        
-        console.log('param_a');
-        console.log(parameters.param_a);
-        console.log('param_b');
-        console.log(values.param_b);
-        console.log('param_c');
-        console.log(parameters.param_c);
+    {                
+        super.execute(engine, parameters, values);
         
-        
-        engine.out('Not implemented yet...');
-        /*
+        //engine.out('Not implemented yet...');
         if (this.loadBootstrap(engine, path.resolve(process.cwd(), parameters.bootstrap))) {
-            engine.out('Path is set to "%EM%' + path.resolve(CORE_PATH, 'dist/tests/TestCase') + '%RESET%".');
-            this.loadTests(engine, path.resolve(CORE_PATH, 'tests'));
-            //this.prepareFiles(engine);
-            this.mocha.run((failures) => {
-                process.exit(failures);
+            let mocha = new Mocha({
+                'bail': true,
+                'slow': 300,
+                'timeout': 5000,
+                'ui': 'exports',
+                'grep': parameters.filter[0]
+            });
+
+            let source = path.resolve(CORE_PATH, 'tests');
+            let destination = path.resolve(CORE_PATH, 'dist/tests');
+
+            engine.out('Source path is set to %EM%' + source + '%RESET%.');
+            engine.out('Destination path is set to "%EM%' + destination + '%RESET%".');
+            if (parameters.filter[0] !== null) {
+                engine.out('Filtering tests matching "%EM%' + parameters.filter[0] + '%RESET%".');
+            }
+
+            this.deleteFolderRecursive(destination);
+            this.loadTests(engine, source);
+
+            let tests = [];
+            for (let key in this.files) {
+                let file = this.files[key];
+
+                let to = path.join(destination, file.replace(source, ''));
+                this.copyFile(file, to);                           
+                
+                tests.push(to);                
+            }
+
+            for (let i = 0; i < tests.length; i++) {
+                engine.out('Compiling "%EM%' + tests[i] + '%RESET%".');
+                require('child_process').exec('babel --stage 0 --optional runtime --out-dir ' + tests[i] + ' ' + tests[i] + ' > /dev/null');
+
+                mocha.addFile(tests[i]);
+            }
+
+            engine.out('Beginning Mocha tests, please wait...');
+            mocha.run((failures) => {
+               process.exit(failures); 
             });
         }
-            */
-        
+
         return true;
     }
     
@@ -108,8 +132,9 @@ export class TestCommand extends Command
         }
         
         engine.out('Loading bootstrap "%EM%' + bootstrapFullPath + '%RESET%".');
-        require(bootstrapFullPath);
         
+        require(bootstrapFullPath);
+          
         return true;
     }
     
@@ -123,7 +148,7 @@ export class TestCommand extends Command
             let stats = fs.lstatSync(fullPath);
                         
             if (stats.isDirectory()) {
-                return this.loadTests(engine, fullPath, false);
+                this.loadTests(engine, fullPath, false);
             } else {
                 if (fullPath.substr(-7) === 'Test.js') {                    
                     this.files[fullPath] = fullPath;
@@ -138,11 +163,13 @@ export class TestCommand extends Command
      */
     copyFile(source, destination)
     {
+        this.createDirectories(destination);
+        
         let bufferLength = 64*1024;
         let buffer = new Buffer(bufferLength);
         
         let fdSource = fs.openSync(source, 'r');
-        let fdDestination = fs.openSync(source, 'w');
+        let fdDestination = fs.openSync(destination, 'w');
         
         let bytesRead = 0;
         let position = 0;
@@ -160,20 +187,20 @@ export class TestCommand extends Command
     /**
      * 
      */
-    deleteFolderRecursive(path) 
+    deleteFolderRecursive(dir) 
     {
-        if( fs.existsSync(path) ) {
-            fs.readdirSync(path).forEach((file,index) => {
-                var curPath = path + "/" + file;
-                if(fs.lstatSync(curPath).isDirectory()) { // recurse
-                    this.deleteFolderRecursive(curPath);
-            } else { // delete file
-                fs.unlinkSync(curPath);
-            }
-          });
-          fs.rmdirSync(path);
-      }
-    };
+        if (fs.existsSync(dir)) {
+            fs.readdirSync(dir).forEach((file, index) => {
+                let currentPath = dir + DS + file;
+                if(fs.lstatSync(currentPath).isDirectory()) { 
+                    this.deleteFolderRecursive(currentPath);
+                } else {
+                    fs.unlinkSync(currentPath);
+                }
+            });
+            fs.rmdirSync(dir);
+        }
+    }
     
     /**
      * 
@@ -198,29 +225,6 @@ export class TestCommand extends Command
             if (fs.existsSync(dirBuilder) === false) {
                 fs.mkdirSync(dirBuilder);
             }
-        }
-    }
-    
-    /**
-     * 
-     */
-    prepareFiles(engine, destination)
-    {
-        let dir = path.resolve(CORE_PATH, 'dist/tests');
-        engine.out('Removing directory "%EM%' + dir + '%RESET%".');
-        this.deleteFolderRecursive(TESTS);
-        
-        engine.out('Creating directory "%EM%' + dir + '%RESET%".');
-        fs.mkdirSync(TESTS);
-        
-        for (let file in this.files) {
-            let relativePath = file.replace(path.resolve(CORE_PATH, 'tests'), '');
-            let absolutePath = path.join(TESTS, relativePath);
-            this.createDirectories(absolutePath);
-            //engine.out('Copying file "%EM%' + file + '%RESET%" to "%EM%' + absolutePath + '%RESET%".');
-            
-            //this.copyFile(file, absolutePath);
-            //this.mocha.addFile(absolutePath);
         }
     }
 }

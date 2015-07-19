@@ -34,6 +34,8 @@ export class ConstantsCommand extends Command
      */
     configure(engine)
     {
+        super.configure(engine);
+        
         this.setName('constants');
         this.setDescription('Display global constants.');
         this.setManual('TODO: Detailed help.')
@@ -50,6 +52,8 @@ export class ConstantsCommand extends Command
      */
     execute(engine, parameters, values)
     {
+        super.execute(engine, parameters, values);
+        
         let bootstrapFile = '';
         if (parameters.bootstrap !== null) {
             bootstrapFile = require('path').resolve(process.cwd(), parameters.bootstrap);

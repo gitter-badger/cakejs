@@ -34,6 +34,8 @@ export class HelpCommand extends Command
      */
     configure(engine)
     {
+        super.configure(engine);
+        
         this.setName('help');
         this.setDescription('Display help.');
         this.setManual('TODO: Detailed help.')
@@ -50,6 +52,8 @@ export class HelpCommand extends Command
      */
     execute(engine, parameters, values)
     {
+        super.execute(engine, parameters, values);
+        
         if (values.detailed === null) {
             let plugins = engine.getPlugins();
             for (let plugin in plugins) {
@@ -63,6 +67,17 @@ export class HelpCommand extends Command
                 engine.out('[%COMMAND%' + plugins[values.detailed].getName() + '%RESET%] - ' + plugins[values.detailed].getDescription());
                 engine.out('==========');
                 engine.out(plugins[values.detailed].getManual());
+                engine.out('');
+                engine.out('PARAMETERS');
+                engine.out('');
+                for (let i = 0; i < plugins[values.detailed].getParameterCount(); i++) {
+                    let parameter = plugins[values.detailed].getParameter(i);
+                    engine.out('%EM%' + parameter.name + '%RESET% (' + ((parameter.optional) ? 'OPTIONAL' : 'REQUIRED') + ')');
+                    engine.out('----------');
+                    engine.out(parameter.description);
+                    engine.out('Is of type ' + parameter.type + ' and expects ' + parameter.length + ' subparameters.' )
+                    engine.out('');
+                }
             } else {
                 engine.out('Unknown command "%ERROR%' + values.detailed + '%RESET%".');
             }

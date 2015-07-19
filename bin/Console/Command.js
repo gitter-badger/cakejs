@@ -35,14 +35,23 @@ export class Command
      */
     configure(engine)
     {
-        
+        this.setParameter({
+            'name': 'color',
+            'optional': true,
+            'default': true,
+            'type': 'parameter',
+            'length': 1,
+            'description': 'Turn coloring on or off. Example: :color 0 turns off coloring.'
+        });
     }
     
     /**
      * 
      */
-    execute(engine, parameters)
-    {
+    execute(engine, parameters, values)
+    {        
+        engine.setColoring(parameters.color[0] == '1' || parameters.color[0] === true ? true : false);
+        
         return true;
     }
     
@@ -98,17 +107,22 @@ export class Command
             
             if (parameter.type === 'parameter') {
                 if (parameter.name in parameters) {
-                    result.parameters[parameter.name] = parameters[parameter.name];                    
+                    result.parameters[parameter.name] = parameters[parameter.name].value;                    
                     exists = true;
                 } else {
                     if ('length' in parameter && parameter.length > 0) {
                         result.parameters[parameter.name] = [];
 
+                        let defaultValue = ('default' in parameter) ? parameter.default : null;
                         for (let i = 0; i < parameter.length; i++) {
-                            result.parameters[parameter.name].push(null);
+                            result.parameters[parameter.name].push(defaultValue);
                         }
                     } else {
-                        result.parameters[parameter.name] = null;
+                        if ('default' in parameter) {
+                            result.parameters[parameter.name] = parameter.default;                            
+                        } else {
+                            result.parameters[parameter.name] = null;
+                        }
                     }
                 }
             } else {
@@ -119,7 +133,11 @@ export class Command
                             if (values.length > 0) {
                                 result.values[parameter.name].push(values.shift());         
                             } else {
-                                result.values[parameter.name].push(null);
+                                if ('default' in parameter) {
+                                    result.values[parameter.name].push(parameter.default);
+                                } else {
+                                    result.values[parameter.name].push(null);
+                                }
                             }
                         }
                     } else {
@@ -127,7 +145,11 @@ export class Command
                     }
                     exists = true;
                 } else {
-                    result.values[parameter.name] = null;
+                    if ('default' in parameter) {                    
+                        result.values[parameter.name] = parameter.default;                        
+                    } else {
+                        result.values[parameter.name] = null;
+                    }
                 }
             }
             
