@@ -1,16 +1,33 @@
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Copyright (c) 2015 Tiinusen
+ * 
+ * Many thanks to Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * This was inspired by http://cakephp.org CakePHP(tm) Project
+ * 
+ * Licensed under The MIT License
+ * For full copyright and license information, please see the LICENSE
+ * Redistributions of files must retain the above copyright notice.
+ * 
+ * @copyright   Copyright (c) 2015 Tiinusen
+ * @link        https://github.com/cakejsframework/cakejs
+ * @license     http://www.opensource.org/licenses/mit-license.php MIT License
+ * @author      addelajnen
  */
+
 import {Command} from '../Command';
 
 let fs = require('fs');
 let path = require('path');
 let Mocha = require('mocha');
 
+/**
+ * 
+ */
 export class TestCommand extends Command
 {
+    /**
+     * 
+     */
     constructor()
     {
         super();
@@ -19,6 +36,9 @@ export class TestCommand extends Command
         this.mocha = new Mocha();
     }
     
+    /**
+     * 
+     */
     configure(engine)
     {
         this.setName('test');
@@ -47,6 +67,9 @@ export class TestCommand extends Command
         });        
     }
     
+    /**
+     * 
+     */
     execute(engine, parameters, values)
     {        
         console.log('param_a');
@@ -72,6 +95,9 @@ export class TestCommand extends Command
         return true;
     }
     
+    /**
+     * 
+     */
     loadBootstrap(engine, dir)
     {
         let bootstrapFullPath = path.resolve(dir, 'bootstrap.js');
@@ -87,6 +113,9 @@ export class TestCommand extends Command
         return true;
     }
     
+    /**
+     * 
+     */
     loadTests(engine, dir, root = true)
     {        
         fs.readdirSync(dir).forEach((file) => {
@@ -104,6 +133,9 @@ export class TestCommand extends Command
         });        
     }
     
+    /**
+     * 
+     */
     copyFile(source, destination)
     {
         let bufferLength = 64*1024;
@@ -125,6 +157,9 @@ export class TestCommand extends Command
         fs.closeSync(fdDestination);
     }
     
+    /**
+     * 
+     */
     deleteFolderRecursive(path) 
     {
         if( fs.existsSync(path) ) {
@@ -139,7 +174,10 @@ export class TestCommand extends Command
           fs.rmdirSync(path);
       }
     };
-
+    
+    /**
+     * 
+     */
     createDirectories(fullPath)
     {    
         let dir = fullPath.split(DS);
@@ -163,6 +201,9 @@ export class TestCommand extends Command
         }
     }
     
+    /**
+     * 
+     */
     prepareFiles(engine, destination)
     {
         let dir = path.resolve(CORE_PATH, 'dist/tests');

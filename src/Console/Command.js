@@ -1,10 +1,27 @@
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Copyright (c) 2015 Tiinusen
+ * 
+ * Many thanks to Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * This was inspired by http://cakephp.org CakePHP(tm) Project
+ * 
+ * Licensed under The MIT License
+ * For full copyright and license information, please see the LICENSE
+ * Redistributions of files must retain the above copyright notice.
+ * 
+ * @copyright   Copyright (c) 2015 Tiinusen
+ * @link        https://github.com/cakejsframework/cakejs
+ * @license     http://www.opensource.org/licenses/mit-license.php MIT License
+ * @author      addelajnen
+ */
+
+/**
+ * 
  */
 export class Command
 {
+    /**
+     * 
+     */
     constructor()
     {
         this.name = '';
@@ -13,16 +30,25 @@ export class Command
         this.parameters = [];
     }
     
+    /**
+     * 
+     */
     configure(engine)
     {
         
     }
     
+    /**
+     * 
+     */
     execute(engine, parameters)
     {
         return true;
     }
     
+    /**
+     * 
+     */
     prepare(argv)
     {
         let parameters = {};
@@ -115,41 +141,65 @@ export class Command
         return result;        
     }
     
+    /**
+     * 
+     */
     setName(name)
     {
         this.name = name;
     }
     
+    /**
+     * 
+     */
     getName()
     {
         return this.name;
     }
     
+    /**
+     * 
+     */
     setDescription(description)
     {
         this.description = description;
     }
     
+    /**
+     * 
+     */
     getDescription()
     {
         return this.description;
     }
     
+    /**
+     * 
+     */
     setManual(manual)
     {
         this.manual = manual;
     }
     
+    /**
+     * 
+     */
     getManual()
     {
         return this.manual;
     }
     
+    /**
+     * 
+     */
     setParameter(parameter)
     {
         this.parameters.push(parameter);
     }
     
+    /**
+     * 
+     */
     findParameter(name) 
     {
         for (let i = 0; i < this.parameters.length; i++) {
@@ -163,9 +213,16 @@ export class Command
         return null;
     }
     
+    /**
+     * 
+     */
     getParameterCount() {
         return this.parameters.length;
     }
+    
+    /**
+     * 
+     */
     getParameter(index) {
         return this.parameters[index];
     }

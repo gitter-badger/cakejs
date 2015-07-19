@@ -1,14 +1,30 @@
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Copyright (c) 2015 Tiinusen
+ * 
+ * Many thanks to Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * This was inspired by http://cakephp.org CakePHP(tm) Project
+ * 
+ * Licensed under The MIT License
+ * For full copyright and license information, please see the LICENSE
+ * Redistributions of files must retain the above copyright notice.
+ * 
+ * @copyright   Copyright (c) 2015 Tiinusen
+ * @link        https://github.com/cakejsframework/cakejs
+ * @license     http://www.opensource.org/licenses/mit-license.php MIT License
+ * @author      addelajnen
  */
 
 let fs = require('fs');
 let path = require('path');
 
+/**
+ * 
+ */
 class Console
 {
+    /**
+     * 
+     */
     constructor()
     {
         this.configuration = {
@@ -47,6 +63,9 @@ class Console
         this.argv = process.argv.slice(2);
     }
         
+    /**
+     * 
+     */
     configure()
     {
         let pluginPath = path.resolve(
@@ -67,12 +86,18 @@ class Console
         });      
     }
     
+    /**
+     * 
+     */
     about()
     {
         this.out('%EM%Welcome to CakeJS console ' + this.getVersion() + '%RESET%');
         this.out('');
     }
     
+    /**
+     * 
+     */
     execute()
     {
         if (this.argv.length > 0) {
@@ -93,6 +118,9 @@ class Console
         }
     }
     
+    /**
+     * 
+     */
     help()
     {
         this.out('Usage: %COMMAND%command%RESET% [:%OPTIONAL%OPTIONAL_ARG VALUE%RESET%] <%REQUIRED%REQUIRED_ARG%RESET%>');
@@ -101,6 +129,9 @@ class Console
         }
     }
     
+    /**
+     * 
+     */
     describe(plugin, parameters)
     {
         let usage = 'Usage: %COMMAND%' + plugin.getName() + '%RESET% ';
@@ -145,6 +176,9 @@ class Console
         }
     }
     
+    /**
+     * 
+     */
     out(text)
     {
         if (typeof text === 'string' && this.configuration.colors.enabled === true) {
@@ -161,22 +195,34 @@ class Console
         console.log(text);
     }
     
+    /**
+     * 
+     */
     getConfiguration()
     {
         return this.configuration;
     }
     
+    /**
+     * 
+     */
     getPlugins()
     {
         return this.configuration.plugins.plugins;
     }    
     
+    /**
+     * 
+     */
     getVersion()
     {
         return this.configuration.version.major + '.' + this.configuration.version.minor + '.' + this.configuration.version.patch;
     }
 }
 
+/**
+ * 
+ */
 let cake = new Console();
 cake.about();
 cake.configure();
