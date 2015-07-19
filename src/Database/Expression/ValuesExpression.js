@@ -40,8 +40,10 @@ var sprintf = require("sprintf-js").sprintf;
 /**
  * @internal
  */
-export class ValuesExpression extends ExpressionInterface{
-	constructor(columns, typeMap){
+export class ValuesExpression extends ExpressionInterface
+{
+	constructor(columns, typeMap)
+	{
 		super();
 		this._values = [];
 		this._columns = [];
@@ -51,7 +53,8 @@ export class ValuesExpression extends ExpressionInterface{
 		this.typeMap(typeMap);
 	}
 	
-	add(data){
+	add(data)
+	{
 		if((count(this._values) && (typeof data === 'object' && data instanceof Query)) ||
 				(this._query && isArray(data))
 				){
@@ -66,7 +69,8 @@ export class ValuesExpression extends ExpressionInterface{
 		this._values.push(data);
 	}
 	
-	columns(cols = null){
+	columns(cols = null)
+	{
 		if(cols === null){
 			return this._columns;
 		}
@@ -74,7 +78,8 @@ export class ValuesExpression extends ExpressionInterface{
 		return this;
 	}
 	
-	values(values = null){
+	values(values = null)
+	{
 		if(values === null){
 			return this._values;
 		}
@@ -82,14 +87,16 @@ export class ValuesExpression extends ExpressionInterface{
 		return this;
 	}
 	
-	query(query = null){
+	query(query = null)
+	{
 		if(query === null){
 			return this._query;
 		}
 		this._query = query;
 	}
 	
-	sql(generator){
+	sql(generator)
+	{
 		if(isEmpty(this._values) && isEmpty(this._query)){
 			return '';
 		}
@@ -125,7 +132,8 @@ export class ValuesExpression extends ExpressionInterface{
 		return sprintf(' VALUES (%s)', placeholders.join('), ('));
 	}
 	
-	traverse(visitor){
+	traverse(visitor)
+	{
 		if(this._query){
 			return;
 		}

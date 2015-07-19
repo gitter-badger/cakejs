@@ -31,19 +31,24 @@ import {Hash} from '../Utilities/Hash';
 var fs = require('fs');
 var path = require('path');
 
-export var TableRegistry = new class {
-	constructor(){
+export var TableRegistry = new class 
+{
+	constructor()
+	{
 		this._defaultConfig = {
 			"className": "ORM/Table",
 			"entityClass": "ORM/Entity",
 		};
 		this._tables = {};
 	}
-	get(name, config){
+	
+	get(name, config)
+	{
 		var table = null;
 		config = typeof config !== 'undefined' ? config : {};
-		if(typeof config !== 'object')
+		if(typeof config !== 'object'){
 			throw new InvalidParameterException(newConfig, 'object');
+		}
 		var tableClass = null;
 		if(!(name in this._tables) || config !== null){
 			
@@ -82,7 +87,9 @@ export var TableRegistry = new class {
 		var tableClass = ClassLoader.loadClass(Hash.get(this._tables[name], "className"), "Model/Table");
 		return new tableClass(config);
 	}
-	clear(){
+	
+	clear()
+	{
 		this._tables = {};
 	}
 }

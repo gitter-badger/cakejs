@@ -32,12 +32,15 @@ var sprintf = require("sprintf-js").sprintf;
 /**
  * @internal
  */
-export class OrderByExpression extends QueryExpression{
-	constructor(conditions = [], types = [], conjunction = ''){
+export class OrderByExpression extends QueryExpression
+{
+	constructor(conditions = [], types = [], conjunction = '')
+	{
 		super(conditions, types, conjunction);
 	}
 	
-	sql(generator){
+	sql(generator)
+	{
 		var order = [];
 		for(var k in this._conditions){
 			var direction = this._conditions[k];
@@ -49,7 +52,8 @@ export class OrderByExpression extends QueryExpression{
 		return sprintf('ORDER BY %s', order.join(', '));
 	}
 	
-	_addConditions(orders, types){
+	_addConditions(orders, types)
+	{
 		this._conditions = merge(this._conditions, orders);
 	}
 }

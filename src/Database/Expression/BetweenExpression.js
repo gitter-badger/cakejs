@@ -29,8 +29,10 @@ var sprintf = require("sprintf-js").sprintf;
 /**
  * @internal
  */
-export class BetweenExpression extends ExpressionInterface{
-	constructor(field, from, to, type = null){
+export class BetweenExpression extends ExpressionInterface
+{
+	constructor(field, from, to, type = null)
+	{
 		super()
 		this._field = field;
 		this._from = from;
@@ -38,7 +40,8 @@ export class BetweenExpression extends ExpressionInterface{
 		this._type = type;
 	}
 	
-	sql(generator){
+	sql(generator)
+	{
 		var parts = {
 			"from": this._from,
 			"to": this._to

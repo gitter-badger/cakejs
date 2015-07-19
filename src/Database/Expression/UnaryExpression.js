@@ -30,7 +30,8 @@ var sprintf = require("sprintf-js").sprintf;
  * @internal
  */
 export class UnaryExpression extends ExpressionInterface{
-	constructor(operator, value, mode = 0){
+	constructor(operator, value, mode = 0)
+	{
 		super();
 		this.PREFIX = 0;
 		this.POSTFIX = 1;
@@ -40,7 +41,8 @@ export class UnaryExpression extends ExpressionInterface{
 		this._mode = mode;
 	}
 	
-	sql(generator){
+	sql(generator)
+	{
 		var operand = this._value;
 		if(typeof operand === 'object' && operand instanceof ExpressionInterface){
 			operand = operand.sql(generator);
@@ -53,7 +55,8 @@ export class UnaryExpression extends ExpressionInterface{
 		return this._operator + ' ('+operand+')';
 	}
 	
-	traverse(callable){
+	traverse(callable)
+	{
 		if(typeof this._value === 'object' && this._value instanceof ExpressionInterface){
 			callable(this._value);
 		}

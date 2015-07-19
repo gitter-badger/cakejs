@@ -32,7 +32,6 @@ export class Connection
 	_description = null;
 	
 	constructor(config)
-	
 	{
 		this._config = config;
 		
@@ -61,8 +60,9 @@ export class Connection
 	
 	async oldQuery(sql)
 	{
-		if(typeof args[0] !== 'string')
+		if(typeof args[0] !== 'string'){
 			throw new InvalidParameterException(args[0], "string");
+		}
 		return await this.driver().query.apply(this.driver(), args);
 	}
 	

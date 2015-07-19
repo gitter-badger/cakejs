@@ -23,7 +23,8 @@ import {CollectionInterface} from '../Collection/CollectionInterface'
 
 export class ResultSet extends CollectionInterface 
 {
-	constructor(query, statement){
+	constructor(query, statement)
+	{
 		super();
 		var repository = query.repository();
 		this._query = query;

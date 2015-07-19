@@ -27,10 +27,12 @@ export var ProcessManager = new class
 	{
 		this._processes = {};
 	}
+	
 	get(key)
 	{
 		return this._processes[key];
 	}
+	
 	async initialize()
 	{
 		var classes = await ClassLoader.loadFolder('Process');
@@ -41,6 +43,7 @@ export var ProcessManager = new class
 			await this._processes[key].initialize();
 		}
 	}
+	
 	async start()
 	{
 		for(var key in this._processes){

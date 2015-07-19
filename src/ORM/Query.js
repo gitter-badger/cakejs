@@ -32,8 +32,10 @@ import merge from '../Utilities/merge'
 //Requires
 var sprintf = require("sprintf-js").sprintf;
 
-export class Query extends Database.Query {
-	constructor(connection, table){
+export class Query extends Database.Query 
+{
+	constructor(connection, table)
+	{
 		super(connection);
 		/*
 		 * QUERY TRAIT START
@@ -51,7 +53,8 @@ export class Query extends Database.Query {
 		}
 	}
 	
-	addDefaultTypes(table){
+	addDefaultTypes(table)
+	{
 		var alias = table.alias();
 		var schema = table.schema();
 		var fields = [];
@@ -63,11 +66,18 @@ export class Query extends Database.Query {
 		return this;
 	}
 	
-	contain(){throw new NotImplementedException();}
+	contain()
+	{
+		throw new NotImplementedException();
+	}
 	
-	matching(){throw new NotImplementedException();}
+	matching()
+	{
+		throw new NotImplementedException();
+	}
 	
-	aliasField(field, alias = null){
+	aliasField(field, alias = null)
+	{
 		var namespaced = field.indexOf('.') !== -1;
 		var aliasedField = field;
 		if(namespaced){
@@ -86,7 +96,8 @@ export class Query extends Database.Query {
 		return obj;
 	}
 	
-	aliasFields(fields, defaultAlias = null){
+	aliasFields(fields, defaultAlias = null)
+	{
 		var aliased = {};
 		for(var alias in fields){
 			var field = fields[alias];			
@@ -99,7 +110,8 @@ export class Query extends Database.Query {
 		return aliased;
 	}
 	
-	applyOptions(options){
+	applyOptions(options)
+	{
 		var valid = {
 			'fields': 'select',
 			'conditions': 'where',
@@ -125,20 +137,23 @@ export class Query extends Database.Query {
 		return this;
 	}
 	
-	sql(binder = null){
+	sql(binder = null)
+	{
 		//this.triggerBeforeFind(
 		this._transformQuery();
 		var sql = super.sql(binder);
 		return sql;
 	}
 	
-	async _execute(){
+	async _execute()
+	{
 		//await this.triggerBeforeFind();
 		var statement = await this.execute();		
 		return new ResultSet(this, statement);
 	}
 	
-	_transformQuery(){
+	_transformQuery()
+	{
 		if(!this._dirty){
 			return;
 		}
@@ -154,7 +169,8 @@ export class Query extends Database.Query {
 		}
 	}
 	
-	_addDefaultFields(){
+	_addDefaultFields()
+	{
 		var select = this.clause('select');
 		this._hasFields = true;
 		
@@ -169,21 +185,25 @@ export class Query extends Database.Query {
 		this.select(aliased, true);
 	}
 	
-	find(finder, options){
+	find(finder, options)
+	{
 		return this.repository().callFinder(finder, this, options);
 	}
 	
-	_dirty(){
+	_dirty()
+	{
 		this._results = null;
 		super._dirty();
 	}
 	
-	update(table = null){
+	update(table = null)
+	{
 		table = this.repository().table();
 		return super.update(table);
 	}
 	
-	delete(table = null){
+	delete(table = null)
+	{
 		var repo = this.repository();
 		var parameters = {};
 		parameters[repo.alias()] = repo.table();
@@ -191,20 +211,23 @@ export class Query extends Database.Query {
 		return super.delete();
 	}
 	
-	insert(columns, types = []){
+	insert(columns, types = [])
+	{
 		var table = this.repository().table();
 		this.into(table);
 		return super.insert(columns, types);
 	}
 	
-	all(){
+	all()
+	{
 		if(this._type !== 'select'){
 			throw new RuntimeException('You cannot call all() on a non-select query. Use execute() instead.');
 		}
 		return this._all();
 	}
 	
-	async _all(){
+	async _all()
+	{
 		
 		if(typeof this._results !== 'undefined' && this._results !== null){
 			return this._results;
@@ -230,7 +253,8 @@ export class Query extends Database.Query {
 	/*
 	 * QUERY TRAIT START
 	 */
-	repository(table = null){
+	repository(table = null)
+	{
 		if(table === null){
 			return this._repository;
 		}
@@ -238,18 +262,21 @@ export class Query extends Database.Query {
 		return this;
 	}
 	
-	setResult(results){
+	setResult(results)
+	{
 		this._results = results;
 		return this;
 	}
 	
-	getIterator(){
+	getIterator()
+	{
 		return this.all();
 	}
 	
 	//_cache(){throw new NotImplementedException();}
 	
-	eagerLoader(value = null){
+	eagerLoader(value = null)
+	{
 		if(value === null){
 			return this._eagerLoaded;
 		}
@@ -259,15 +286,23 @@ export class Query extends Database.Query {
 	
 	/*_all(){}*/
 	
-	toArray(){
+	toArray()
+	{
 		return this.all().toArray();
 	}
 	
-	mapReduce(){throw new NotImplementedException();}
+	mapReduce()
+	{
+		throw new NotImplementedException();
+	}
 	
-	formatResults(){throw new NotImplementedException();}
+	formatResults()
+	{
+		throw new NotImplementedException();
+	}
 	
-	async first(){
+	async first()
+	{
 		if(this._type !== 'select'){
 			throw new RuntimeException('You cannot call all() on a non-select query. Use execute() instead.');
 		}
@@ -276,7 +311,8 @@ export class Query extends Database.Query {
 		return resultSet.first();
 	}
 	
-	async firstOrFail(){
+	async firstOrFail()
+	{
 		var entity = await this.first();
 		if(entity === null){
 			throw new RuntimeException('Record not found in table');
@@ -284,9 +320,13 @@ export class Query extends Database.Query {
 		return entity;
 	}
 	
-	getOptions(){throw new NotImplementedException();}
+	getOptions()
+	{
+		throw new NotImplementedException();
+	}
 	
-	_decorateResults(result){
+	_decorateResults(result)
+	{
 		return result;
 		result = this._applyDecorators(result);
 		
@@ -298,7 +338,10 @@ export class Query extends Database.Query {
 		return result;
 	}
 	
-	_decoratorClass(){throw new NotImplementedException();}
+	_decoratorClass()
+	{
+		throw new NotImplementedException();
+	}
 	/*
 	 * QUERY TRAIT STOP
 	 */

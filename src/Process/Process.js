@@ -15,7 +15,15 @@
 
 //CakeJS.Process.Process
 
-export class Process {
-	initialize(){}
-	start(){}	
+export class Process 
+{
+	initialize()
+	{
+		
+	}
+	
+	start()
+	{
+		
+	}	
 }

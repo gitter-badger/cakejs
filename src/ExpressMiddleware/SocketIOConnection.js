@@ -21,8 +21,10 @@ import {Connection} from '../WebSocket/Connection'
 //Singelton instances
 import {ConnectionManager} from '../WebSocket/ConnectionManager'
 
-class SocketIOConnection {
-	newConnection(socket){
+class SocketIOConnection 
+{
+	newConnection(socket)
+	{
 		var connection = new Connection(socket);
 		ConnectionManager.add(connection);
 	}
@@ -30,6 +32,7 @@ class SocketIOConnection {
 
 var socketIOConnection = new SocketIOConnection();
 
-export default function(){
+export default function()
+{
 	return socketIOConnection.newConnection.bind(socketIOConnection);
 }

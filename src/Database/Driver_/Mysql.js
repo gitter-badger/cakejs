@@ -29,51 +29,66 @@ import {MysqlStatement} from '../Statement/MysqlStatement'
 //Requires
 var mysql = require('mysql2');
 
-export class Mysql extends Driver{
-	constructor(config){
-		if(!('host' in config))
+export class Mysql extends Driver
+{
+	constructor(config)
+	{
+		if(!('host' in config)){
 			throw new MissingConfigException("host");
-		if(!('username' in config))
+		}
+		if(!('username' in config)){
 			throw new MissingConfigException("username");
-		if(!('password' in config))
+		}
+		if(!('password' in config)){
 			throw new MissingConfigException("password");
-		if(!('persistent' in config) || typeof config.persistent !== 'boolean')
+		}
+		if(!('persistent' in config) || typeof config.persistent !== 'boolean'){
 			config.persistent = true;
+		}
 		super(config);
 		this._startQuote = '`';
 		this._endQuote = '`';
 		this._connection = null;
 		this._connected = false;
 	}
-	_create(){
+	
+	_create()
+	{
 		var config = {
 			host: this._config.host,
 			user: this._config.username,
 			password: this._config.password,
 		};
-		if('database' in this._config)
+		if('database' in this._config){
 			config.database = this._config.database;
+		}
 		this._connection = mysql.createConnection(config);
 		this._connection.on('error', (e) => {
 			this.disconnect();
 			switch(e.code){
 				case 'PROTOCOL_CONNECTION_LOST':
-						if(this._config.persistent)
+						if(this._config.persistent){
 							this.connect();
+						}
 					break;
 			}
 		});
 	}
-	connect(){
-		if(this._connected)
+	
+	connect()
+	{
+		if(this._connected){
 			return true;
-		if(this._connection === null)
+		}
+		if(this._connection === null){
 			this._create();
+		}
 		return new Promise((resolve, reject) => {
 			try{
 				this._connection.connect((err) => {
-					if(err)
+					if(err){
 						return reject(err);
+					}
 					this._connected = true;
 					resolve();
 				});
@@ -82,14 +97,18 @@ export class Mysql extends Driver{
 			}
 		});
 	}
-	disconnect(){
+	
+	disconnect()
+	{
 		try{
 			this._connection.destroy();
 		}catch(e){}
 		this._connection = null;
 		this._connected = false;
 	}
-	execute(sql, placeholderData){
+	
+	execute(sql, placeholderData)
+	{
 		return new Promise(async (resolve, reject) => {
 			try{
 				if(!this._connected){
@@ -115,12 +134,16 @@ export class Mysql extends Driver{
 			}
 		});
 	}
-	async query(sql){
+	
+	async query(sql)
+	{
 		var statement = this.prepare(sql);
 		await statement.execute();
 		return statement;
 	}
-	oldprepare(query){
+	
+	oldprepare(query)
+	{
 		return new Promise(async (resolve, reject) => {
 			try{
 				await this.connect();
@@ -141,7 +164,9 @@ export class Mysql extends Driver{
 			}
 		});
 	}
-	prepare(query){
+	
+	prepare(query)
+	{
 		var isObject = (typeof query === 'object') && (query instanceof Query);
 		return new MysqlStatement(isObject ? query.sql() : query, this);
 	}
@@ -154,14 +179,16 @@ export class Mysql extends Driver{
 		return [query, processor.compile(query, generator)];
 	}
 	
-	newCompiler(){
+	newCompiler()
+	{
 		return new QueryCompiler();
 	}
 	
 	/**
 	 * SqlDialectTrait
 	 */
-	quoteIdentifier(identifier){
+	quoteIdentifier(identifier)
+	{
 		identifier = identifier.trim();
 		
 		if(identifier === '*'){
@@ -198,7 +225,8 @@ export class Mysql extends Driver{
 		return identifier;
 	}
 	
-	queryTranslator(type){
+	queryTranslator(type)
+	{
 		return (query) => {
 			if(this.autoQutoing()){
 				query = (new IdentifierQuoter(this)).quote(query);
@@ -225,7 +253,8 @@ export class Mysql extends Driver{
 	/**
 	 * This method is used to describe all tables inside database
 	 */
-	async describe(){
+	async describe()
+	{
 		var description = {
 			_tables: [],
 		};

@@ -32,8 +32,10 @@ var sprintf = require("sprintf-js").sprintf;
 /**
  * @internal
  */
-export class Comparison extends ExpressionInterface{
-	constructor(field, value, type, operator){
+export class Comparison extends ExpressionInterface
+{
+	constructor(field, value, type, operator)
+	{
 		super();
 		this.setField(field);
 		this.setValue(value);
@@ -44,23 +46,28 @@ export class Comparison extends ExpressionInterface{
 		}
 	}
 	
-	setValue(value){
+	setValue(value)
+	{
 		this._value = value;
 	}
 	
-	getValue(){
+	getValue()
+	{
 		return this._value;
 	}
 	
-	setOperator(operator){
+	setOperator(operator)
+	{
 		this._operator = operator;
 	}
 	
-	getOperator(){
+	getOperator()
+	{
 		return this._operator;
 	}
 	
-	sql(generator){
+	sql(generator)
+	{
 		var field = this._field;
 		
 		if(typeof field === 'object' && field instanceof ExpressionInterface) {
@@ -77,7 +84,8 @@ export class Comparison extends ExpressionInterface{
 		return sprintf(template, field, this._operator, value);
 	}
 	
-	traverse(callable){
+	traverse(callable)
+	{
 		if(typeof this._field === 'object' && this._field instanceof ExpressionInterface){
 			callable(this._field);
 			this._field.traverse(callable);
@@ -89,7 +97,8 @@ export class Comparison extends ExpressionInterface{
 		}
 	}
 	
-	_stringExpression(generator){
+	_stringExpression(generator)
+	{
 		var template = '%s ';
 		
 		if(typeof this._field === 'object' && this._field instanceof ExpressionInterface){
@@ -112,13 +121,15 @@ export class Comparison extends ExpressionInterface{
 		return [template, value];
 	}
 	
-	_bindValue(value, generator, type){
+	_bindValue(value, generator, type)
+	{
 		var placeholder = generator.placeholder('c');
 		generator.bind(placeholder, value, type);
 		return placeholder;
 	}
 	
-	_flattenValue(value, generator, type = null){
+	_flattenValue(value, generator, type = null)
+	{
 		var parts = [];
 		for(var k in value){
 			var v = value[k];

@@ -18,11 +18,15 @@
 //Types
 import {Exception} from '../Core/Exception/Exception'
 
-export class ConnectionContainer{
-	constructor(){
+export class ConnectionContainer
+{
+	constructor()
+	{
 		this._connections = [];
 	}
-	add(connection){
+	
+	add(connection)
+	{
 		//To make sure there are no duplicates 
 		this.remove(connection);
 		this._connections.push(connection);
@@ -31,16 +35,23 @@ export class ConnectionContainer{
 			this.remove(connection);
 		});
 	}
-	remove(connection){
+	
+	remove(connection)
+	{
 		var index = this._connections.indexOf(connection);
-		if(index === -1)
+		if(index === -1){
 			return false;
+		}
 		this._connections.splice(index, 1);
 	}
-	forEach(callback){
-		if(typeof callback !== 'function')
+	
+	forEach(callback)
+	{
+		if(typeof callback !== 'function'){
 			throw new Exception("Callback must be a function");
-		for(var connection of this._connections)
+		}
+		for(var connection of this._connections){
 			callback(connection);
+		}
 	}
 }

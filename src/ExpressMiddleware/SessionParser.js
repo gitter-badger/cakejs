@@ -21,17 +21,22 @@ import {SessionManager} from '../Session/SessionManager'
 //Requires
 var cookie = require("cookie");
 
-class SessionParser {
-	async use(request, response, next){
+class SessionParser 
+{
+	async use(request, response, next)
+	{
 		var session = await SessionManager.get(request.cookies);
 		response.cookie(SessionManager.keyName, session.keyValue, {maxAge: 365 * 24 * 60 * 60 * 1000});
 		request.session = session.data;
 		await session.touch();
 		next();
 	}
-	async set(data, accept){
-		if(typeof data === 'undefined' || !('headers' in data) || !('cookie' in data.headers) || (data.headers.cookie === null))
+	
+	async set(data, accept)
+	{
+		if(typeof data === 'undefined' || !('headers' in data) || !('cookie' in data.headers) || (data.headers.cookie === null)){
 			return accept("BAD", false);
+		}
 		try{
 			var cookies = cookie.parse(data.headers.cookie);
 			var session = await SessionManager.get(cookies);
@@ -46,11 +51,13 @@ class SessionParser {
 
 var _sessionParser = new SessionParser();
 
-export default function(){
+export default function()
+{
 	return function(p1, p2, p3){
-		if(typeof p3 !== 'undefined')
+		if(typeof p3 !== 'undefined'){
 			_sessionParser.use(p1, p2, p3);
-		else if(typeof p2 !== 'undefined')
+		}else if(typeof p2 !== 'undefined'){
 			_sessionParser.set(p1, p2);
+		}
 	}
 }

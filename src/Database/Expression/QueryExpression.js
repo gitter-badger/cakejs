@@ -39,8 +39,10 @@ import count from '../../Utilities/count'
 /**
  * @internal
  */
-export class QueryExpression extends ExpressionInterface{
-	constructor(conditions = [], types = [], conjunction = 'AND'){
+export class QueryExpression extends ExpressionInterface
+{
+	constructor(conditions = [], types = [], conjunction = 'AND')
+	{
 		super();
 		this._conditions = [];
 		
@@ -51,7 +53,8 @@ export class QueryExpression extends ExpressionInterface{
 		}
 	}
 	
-	type(conjunction = null){
+	type(conjunction = null)
+	{
 		if(conjunction === null){
 			return this._conjunction;
 		}
@@ -60,7 +63,8 @@ export class QueryExpression extends ExpressionInterface{
 		return this;
 	}
 	
-	add(conditions, types = []){
+	add(conditions, types = [])
+	{
 		if(typeof conditions === 'string'){
 			this._conditions.push(conditions);
 			return this;
@@ -75,97 +79,116 @@ export class QueryExpression extends ExpressionInterface{
 		return this;
 	}
 	
-	eq(field, value, type = null) {
+	eq(field, value, type = null) 
+	{
 		return this.add(new Comparison(field, value, type, '='));
 	}
 	
-	notEq(field, value, type = null) {
+	notEq(field, value, type = null) 
+	{
 		return this.add(new Comparison(field, value, type, '!='));
 	}
 	
-	gt(field, value, type = null) {
+	gt(field, value, type = null) 
+	{
 		return this.add(new Comparison(field, value, type, '>'));
 	}
 	
-	lt(field, value, type = null) {
+	lt(field, value, type = null) 
+	{
 		return this.add(new Comparison(field, value, type, '<'));
 	}
 	
-	gte(field, value, type = null) {
+	gte(field, value, type = null) 
+	{
 		return this.add(new Comparison(field, value, type, '>='));
 	}
 	
-	lte(field, value, type = null) {
+	lte(field, value, type = null)
+	{
 		return this.add(new Comparison(field, value, type, '<='));
 	}
 	
-	isNull(field) {
+	isNull(field) 
+	{
 		if(typeof field !== 'object' || !(field instanceof ExpressionInterface)){
 			field = new IdentifierExpression(field);
 		}
 		return this.add(new UnaryExpression('IS NULL', field, 1));
 	}
 	
-	isNotNull(field) {
+	isNotNull(field) 
+	{
 		if(typeof field !== 'object' || !(field instanceof ExpressionInterface)){
 			field = new IdentifierExpression(field);
 		}
 		return this.add(new UnaryExpression('IS NOT NULL', field, 1));
 	}
 	
-	like(field, value, type = null) {
+	like(field, value, type = null) 
+	{
 		return this.add(new Comparison(field, value, type, 'LIKE'));
 	}
 	
-	notLike(field, value, type = null) {
+	notLike(field, value, type = null) 
+	{
 		return this.add(new Comparison(field, value, type, 'NOT LIKE'));
 	}
 	
-	in(field, value, type = null) {
+	in(field, value, type = null)
+	{
 		type = type ? type : 'string';
 		type += '[]';
 		values = (typeof values === 'object' && values instanceof ExpressionInterface) ? values : toArray(values);
 		return this.add(new Comparison(field, values, type, 'IN'));
 	}
 	
-	addCase(conditions, values = [], types = []){
+	addCase(conditions, values = [], types = [])
+	{
 		return this.add(new CaseExpression(conditions, values, types));
 	}
 	
-	notIn(field, values, type = null){
+	notIn(field, values, type = null)
+	{
 		type = type ? type : 'string';
 		type += '[]';
 		values = (typeof values === 'object' && values instanceof ExpressionInterface) ? values : toArray(values);
 		return this.add(new Comparison(field, values, type, 'NOT IN'));
 	}
 	
-	between(field, from, to, type = null){
+	between(field, from, to, type = null)
+	{
 		return this.add(new BetweenExpression(field, from, to, type));
 	}
 	
-	and_(conditions, types = []){
+	and_(conditions, types = [])
+	{
 		if(typeof conditions !== 'string' && typeof conditions === 'function'){
 			return conditions(new this([], this.typeMap().types(types)));
 		}
 		return new this(conditions, this.typeMap().types(types));
 	}
 	
-	or_(conditions, types = []){
+	or_(conditions, types = [])
+	{
 		if(typeof conditions !== 'string' && typeof conditions === 'function'){
 			return conditions(new this([], this.typeMap().types(types), 'OR'));
 		}
 		return new this(conditions, this.typeMap().types(types), 'OR');
 	}
 	
-	not(conditions, types = []) {
+	not(conditions, types = []) 
+	{
 		return this.add({'NOT': conditions}, types);
 	}
 	
-	count(){
+	count()
+	{
 		return count(this.conditions);
 	}
 	
-	sql(generator){
+	sql(generator)
+	{
 		var conjunction = this._conjunction;
         var template = (this.count() === 1) ? '%s' : '(%s)';
         var parts = [];
@@ -178,7 +201,8 @@ export class QueryExpression extends ExpressionInterface{
         return sprintf(template, parts.join(' '+conjunction+' '));
 	}
 	
-	traverse(callable){
+	traverse(callable)
+	{
 		for(var c of this._conditions){
 			if(typeof c === 'object' && c instanceof ExpressionInterface){
 				callable(c);
@@ -187,7 +211,8 @@ export class QueryExpression extends ExpressionInterface{
 		}
 	}
 	
-	iterateParts(callable){
+	iterateParts(callable)
+	{
 		var parts = [];
 		for(var k in this._conditions){
 			var c = this._conditions[k];
@@ -202,7 +227,8 @@ export class QueryExpression extends ExpressionInterface{
 		return this;
 	}
 	
-	_addConditions(conditions, types){
+	_addConditions(conditions, types)
+	{
 		var operators = ['and', 'or', 'xor'];
 		
 		var typeMap = this.typeMap().types(types);
@@ -246,7 +272,8 @@ export class QueryExpression extends ExpressionInterface{
 		}
 	}
 	
-	_parseCondition(field, value){
+	_parseCondition(field, value)
+	{
 		var operator = '=';
 		var expression = field;
 		var parts = field.trim().split(' ', 2);
@@ -289,7 +316,8 @@ export class QueryExpression extends ExpressionInterface{
 		return new Comparison(expression, value, type, operator);		
 	}
 	
-	_bindMultiplePlaceholders(field, values, type){
+	_bindMultiplePlaceholders(field, values, type)
+	{
 		type = type.replace('[]', '');
 		var params = [];
 		for(var value of values){

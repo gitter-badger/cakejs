@@ -18,8 +18,10 @@
 //Types
 import {Exception} from '../Core/Exception/Exception'
 
-export class MissingConfigException extends Exception{
-	constructor(message){
+export class MissingConfigException extends Exception
+{
+	constructor(message)
+	{
 		super(typeof message !== 'string'?"CakeJS config is missing or not parseable":message);
 	}
 }

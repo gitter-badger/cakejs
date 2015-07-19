@@ -18,13 +18,16 @@
 //Types
 import {StatementDecorator} from './StatementDecorator';
 
-export class PDOStatement extends StatementDecorator {
-	constructor(statement = null, driver = null){
+export class PDOStatement extends StatementDecorator 
+{
+	constructor(statement = null, driver = null)
+	{
 		super(statement, driver);
 		this._columns = {};
 	}
 	
-	bindValue(column, value, type = 'string'){
+	bindValue(column, value, type = 'string')
+	{
 		if(type === null){
 			type = 'string';
 		}

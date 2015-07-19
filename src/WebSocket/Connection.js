@@ -29,8 +29,10 @@ import {ControllerManager} from '../Controller/ControllerManager'
 //Requires
 var events = require('events');
 
-export class Connection {
-	constructor(socket){
+export class Connection 
+{
+	constructor(socket)
+	{
 		var session = socket.request._session;
 		delete socket.request._session;
 		this.socket = socket;
@@ -43,14 +45,17 @@ export class Connection {
 			this.event.emit('disconnect', this);
 		});
 		this.socket.on('WebSocketRequest', async (request) => {
-			if(typeof request !== 'object' || request === null || typeof request.index !== 'number')
+			if(typeof request !== 'object' || request === null || typeof request.index !== 'number'){
 				return;
-			if(typeof request.request !== 'object' || request.request === null)
+			}
+			if(typeof request.request !== 'object' || request.request === null){
 				return;
+			}
 			var response = {index: request.index};
 			request = request.request;
-			if(typeof request.controller !== 'string' || typeof request.action !== 'string' || typeof request.arguments !== 'object' || !(request.arguments instanceof Array))
+			if(typeof request.controller !== 'string' || typeof request.action !== 'string' || typeof request.arguments !== 'object' || !(request.arguments instanceof Array)){
 				return;
+			}
 			try{
 				var route = Router.parse("/"+request.controller+"/"+request.action);
 				route.params = request.arguments;
@@ -58,19 +63,23 @@ export class Connection {
 				controller.request = new Request(null, this.session);
 				controller.request.url = "/"+request.controller+"/"+request.action;
 				controller.request.data = request.data;
-				if(!(route.action in controller))
+				if(!(route.action in controller)){
 					throw new MissingActionException(route.action);
+				}
 				await controller.initialize();
 				var result = await controller[route.action].apply(controller, route.params);
-				if(typeof result !== 'undefined')
+				if(typeof result !== 'undefined'){
 					response.data = result;
+				}
 				this.socket.emit("WebSocketResponse", response);
 			}catch(e){
 				response.error = null;
-				if(e === null || e === false || e === true)
+				if(e === null || e === false || e === true){
 					return this.socket.emit("WebSocketResponse", response);
-				if(typeof e !== 'object')
+				}
+				if(typeof e !== 'object'){
 					e = new Error(e);
+				}
 				if(e instanceof ClientException){
 					response.error = e.data;
 					return this.socket.emit("WebSocketResponse", response);
@@ -90,10 +99,12 @@ export class Connection {
 		});
 		session.connections.add(this);
 	}
+	
 	emit(event){
 		var args = [];
-		for(var key in arguments)
+		for(var key in arguments){
 			args.push(arguments[key]);
+		}
 		args.shift();
 		this.socket.emit("WebSocketEmit", {
 			event: event,

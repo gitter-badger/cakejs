@@ -35,13 +35,16 @@ var sprintf = require("sprintf-js").sprintf;
 /**
  * @internal
  */
-export class TurpleComparison extends Comparison{
-	constructor(fields, values, types = [], conjunction = '='){
+export class TurpleComparison extends Comparison
+{
+	constructor(fields, values, types = [], conjunction = '=')
+	{
 		super(fields, values, types, conjunction);
 		this._type = toArray(types);
 	}
 	
-	sql(generator){
+	sql(generator)
+	{
 		var template = '(%s) %s (%s)';
 		var fields = [];
 		originalFields = this.fields();
@@ -60,7 +63,8 @@ export class TurpleComparison extends Comparison{
 		return sprintf(template, field, this._operator, values);
 	}
 	
-	_stringifyValues(generator){
+	_stringifyValues(generator)
+	{
 		var values = [];
 		var parts = this.getValue();
 		
@@ -101,13 +105,15 @@ export class TurpleComparison extends Comparison{
 		return values.join(', ');	
 	}
 	
-	_bindValue(generator, value, type){
+	_bindValue(generator, value, type)
+	{
 		var placeholder = generator.placeholder('tuple');
 		generator.bind(placeholder, value, type);
 		return placeholder;
 	}
 	
-	traverse(callable){
+	traverse(callable)
+	{
 		for(var field of this.getField()){
 			this._traverseValue(field, callable);
 		}
@@ -131,14 +137,16 @@ export class TurpleComparison extends Comparison{
 		}
 	}
 	
-	_traverseValue(value, callable){
+	_traverseValue(value, callable)
+	{
 		if(typeof value === 'object' && value instanceof ExpressionInterface){
 			callable(value);
 			this.traverse(callable);
 		}
 	}
 	
-	isMulti(){
+	isMulti()
+	{
 		return ['in', 'not in'].indexOf(this._operator.toLowerCase()) !== -1;
 	}
 }

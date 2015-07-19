@@ -18,6 +18,7 @@
 //Types
 import {Exception} from '../../Core/Exception/Exception'
 
-export class MissingEntityException extends Exception{
+export class MissingEntityException extends Exception
+{
 	
 }

@@ -17,6 +17,7 @@
 
 //Types
 
-export class StatementInterface {
+export class StatementInterface 
+{
 
 }

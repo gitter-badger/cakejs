@@ -34,8 +34,10 @@ import count from '../../Utilities/count'
 /**
  * @internal
  */
-export class CaseExpression extends ExpressionInterface{
-	constructor(conditions = [], values = [], types = []){
+export class CaseExpression extends ExpressionInterface
+{
+	constructor(conditions = [], values = [], types = [])
+	{
 		super();
 		this._conditions = [];
 		this._values  = [];
@@ -67,7 +69,8 @@ export class CaseExpression extends ExpressionInterface{
 		}
 	}
 	
-	add(conditions = [], values = [], types = []){
+	add(conditions = [], values = [], types = [])
+	{
 		if(!isArray(conditions)){
 			conditions = [conditions];
 		}
@@ -85,7 +88,8 @@ export class CaseExpression extends ExpressionInterface{
 		return this;
 	}
 	
-	_addExpressions(conditions, values, types){
+	_addExpressions(conditions, values, types)
+	{
 		for(var k in conditions){
 			var c = conditions[k];
 			var numericKey = typeof k === 'number';
@@ -117,7 +121,8 @@ export class CaseExpression extends ExpressionInterface{
 		}
 	}
 	
-	elseValue(value = null, type = null){
+	elseValue(value = null, type = null)
+	{
 		if(isArray(value)){
 			var lastkey = null;
 			for(var key in values){
@@ -133,7 +138,8 @@ export class CaseExpression extends ExpressionInterface{
 		this._elseValue = value;
 	}
 	
-	_compile(part, generator){
+	_compile(part, generator)
+	{
 		if(typeof part === 'object' && part instanceof ExpressionInterface){
 			part = part.sql(generator);
 		}else if(isArray(part)){
@@ -144,7 +150,8 @@ export class CaseExpression extends ExpressionInterface{
 		return part;
 	}
 	
-	sql(generator){
+	sql(generator)
+	{
 		var parts = [];
 		parts.push('CASE');
 		

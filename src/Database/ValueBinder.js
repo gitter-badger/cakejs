@@ -30,13 +30,16 @@ var sprintf = require("sprintf-js").sprintf;
 /**
  * @internal
  */
-export class ValueBinder{
-	constructor(){
+export class ValueBinder
+{
+	constructor()
+	{
 		this._bindings = {};
 		this._bindingsCount = 0;
 	}
 	
-	bind(param, value, type = 'string'){
+	bind(param, value, type = 'string')
+	{
 		this._bindings[param] = {
 			"value": value, 
 			"type": type, 
@@ -44,7 +47,8 @@ export class ValueBinder{
 		}
 	}
 	
-	placeholder(token){
+	placeholder(token)
+	{
 		var number = this._bindingsCount++;
 		if(token[0] !== ':' || token !== '?'){
 			token = sprintf(':%s', number);
@@ -52,20 +56,24 @@ export class ValueBinder{
 		return token;
 	}
 	
-	bindings(){
+	bindings()
+	{
 		return this._bindings;
 	}
 	
-	reset(){
+	reset()
+	{
 		this._bindings = {};
 		this._bindingsCount = 0;
 	}
 	
-	resetCount(){
+	resetCount()
+	{
 		this._bindingsCount = 0;
 	}
 	
-	attachTo(statement){
+	attachTo(statement)
+	{
 		var bindings = this.bindings();
 		if(isEmpty(bindings)){
 			return;

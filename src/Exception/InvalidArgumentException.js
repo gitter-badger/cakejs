@@ -18,8 +18,10 @@
 //Types
 import {FatalException} from '../Core/Exception/FatalException'
 
-export class InvalidArgumentException extends FatalException{
-	constructor(text){
+export class InvalidArgumentException extends FatalException
+{
+	constructor(text)
+	{
 		super('Invalid argument exception:'+text);
 	}
 }

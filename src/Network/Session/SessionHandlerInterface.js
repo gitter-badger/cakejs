@@ -24,32 +24,40 @@ import {InvalidArgumentException} from '../../Exception/InvalidArgumentException
 //Requires
 var cookie = require("cookie");
 
-export class SessionHandlerInterface {
-	constructor(config = {}){
+export class SessionHandlerInterface 
+{
+	constructor(config = {})
+	{
 		this._options = config;
 	}
 	
-	open(savePath, name){
+	open(savePath, name)
+	{
 		return true;
 	}
 	
-	close(){
+	close()
+	{
 		return true;
 	}
 	
-	read(id){
+	read(id)
+	{
 		return null;
 	}
 	
-	write(id, data){
+	write(id, data)
+	{
 		return true;
 	}
 	
-	destroy(id){
+	destroy(id)
+	{
 		return true;
 	}
 	
-	gc(maxlifetime){
+	gc(maxlifetime)
+	{
 		return true;
 	}
 	

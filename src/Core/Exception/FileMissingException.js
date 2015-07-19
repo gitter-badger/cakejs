@@ -18,8 +18,13 @@
 //Types
 import {Exception} from './Exception'
 
-export class FileMissingException extends Exception {
-	constructor(path){
+/**
+ * @class FileMissingException
+ */
+export class FileMissingException extends Exception 
+{
+	constructor(path)
+	{
 		super('File does not exist: "'+path+'"');
 	}
 }

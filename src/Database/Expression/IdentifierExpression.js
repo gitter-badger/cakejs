@@ -29,24 +29,31 @@ var sprintf = require("sprintf-js").sprintf;
 /**
  * @internal
  */
-export class IdentifierExpression extends ExpressionInterface{
-	constructor(identifier){
+export class IdentifierExpression extends ExpressionInterface
+{
+	constructor(identifier)
+	{
 		super();
 		this._identifier = identifier
 	}
 	
-	setIdentifier(identifier){
+	setIdentifier(identifier)
+	{
 		this._identifier = identifier
 	}
 	
-	getIdentifier(){
+	getIdentifier()
+	{
 		return this._identifier;
 	}
 	
-	sql(generator){
+	sql(generator)
+	{
 		return this._identifier;
 	}
 	
-	traverse(callable){
+	traverse(callable)
+	{
+		
 	}
 }

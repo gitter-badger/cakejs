@@ -39,8 +39,10 @@ var sprintf = require("sprintf-js").sprintf;
 /**
  * @internal
  */
-export class QueryCompiler {
-	constructor(){
+export class QueryCompiler 
+{
+	constructor()
+	{
 		this._templates = {
 			'delete': 'DELETE',
 			'update': 'UPDATE %s',
@@ -62,7 +64,8 @@ export class QueryCompiler {
 		this._orderedUnion = true;
 	}
 	
-	compile(query, generator){
+	compile(query, generator)
+	{
 		var sql_object = {sql: ''};
 		var type = query.type();
 		query.traverse(
@@ -72,7 +75,8 @@ export class QueryCompiler {
 		return sql_object.sql;
 	}
 	
-	_sqlCompiler(sql_object, query, generator){
+	_sqlCompiler(sql_object, query, generator)
+	{
 		if(typeof sql_object !== 'object'){
 			sql_object = {sql: sql_object};
 		}
@@ -93,7 +97,8 @@ export class QueryCompiler {
 		};
 	}
 	
-	_buildSelectPart(parts, query, generator){
+	_buildSelectPart(parts, query, generator)
+	{
 		var driver = query.connection().driver();
 		var select = 'SELECT %s%s%s';
 		if(this._orderedUnion && !isEmpty(query.clause('union'))){
@@ -134,7 +139,8 @@ export class QueryCompiler {
 		return sprintf(select, distinct, modifiers, normalized.join(', '));
 	}
 	
-	_buildFromPart(parts, query, generator){
+	_buildFromPart(parts, query, generator)
+	{
 		var select = ' FROM %s';
 		var normalized = [];
 		var parts = this._stringifyExpressions(parts, generator);
@@ -149,7 +155,8 @@ export class QueryCompiler {
 		return sprintf(select, normalized.join(', '));
 	}
 	
-	_buildJoinPart(parts, query, generator){
+	_buildJoinPart(parts, query, generator)
+	{
 		var joins = '';
 		for(var join of parts){
 			if(typeof join['table'] === 'object' && join['table'] instanceof ExpressionInterface){
@@ -165,7 +172,8 @@ export class QueryCompiler {
 		return joins;
 	}
 	
-	_buildSetPart(parts, query, generator){
+	_buildSetPart(parts, query, generator)
+	{
 		var set = [];
 		for(var part of parts){
 			if(typeof part === 'object' && part instanceof ExpressionInterface){
@@ -179,7 +187,8 @@ export class QueryCompiler {
 		return ' SET '+set.join('');
 	}
 	
-	_buildUnionPart(parts, query, generator){
+	_buildUnionPart(parts, query, generator)
+	{
 		parts = new Collection(parts).map((p) => {
 			p['query'] = p['query'].sql(generator);
 			p['query'] = p['query'][0] === '(' ? + p['query'].substr(1,p['query'].length-2) : p['query'];
@@ -196,17 +205,20 @@ export class QueryCompiler {
 		return sprintf("\nUNION %s", parts.join("\nUNION "));
 	}
 	
-	_buildInsertPart(parts, query, generator){
+	_buildInsertPart(parts, query, generator)
+	{
 		var table = parts[0];
 		var columns = this._stringifyExpressions(parts[1], generator);
 		return sprintf('INSERT INTO %s (%s)', table, columns.join(', '));
 	}
 	
-	_buildValuesPart(parts, query, generator){
+	_buildValuesPart(parts, query, generator)
+	{
 		return this._stringifyExpressions(parts, generator).join('');
 	}
 	
-	_stringifyExpressions(expressions, generator){
+	_stringifyExpressions(expressions, generator)
+	{
 		var result = [];
 		for(var k in expressions){
 			var expression = expressions [k];

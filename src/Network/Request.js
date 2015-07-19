@@ -15,8 +15,10 @@
 
 //CakeJS.Network.Request
 
-export class Request{
-	constructor(request, session){
+export class Request
+{
+	constructor(request, session)
+	{
 		request = typeof request !== 'undefined' ? request : null;
 		session = typeof session !== 'undefined' ? session : null;
 		this.data = null;
@@ -34,18 +36,27 @@ export class Request{
 			}
 		}
 	}
-	session(){
+	
+	session()
+	{
 		return this._session;
 	}
-	setDetected(key){
+	
+	setDetected(key)
+	{
 		this._detectorCache[key] = true;
 	}
-	is(keyOrArray){
-		if(!(typeof keyOrArray === 'object' && keyOrArray instanceof Array))
+	
+	is(keyOrArray)
+	{
+		if(!(typeof keyOrArray === 'object' && keyOrArray instanceof Array)){
 			key_or_array = [keyOrArray];
-		for(var key of keyOrArray)
-			if(key in this._detectorCache && this._detectorCache[key] === true)
+		}
+		for(var key of keyOrArray){
+			if(key in this._detectorCache && this._detectorCache[key] === true){
 				return true;
+			}
+		}
 		return false;
 	}
 }

@@ -18,14 +18,20 @@
 //Types
 import {ConnectionContainer} from './ConnectionContainer'
 
-export var ConnectionManager = new class {
-	constructor(){
+export var ConnectionManager = new class 
+{
+	constructor()
+	{
 		this.connections = new ConnectionContainer();
 	}
-	add(connection){
+	
+	add(connection)
+	{
 		this.connections.add(connection);
 	}
-	forEach(callback){
+	
+	forEach(callback)
+	{
 		this.connections.forEach(callback);
 	}
 }

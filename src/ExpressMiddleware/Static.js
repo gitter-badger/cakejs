@@ -26,29 +26,37 @@ import {Request} from '../Network/Request'
 import {Router} from '../Routing/Router'
 import {ControllerManager} from '../Controller/ControllerManager'
 
-class Static {
-	constructor(path){
+class Static 
+{
+	constructor(path)
+	{
 		this._path = path;
 		this._expressStatic = require('express').static(this._path);
 	}
-	async use(request, response, next){
+	
+	async use(request, response, next)
+	{
 		try{
 			var route = Router.parse(request.url);
 			var controller = ControllerManager.get(route.controller);
 			controller.request = new Request(request, request.session);
-			if(!(route.action in controller))
+			if(!(route.action in controller)){
 				throw new MissingActionException(route.action);
+			}
 			try{
 				await controller.initialize();
 				var result = await controller[route.action].apply(controller, route.params);
 				response.writeHead(200, {'Content-Type': 'application/json'});
-				if(typeof result !== 'undefined')
+				if(typeof result !== 'undefined'){
 					response.write(JSON.stringify(result));
+				}
 			}catch(e){
-				if(e === null || e === false || e === true)
+				if(e === null || e === false || e === true){
 					return response.sendStatus(500);
-				if(typeof e !== 'object')
+				}
+				if(typeof e !== 'object'){
 					e = new Error(e);
+				}
 				if(e instanceof ClientException){
 					response.writeHead(520, {'Content-Type': 'application/json'});
 					response.write(JSON.stringify(e.data));
@@ -72,7 +80,8 @@ class Static {
 	}
 }
 
-export default function(path){
+export default function(path)
+{
 	var _static = new Static(path);
 	return _static.use.bind(_static);
 }

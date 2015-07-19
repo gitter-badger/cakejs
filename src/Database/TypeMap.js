@@ -20,14 +20,17 @@
 
 //CakeJS.Database.TypeMap
 
-export class TypeMap{
-	constructor(defaults = []){
+export class TypeMap
+{
+	constructor(defaults = [])
+	{
 		this._types = [];
 		
 		this.defaults(defaults);
 	}
 	
-	defaults(defaults = null){
+	defaults(defaults = null)
+	{
 		if(defaults === null){
 			return this._defaults;
 		}
@@ -35,7 +38,8 @@ export class TypeMap{
 		return this;
 	}
 	
-	types(types = null){
+	types(types = null)
+	{
 		if(types === null){
 			return this._types;
 		}
@@ -43,7 +47,8 @@ export class TypeMap{
 		return this;
 	}
 	
-	type(column){
+	type(column)
+	{
 		if(column in this._types){
 			return this._types[column];
 		}

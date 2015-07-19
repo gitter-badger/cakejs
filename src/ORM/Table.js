@@ -35,8 +35,10 @@ import count from '../Utilities/count';
 import {Marshaller} from './Marshaller'
 import uuid from '../Utilities/uuid'
 
-export class Table {
-	constructor(config){
+export class Table 
+{
+	constructor(config)
+	{
 		config = new Collection(config);	
 		this._hasOne = [];
 		this._hasMany = [];
@@ -87,13 +89,18 @@ export class Table {
 		this.initialize(config);
 	}
 	
-	defaultConnectionName(){
+	defaultConnectionName()
+	{
 		return 'default';
 	}
 	
-	initialize(){}
+	initialize()
+	{
+		
+	}
 	
-	table(table = null){
+	table(table = null)
+	{
 		if(table !== null){
 			this._table = table;
 		}
@@ -108,7 +115,8 @@ export class Table {
 	}
 	
 	
-	alias(alias = null){
+	alias(alias = null)
+	{
 		if(alias !== null){
 			this._alias = alias;
 		}
@@ -124,11 +132,13 @@ export class Table {
 		return this._alias;
 	}
 	
-	aliasField(field){
+	aliasField(field)
+	{
 		return this.alias()+'.'+field;
 	}
 	
-	registryAlias(registryAlias = null){
+	registryAlias(registryAlias = null)
+	{
 		if(registryAlias !== null){
 			this._registryAlias = registryAlias;
 		}
@@ -138,14 +148,16 @@ export class Table {
 		return this._registryAlias;
 	}	
 	
-	connection(connection = null){
+	connection(connection = null)
+	{
 		if(connection === null){
 			return this._connection;
 		}
 		this._connection = connection;
 	}
 	
-	schema(schema = null){
+	schema(schema = null)
+	{
 		if(schema === null){
 			if(this._schema === null){
 				this.connection().schemaCollection().describe(this.table());
@@ -172,16 +184,19 @@ export class Table {
 		return this._schema;
 	}
 	
-	_initializeSchema(table){
+	_initializeSchema(table)
+	{
 		return table;
 	}
 	
-	hasField(field){
+	hasField(field)
+	{
 		schema = this.schema();
 		return schema.column(field) !== null;
 	}
 	
-	primaryKey(key){
+	primaryKey(key)
+	{
 		if(key !== null){
 			this._primaryKey = key;
 		}
@@ -195,7 +210,8 @@ export class Table {
 		return this._primaryKey;
 	}
 	
-	displayField(key = null){
+	displayField(key = null)
+	{
 		if(key !== null){
 			this._displayField = key;
 		}
@@ -213,7 +229,8 @@ export class Table {
 		return this._displayField;
 	}
 	
-	entityClass(name = null){
+	entityClass(name = null)
+	{
 		if(name === null && !this._entityClass) {
 			var _default = 'Entity';
 			var self = this.constructor.name;
@@ -357,17 +374,20 @@ export class Table {
 		let statement = await this.query().update().set(data).where({id: data.id}).execute();		
 	}
 	
-	find(type = 'all', options = {}){
+	find(type = 'all', options = {})
+	{
 		var query = this.query();
 		query.select();
 		return this.callFinder(type, query, options);
 	}
 	
-	findAll(query, options){
+	findAll(query, options)
+	{
 		return query;
 	}
 	
-	callFinder(type, query, options = {}){
+	callFinder(type, query, options = {})
+	{
 		//query.applyOptions(options);
 		//options = query.getOptions();
 		type = type.substr(0,1).toUpperCase()+type.substr(1);

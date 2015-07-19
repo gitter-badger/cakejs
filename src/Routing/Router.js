@@ -29,10 +29,13 @@ import {Inflector} from '../Utilities/Inflector';
 //Requires
 var fs = require('fs');
 
-function escapeRegExp(string) {
+function escapeRegExp(string) 
+{
     return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
 }
-function replaceAll(string, find, replace) {
+
+function replaceAll(string, find, replace) 
+{
   return string.replace(new RegExp(escapeRegExp(find), 'g'), replace);
 }
 
@@ -71,6 +74,7 @@ export var Router = new class
 			this._filters.push(filter);
 		}
 	}
+	
 	parse(obj)
 	{
 		var route = {
@@ -172,12 +176,14 @@ export var Router = new class
 		}
 		return route;
 	}
+	
 	connect(route, defaults, options)
 	{
 		defaults = typeof defaults === 'object' ? defaults: {};
 		options = typeof options === 'object' ? options: {};
 		this._routes.push({route: route, defaults: defaults, options: options});
 	}
+	
 	url(urlOrObject, appendLocalHost = false)
 	{
 		var query = {};

@@ -26,9 +26,17 @@ import {TypeMap} from './TypeMap'
 //Utilities
 import isArray from '../Utilities/isArray'
 
-export class ExpressionInterface{
-	sql(){throw new NotImplementedException();}
-	traverse(){throw new NotImplementedException();}
+export class ExpressionInterface
+{
+	sql()
+	{
+		throw new NotImplementedException();
+	}
+	
+	traverse()
+	{
+		throw new NotImplementedException();
+	}
 	
 	setField(field)
     {

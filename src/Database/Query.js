@@ -42,8 +42,10 @@ var sprintf = require("sprintf-js").sprintf;
 
 
 
-export class Query extends ExpressionInterface {
-	constructor(connection){
+export class Query extends ExpressionInterface 
+{
+	constructor(connection)
+	{
 		super();
 		this._valueBinder = null;
 		
@@ -81,7 +83,8 @@ export class Query extends ExpressionInterface {
 		this.connection(connection);
 	}
 	
-	connection(connection = null){
+	connection(connection = null)
+	{
 		if (connection === null) {
             return this._connection;
         }
@@ -90,12 +93,14 @@ export class Query extends ExpressionInterface {
         return this;
 	}
 	
-	async execute(){
+	async execute()
+	{
 		var statement = await this._connection.run(this);
 		return this._iterator = this._decorateStatement(statement);
 	}
 	
-	sql(generator = null){
+	sql(generator = null)
+	{
 		if(!generator){
 			generator = this.valueBinder();
 			generator.resetCount();
@@ -103,7 +108,8 @@ export class Query extends ExpressionInterface {
 		return this.connection().compileQuery(this, generator);
 	}
 	
-	traverse(visitor, parts = []){
+	traverse(visitor, parts = [])
+	{
 		var [keys] = getArrayKeysAndValues(this._parts);
 		parts = parts ? parts : keys;
 		for(var name of parts){
@@ -112,7 +118,8 @@ export class Query extends ExpressionInterface {
 		return this;
 	}
 	
-	select(fields = [], overwrite = false){
+	select(fields = [], overwrite = false)
+	{
 		if(typeof fields === 'function'){
 			fields = fields(this);
 		}
@@ -131,7 +138,8 @@ export class Query extends ExpressionInterface {
 		return this;
 	}
 	
-	distinct(on = [], overwrite = false){
+	distinct(on = [], overwrite = false)
+	{
 		if(count(on) === 0){
 			on = true;
 		}
@@ -150,7 +158,8 @@ export class Query extends ExpressionInterface {
 		return this;
 	}
 	
-	modifier(modifiers, overwrite = false){
+	modifier(modifiers, overwrite = false)
+	{
 		this._dirty();
 		if(overwrite){
 			this._parts['modifiers'] = [];
@@ -159,7 +168,8 @@ export class Query extends ExpressionInterface {
 		return this;
 	}
 	
-	from(tables = [], overwrite = false){
+	from(tables = [], overwrite = false)
+	{
 		if(isEmpty(tables)){
 			return this._parts['from'];
 		}
@@ -178,7 +188,8 @@ export class Query extends ExpressionInterface {
 		return this;
 	}
 	
-	join(tables = null, types = [], overwrite = false){
+	join(tables = null, types = [], overwrite = false)
+	{
 		if(tables === null){
 			return this._parts['join'];
 		}
@@ -216,15 +227,28 @@ export class Query extends ExpressionInterface {
 		return this;
 	}
 	
-	leftJoin(){throw new NotImplementedException();}
+	leftJoin()
+	{
+		throw new NotImplementedException();
+	}
 	
-	rightJoin(){throw new NotImplementedException();}
+	rightJoin()
+	{
+		throw new NotImplementedException();
+	}
 	
-	innerJoin(){throw new NotImplementedException();}
+	innerJoin()
+	{
+		throw new NotImplementedException();
+	}
 	
-	_makeJoin(){throw new NotImplementedException();}
+	_makeJoin()
+	{
+		throw new NotImplementedException();
+	}
 	
-	where(conditions = null, types = [], overwrite = false){
+	where(conditions = null, types = [], overwrite = false)
+	{
 		if(overwrite){
 			this._parts['where'] = this.newExpr();
 		}
@@ -232,23 +256,48 @@ export class Query extends ExpressionInterface {
         return this;
 	}
 	
-	andWhere(){throw new NotImplementedException();}
+	andWhere()
+	{
+		throw new NotImplementedException();
+	}
 	
-	orWhere(){throw new NotImplementedException();}
+	orWhere()
+	{
+		throw new NotImplementedException();
+	}
 	
-	order(){throw new NotImplementedException();}
+	order()
+	{
+		throw new NotImplementedException();
+	}
 	
-	group(){throw new NotImplementedException();}
+	group()
+	{
+		throw new NotImplementedException();
+	}
 	
-	having(){throw new NotImplementedException();}
+	having()
+	{
+		throw new NotImplementedException();
+	}
 	
-	andHaving(){throw new NotImplementedException();}
+	andHaving()
+	{
+		throw new NotImplementedException();
+	}
 	
-	orHaving(){throw new NotImplementedException();}
+	orHaving()
+	{
+		throw new NotImplementedException();
+	}
 	
-	page(){throw new NotImplementedException();}
+	page()
+	{
+		throw new NotImplementedException();
+	}
 	
-	limit(num){
+	limit(num)
+	{
 		this._dirty();
 		if(num !== null && typeof num !== 'object'){
 			num = parseInt(num);
@@ -257,13 +306,23 @@ export class Query extends ExpressionInterface {
 		return this;
 	}
 	
-	offset(){throw new NotImplementedException();}
+	offset()
+	{
+		throw new NotImplementedException();
+	}
 	
-	union(){throw new NotImplementedException();}
+	union()
+	{
+		throw new NotImplementedException();
+	}
 	
-	unionAll(){throw new NotImplementedException();}
+	unionAll()
+	{
+		throw new NotImplementedException();
+	}
 	
-	insert(columns, types = []){
+	insert(columns, types = [])
+	{
 		if(isEmpty(columns)){
 			throw new RuntimeException('At least 1 column is required to perform an insert.');
 		}
@@ -284,14 +343,16 @@ export class Query extends ExpressionInterface {
 		return this;
 	}
 	
-	into(table){
+	into(table)
+	{
 		this._dirty();
 		this._type = 'insert';
 		this._parts['insert'][0] = table;
 		return this;
 	}
 	
-	values(data){
+	values(data)
+	{
 		if(this._type !== 'insert'){
 			throw new RuntimeException('You cannot add values before defining columns to use.');
 		}
@@ -314,14 +375,16 @@ export class Query extends ExpressionInterface {
 		return this;
 	}
 	
-	update(table){
+	update(table)
+	{
 		this._dirty();
 		this._type = 'update';
 		this._parts['update'][0] = table;
 		return this;
 	}
 	
-	set(key, value = null, types = []){
+	set(key, value = null, types = [])
+	{
 		if(isEmpty(this._parts['set'])){
 			this._parts['set'] = this.newExpr().type(',');
 		}
@@ -341,7 +404,8 @@ export class Query extends ExpressionInterface {
 		return this;		
 	}
 	
-	delete(table = null){
+	delete(table = null)
+	{
 		this._dirty();
 		this._type = 'delete';
 		if(!isEmpty(table)){
@@ -350,13 +414,18 @@ export class Query extends ExpressionInterface {
 		return this;
 	}
 	
-	epilog(){throw new NotImplementedException();}
+	epilog()
+	{
+		throw new NotImplementedException();
+	}
 	
-	type(){
+	type()
+	{
 		return this._type;
 	}
 	
-	newExpr(rawExpression = null){
+	newExpr(rawExpression = null)
+	{
 		var expression = new QueryExpression([], this.typeMap());
 		
 		if(rawExpression !== null){
@@ -366,21 +435,38 @@ export class Query extends ExpressionInterface {
 		return expression;
 	}
 	
-	func(){throw new NotImplementedException();}
+	func()
+	{
+		throw new NotImplementedException();
+	}
 	
-	getIterator(){throw new NotImplementedException();}
+	getIterator()
+	{
+		throw new NotImplementedException();
+	}
 	
-	clause(name){
+	clause(name)
+	{
 		return this._parts[name];
 	}
 	
-	decorateResults(){throw new NotImplementedException();}
+	decorateResults()
+	{
+		throw new NotImplementedException();
+	}
 	
-	traverseExpressions(){throw new NotImplementedException();}
+	traverseExpressions()
+	{
+		throw new NotImplementedException();
+	}
 	
-	bind(){throw new NotImplementedException();}
+	bind()
+	{
+		throw new NotImplementedException();
+	}
 	
-	valueBinder(binder = null){
+	valueBinder(binder = null)
+	{
 		if(binder === null){
 			if(this._valueBinder === null){
 				this._valueBinder = new ValueBinder();
@@ -391,16 +477,21 @@ export class Query extends ExpressionInterface {
 		return this;
 	}
 	
-	bufferResults(){throw new NotImplementedException();}
+	bufferResults()
+	{
+		throw new NotImplementedException();
+	}
 	
-	_decorateStatement(statement){
+	_decorateStatement(statement)
+	{
 		/*for(var p of this._resultDecorators){
 			
 		}*/
 		return statement;
 	}
 	
-	_conjugate(part, append, conjunction, types){
+	_conjugate(part, append, conjunction, types)
+	{
 		var expression = !isEmpty(this._parts[part]) ? this._parts[part] : this.newExpr();
 		
 		if(typeof append === 'function'){
@@ -417,12 +508,14 @@ export class Query extends ExpressionInterface {
 		this._dirty();
 	}
 	
-	_dirty(){
+	_dirty()
+	{
 		this.__dirty = true;
 		this._transformedQuery = null;
 	}
 	
-	toString(){
+	toString()
+	{
 		return this.sql();
 	}
 }

@@ -18,8 +18,10 @@
 //Types
 import {Exception} from '../Core/Exception/Exception'
 
-export class RuntimeException extends Exception{
-	constructor(message){
+export class RuntimeException extends Exception
+{
+	constructor(message)
+	{
 		super(message);
 	}
 }

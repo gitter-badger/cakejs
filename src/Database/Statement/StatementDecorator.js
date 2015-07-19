@@ -23,13 +23,15 @@ import isEmpty from '../../Utilities/isEmpty';
 import isNumeric from '../../Utilities/isEmpty';
 
 export class StatementDecorator extends StatementInterface {
-	constructor(statement = null, driver = null){
+	constructor(statement = null, driver = null)
+	{
 		super();
 		this._statement = statement;
 		this._driver = driver;
 	}
 	
-	bind(params, types){
+	bind(params, types)
+	{
 		if(isEmpty(params)){
 			return;
 		}

@@ -34,13 +34,16 @@ import count from '../../Utilities/count'
 /**
  * @internal
  */
-export class FunctionExpression extends QueryExpression{
-	constructor(name, params, types){
+export class FunctionExpression extends QueryExpression
+{
+	constructor(name, params, types)
+	{
 		super(params, types, ',');
 		this._name = name;
 	}
 	
-	name(name = null){
+	name(name = null)
+	{
 		if(name === null){
 			return this._name;
 		}
@@ -48,7 +51,8 @@ export class FunctionExpression extends QueryExpression{
 		return this;
 	}
 	
-	add(params, types = [], prepend = false){
+	add(params, types = [], prepend = false)
+	{
 		for(var k in params){
 			var p = params[k];
 			
@@ -80,7 +84,8 @@ export class FunctionExpression extends QueryExpression{
 		}
 	}
 	
-	sql(generator){
+	sql(generator)
+	{
 		var parts = [];
 		for(var condition of this._conditions){
 			if(typeof condition === 'object' && condition instanceof ExpressionInterface){
