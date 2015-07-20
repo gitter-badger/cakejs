@@ -124,6 +124,10 @@ var dateFormat = function () {
 dateFormat.masks = {
 	"mysqlDateTime": "yyyy-mm-dd HH:MM:ss",
 	"mssqlDateTime": "yyyy-mm-dd HH:MM:ss.l",
+	"mysqlDate": "yyyy-mm-dd",
+	"mssqlDate": "yyyy-mm-dd",
+	"mysqlTime": "HH:MM:ss",
+	"mssqlTime": "HH:MM:ss.l",
 	full:      "ddd mmm dd yyyy HH:MM:ss",
 	shortDate:      "m/d/yy",
 	mediumDate:     "mmm d, yyyy",
