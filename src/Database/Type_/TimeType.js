@@ -13,12 +13,12 @@
  * @license     http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-//CakeJS.Database.Type_.DateTimeType
+//CakeJS.Database.Type_.TimeType
 
 //Types
 import {Type} from '../Type';
 
-export class DateTimeType extends Type
+export class TimeType extends Type
 {
 	toDatabase(value, driver)
 	{
@@ -28,7 +28,7 @@ export class DateTimeType extends Type
 		if(typeof value === 'number'){
 			value = new Date(value);
 		}
-		return value.format('mysqlDateTime');
+		return value.format('mysqlTime');
 	}
 	
 	toNode(value, driver)

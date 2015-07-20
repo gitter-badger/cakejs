@@ -13,30 +13,32 @@
  * @license     http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-//CakeJS.Database.Type_.DateTimeType
+//CakeJS.Database.Type_.UuidType
 
 //Types
 import {Type} from '../Type';
+import {Text} from '../../Utility/Type';
 
-export class DateTimeType extends Type
+export class UuidType extends Type
 {
 	toDatabase(value, driver)
 	{
-		if(value === null || typeof value === 'string'){
-			return value;
+		if(value === null || value === ''){
+			return null;
 		}
-		if(typeof value === 'number'){
-			value = new Date(value);
-		}
-		return value.format('mysqlDateTime');
+		return String(value);
 	}
 	
 	toNode(value, driver)
 	{
-		if(typeof value !== 'object'){
-			value = new Date(value);
+		if(value === null){
+			return null;
 		}
-		
-		return value;
+		return String(value);
 	}	
+	
+	newId()
+	{
+		return Text::uuid();
+	}
 }
