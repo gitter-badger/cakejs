@@ -13,7 +13,9 @@
  * @license     http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-import {ConnectionManager} from '../Datasource/ConnectionManager';
+
+
+import {ConnectionManager} from '../../Datasource/ConnectionManager';
 
 class FixtureManager
 {
