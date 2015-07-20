@@ -23,6 +23,9 @@ var TableRegistry = CakeJS.ORM.TableRegistry;
 
 var test = new class TypeTest extends TestCase
 {
+	/**
+	 * Tests Type build and assert the type returned by the static method build
+	 */
 	test_build()
 	{
 		var type = CakeJS.Database.Type.build('biginteger');
