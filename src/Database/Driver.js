@@ -43,4 +43,24 @@ export class Driver
 	{
 		throw new NotImplementedException();
 	}
+	
+	schemaValue(value)
+	{
+		if(value === null){
+			return 'NULL';
+		}
+		if(value === false){
+			return 'FALSE';
+		}
+		if(value === true){
+			return 'TRUE';
+		}
+		if(typeof value === 'number'){
+			return String(value).replace(',', '.');
+		}
+		if(/^[0-9]{1,}$/.test(String(value))){
+			return value;
+		}
+		return this._connection.quote(value);
+	}
 }
