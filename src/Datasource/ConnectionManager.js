@@ -33,6 +33,8 @@ export var ConnectionManager = new class
 	_descriptions = {};	
 	_initialized = false;
 	
+	_aliasMap = {};
+	
 	/**
 	 * Configures the datasource
 	 * 
@@ -57,7 +59,6 @@ export var ConnectionManager = new class
 		return true;
 	}
 	
-	
 	configured()
 	{
 		var keys = [];
@@ -66,6 +67,21 @@ export var ConnectionManager = new class
 		}
 		return keys;
 	}
+	
+	alias(from, to)
+	{
+		if(to in this._configurations && from in this._configurations){
+			throw new MissingConfigException();
+		}
+		this._aliasMap[to] = from;
+	}
+	
+	dropAlias(name)
+	{
+		delete this._aliasMap[to];
+	}
+	
+	
 	
 	/**
 	 * Retreives the configuration of datasource
