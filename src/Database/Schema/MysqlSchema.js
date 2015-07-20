@@ -24,6 +24,9 @@ import {Table} from './Table';
 //Utilities
 import isEmpty from '../../Utilities/isEmpty';
 
+// Baseclass
+import {BaseSchema} from './BaseSchema';
+
 export class MysqlSchema extends BaseSchema
 {
 	listTablesSql(config)

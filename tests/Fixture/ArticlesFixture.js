@@ -23,7 +23,7 @@ export class ArticlesFixture extends TestFixture
 		title: {type: 'string', length: 255, null: false},
 		body: 'text'
 	};
-	
+
 	records = [
 		{
 			id: 1,
@@ -41,4 +41,6 @@ export class ArticlesFixture extends TestFixture
 			body: 'body C'
 		}
 	];
+	
+	connection = 'test';
 }

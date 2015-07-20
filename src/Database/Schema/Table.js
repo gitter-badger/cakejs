@@ -132,7 +132,7 @@ export class Table
 		if(typeof attrs === 'string'){
 			attrs = {'type': attrs};
 		}
-		valid = Table._columnKeys;
+		let valid = Table._columnKeys;
 		if(attrs['type'] in Table._columnExtras){
 			valid = Hash.merge(valid, Table._columnExtras[attrs['type']]);
 		}
@@ -289,10 +289,12 @@ export class Table
 	
 	createSql(connection)
 	{
-		var dialect = connection.driver.schemaDialect();
+		var dialect = connection._driver.schemaDialect();
+
 		var columns = [];
 		var constraints = [];
 		var indexes = [];
+
 		for(var name in this._columns){
 			columns.push(dialect.columnSql(this, name));
 		}
@@ -302,6 +304,8 @@ export class Table
 		for(var name in this._indexes){
 			columns.push(dialect.indexSql(this, name));
 		}
+		
+		return dialect.createTableSql(this, columns, constraints, indexes);
 	}
 	
 	dropSql(connection)

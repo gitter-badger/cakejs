@@ -13,23 +13,25 @@
  * @license     http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-//Uses
-var TestCase = CakeJS.TestSuite.TestCase;
-
-import {ArticlesFixture} from '../../Fixture/ArticlesFixture';
-
-var test = new class FixtureTest extends TestCase
+class FixtureManager
 {
-	testFixtures()
+	constructor()
 	{
-		let db = CakeJS.Datasource.ConnectionManager.get('test');
-		if (db !== null) {
-			let fixtures = new ArticlesFixture();
-			fixtures.construct();
-			fixtures.init();
-			fixtures.create(db);
+		
+	}
+	
+	_setupTable(fixture, db, sources, drop)
+	{
+		let table = fixture.table();
+		let exists = sources.indexOf(table);
+		
+		if (drop && exists) {
+			fixture.create(db);
+		} else if (!exists) {
+			fixture.create(db);
+		} else {
+			fixture.created.push(db.configName());
+			fixture.truncate(db);
 		}
 	}
-
 }
-module.exports = test.moduleExports();
