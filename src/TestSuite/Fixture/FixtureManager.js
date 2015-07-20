@@ -13,25 +13,46 @@
  * @license     http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
+import {ConnectionManager} from '../Datasource/ConnectionManager';
+
 class FixtureManager
 {
-	constructor()
+	_initialized = false;
+	
+	_initDb()
 	{
+		if (this._initialized === true) {
+			return;
+		}
 		
+		this._aliasConnections();
+		this._initialized = true;
 	}
 	
-	_setupTable(fixture, db, sources, drop)
+	_aliasConnections()
 	{
-		let table = fixture.table();
-		let exists = sources.indexOf(table);
+		let connections = ConnectionManager.configured();
+		ConnectionManager.alias('test', 'default');
+		let map = {};
+		for (let connection of connections) {
+			if (connection === 'test' || connection === 'default') {
+				continue;
+			}
+			
+			if (connection in map) {
+				continue;
+			}
+			
+			if (connection.indexOf('test_') === 0) {
+				map[connection] = connection.substr(5);
+			} else {
+				map['test_' + connection] = connection;
+			}
+		}
 		
-		if (drop && exists) {
-			fixture.create(db);
-		} else if (!exists) {
-			fixture.create(db);
-		} else {
-			fixture.created.push(db.configName());
-			fixture.truncate(db);
+		for (let alias in map) {
+			let connection = map[alias];
+			ConnectionManager.alias(alias, connection);
 		}
 	}
 }
