@@ -48,7 +48,7 @@ export class TestCommand extends Command
         this.setParameter({
            'name': 'bootstrap',
            'optional': true,
-           'length': 0,
+           'length': 1,
            'default': '.',
            'type': 'parameter',
            'description': 'Path to bootstap.'
@@ -71,18 +71,28 @@ export class TestCommand extends Command
     {                
         super.execute(engine, parameters, values);
         
+        if (parameters.bootstrap.length > 0) {
+            parameters.bootstrap = parameters.bootstrap[0];
+        }
         //engine.out('Not implemented yet...');
         if (this.loadBootstrap(engine, path.resolve(process.cwd(), parameters.bootstrap))) {
+            process.chdir(CORE_PATH);
+            
             let mocha = new Mocha({
                 'bail': true,
                 'slow': 300,
                 'timeout': 5000,
                 'ui': 'exports',
-                'grep': parameters.filter[0]
+                'grep': parameters.filter[0],
+                'recursive': true
             });
 
-            let source = path.resolve(CORE_PATH, 'tests');
-            let destination = path.resolve(CORE_PATH, 'dist/tests');
+            let source = [ 
+                path.resolve(CORE_PATH, 'tests'),
+                path.resolve(CORE_PATH, 'src')
+            ];
+                
+            let destination = path.resolve(CORE_PATH, 'dist');
 
             engine.out('Source path is set to %EM%' + source + '%RESET%.');
             engine.out('Destination path is set to "%EM%' + destination + '%RESET%".');
@@ -91,7 +101,10 @@ export class TestCommand extends Command
             }
 
             this.deleteFolderRecursive(destination);
-            this.loadTests(engine, source);
+            
+            for (let i = 0; i < source.length; i++) {
+                this.loadTests(engine, source[i]);
+            }
 
             let tests = [];
             for (let key in this.files) {
@@ -106,8 +119,9 @@ export class TestCommand extends Command
             for (let i = 0; i < tests.length; i++) {
                 engine.out('Compiling "%EM%' + tests[i] + '%RESET%".');
                 require('child_process').exec('babel --stage 0 --optional runtime --out-dir ' + tests[i] + ' ' + tests[i] + ' > /dev/null');
-
-                mocha.addFile(tests[i]);
+                if (tests[i].substr(-7) === 'Test.js') {                    
+                    mocha.addFile(tests[i]);
+                }
             }
 
             engine.out('Beginning Mocha tests, please wait...');
@@ -150,10 +164,10 @@ export class TestCommand extends Command
             if (stats.isDirectory()) {
                 this.loadTests(engine, fullPath, false);
             } else {
-                if (fullPath.substr(-7) === 'Test.js') {                    
+                //if (fullPath.substr(-7) === 'Test.js') {                    
                     this.files[fullPath] = fullPath;
                     engine.out('Added file "%EM%' + fullPath + '%RESET%".');
-                }
+                //}
             }
         });        
     }

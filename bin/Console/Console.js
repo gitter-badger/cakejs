@@ -14,9 +14,6 @@
  * @author      addelajnen
  */
 
-let fs = require('fs');
-let path = require('path');
-
 /**
  * 
  */
@@ -60,7 +57,14 @@ class Console
                 'patch': 0
             }            
         };
-        this.argv = process.argv.slice(2);
+        let argv = process.argv.slice(2);
+        this.argv = [];
+        for (let i = 0; i < argv.length; i++) {
+            argv[i] = argv[i].trim().replace(/([\n\r])/gi, '');
+            if (argv[i].length > 0) {
+                this.argv.push(argv[i]);
+            }
+        }
     }
         
     /**
@@ -68,15 +72,15 @@ class Console
      */
     configure()
     {
-        let pluginPath = path.resolve(
+        let pluginPath = require('path').resolve(
                 __dirname, 
                 this.configuration.plugins.path
         );
 
         // load all commands.
-        fs.readdirSync(pluginPath).forEach((file) => {
+        require('fs').readdirSync(pluginPath).forEach((file) => {
             if (file.substr(-10) === 'Command.js' && file.length > 10) {
-                let plugins = require(path.join(pluginPath, file));
+                let plugins = require(require('path').join(pluginPath, file));
                 for (let plugin in plugins) {
                     let pluginInstance = new plugins[plugin]();
                     pluginInstance.configure(this);
@@ -100,11 +104,13 @@ class Console
      */
     execute()
     {
-        if (this.argv.length > 0) {
-            let plugin = this.argv[0];
+        let argv = this.argv;
+
+        if (argv.length > 0) {
+            let plugin = argv[0];
             
             if (plugin in this.configuration.plugins.plugins) {
-                let parameters = this.configuration.plugins.plugins[plugin].prepare(this.argv.slice(1));
+                let parameters = this.configuration.plugins.plugins[plugin].prepare(argv);
                 if (parameters.errors.length === 0) {
                     this.configuration.plugins.plugins[plugin].execute(this, parameters.parameters, parameters.values);
                 } else {

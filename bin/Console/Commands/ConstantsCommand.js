@@ -55,10 +55,10 @@ export class ConstantsCommand extends Command
         super.execute(engine, parameters, values);
         
         let bootstrapFile = '';
-        if (parameters.bootstrap !== null) {
-            bootstrapFile = require('path').resolve(process.cwd(), parameters.bootstrap);
+        if (parameters.bootstrap !== null && typeof parameters.bootstrap === 'string') {
+            bootstrapFile = require('path').resolve(__dirname, parameters.bootstrap);
         } else {
-            bootstrapFile = require('path').resolve(process.cwd(), 'bootstrap.js');
+            bootstrapFile = require('path').resolve(__dirname, '../../bootstrap.js');
         }
         
         engine.out('Trying to load "%EM%' + bootstrapFile + '%RESET%".');
