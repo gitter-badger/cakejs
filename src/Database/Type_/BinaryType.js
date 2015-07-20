@@ -20,7 +20,7 @@ import {Type} from '../Type';
 
 export class BinaryType extends Type
 {
-	toDatabasse(value, driver)
+	toDatabase(value, driver)
 	{
 		return value;
 	}

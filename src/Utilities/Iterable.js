@@ -25,19 +25,25 @@ import {NotImplementedException} from '../Exception/NotImplementedException';
 export class Iterable
 {
     /**
-     * 
+     * The constructor.
+	 * 
+	 * @constructor
      */
     constructor()
     {
     }
-    
+    			
     /**
-     * 
+     * Make the object iterable using for of.
+	 * This method is called by Symbol.iterator.
+	 * 
+	 * @return {object} The iterator.
      */
     next()
     {
-        let object = this.toObject();
-        let keys = Reflect.ownKeys(object);
+        let keys = this.keys();
+		var __this = this;
+        
         let keyIndex = 0;
         
         return {
@@ -49,25 +55,62 @@ export class Iterable
                 if (keyIndex < keys.length) {
                     let key = keys[keyIndex];
                     ++keyIndex;
-                    
-                    return { value: [key, object[key]] };
+					let value = __this.get(key);
+					if (value === null) {
+						return { done: true };
+					}  
+
+                    return { value: value };
                 } else {
                     return { done: true };
                 }
             }
         }
     }
+	
+	/**
+	 * Make the object iterable using forEach.
+	 * 
+	 * @param {function} The callback to be invoked on each item.
+	 */
+	forEach(callback)
+	{
+		var keys = this.keys();
+		for(var key of keys){
+			callback(this.get(key), key);
+		}
+	}
     
     /**
-     * 
+     * Return the iterable keys.
+	 * 
+	 * @param {object} The object with the iterable keys.
+	 * 
+	 * @return The keys.
      */
-    toObject()
+    keys(object = null)
     {
-        throw new NotImplementedException();
+		if(typeof object !== 'object'){
+			throw new NotImplementedException();
+		}
+        let keys = Reflect.ownKeys(object);
+		return keys;
     }
+	
+	/**
+	 * Get item. Override.
+	 * 
+	 * @param {mixed} key The key.
+	 * 
+	 * @return The item.
+	 */
+	get(key)
+	{
+		throw new NotImplementedException();
+	}
     
     /**
-     * 
+     * Make this item iterable.
      */
     [Symbol.iterator]()
     {

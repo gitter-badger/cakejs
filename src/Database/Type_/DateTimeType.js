@@ -20,7 +20,7 @@ import {Type} from '../Type';
 
 export class DateTimeType extends Type
 {
-	toDatabasse(value, driver)
+	toDatabase(value, driver)
 	{
 		if(value === null || typeof value === 'string'){
 			return value;
