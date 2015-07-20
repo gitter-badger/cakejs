@@ -39,6 +39,6 @@ export class UuidType extends Type
 	
 	newId()
 	{
-		return Text::uuid();
+		return Text.uuid();
 	}
 }
