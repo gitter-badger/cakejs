@@ -10,6 +10,7 @@ install:
 build: clean index
 	@rsync -ax --exclude dist --exclude tests --exclude node_modules --exclude Makefile --exclude LICENSE --exclude npm-debug.log --exclude package.json --exclude README.md --exclude utils * dist
 	@babel --stage 0 --optional runtime --out-dir dist/src dist/src > /dev/null
+	@babel --stage 0 --optional runtime --out-dir dist/bin dist/bin > /dev/null
 	@browserify dist/webroot/js/* -t [ babelify --stage 0 ] --standalone client --outfile dist/webroot/js/*
 
 clean:
