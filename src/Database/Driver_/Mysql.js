@@ -16,15 +16,16 @@
 //CakeJS.Database.Drivers.Mysql
 
 //Exceptions
-import {InvalidParameterException} from '../../Exception/InvalidParameterException'
-import {MissingConfigException} from '../../Exception/MissingConfigException'
-import {Exception} from '../../Core/Exception/Exception'
+import {InvalidParameterException} from '../../Exception/InvalidParameterException';
+import {MissingConfigException} from '../../Exception/MissingConfigException';
+import {Exception} from '../../Core/Exception/Exception';
 
 //Types
-import {Driver} from '../Driver'
-import {Query} from '../Query'
-import {QueryCompiler} from '../QueryCompiler'
-import {MysqlStatement} from '../Statement/MysqlStatement'
+import {Driver} from '../Driver';
+import {Query} from '../Query';
+import {QueryCompiler} from '../QueryCompiler';
+import {MysqlStatement} from '../Statement/MysqlStatement';
+import {MysqlSchema} from '../Schema/MysqlSchema';
 
 //Requires
 var mysql = require('mysql2');
@@ -51,6 +52,14 @@ export class Mysql extends Driver
 		this._connection = null;
 		this._connected = false;
 	}
+	
+	schemaDialect()
+    {
+        if (!this._schemaDialect) {
+            this._schemaDialect = new MysqlSchema(this);
+        }
+        return this._schemaDialect;
+    }
 	
 	_create()
 	{
