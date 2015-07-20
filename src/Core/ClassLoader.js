@@ -97,7 +97,7 @@ export var ClassLoader = new class
 		}else if(fs.existsSync(path.resolve(APP,'..',Configure.read("App.dir"),relativePath,className)+".js")){
 			className = path.resolve(APP,'..',Configure.read("App.dir"),relativePath,className);
 		}else{
-			className = path.resolve(CAKE,relativePath,className);
+			className = path.resolve(CAKE,relativePath.replace('Type','Type_').replace('Driver', 'Driver_'),className);
 		}
 		className = className+".js";
 		if(!fs.existsSync(path.resolve(APP,'..',Configure.read("App.dir"),relativePath,className))){
