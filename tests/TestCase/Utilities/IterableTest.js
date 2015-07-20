@@ -25,26 +25,53 @@ var Iterable = CakeJS.Utilities.Iterable;
  */
 class Customers extends Iterable
 {
+	/**
+	 * Constructor.
+	 * 
+	 * @constructor
+	 */
     constructor()
     {
         super();
         
         this.customers = {};
     }
-
+	
+	/**
+	 * Set data.
+	 * 
+	 * @param {id} The id to set.
+	 * @param {name} The name to set.
+	 * @param {title} The title to set.
+	 * 
+	 * @return {void}
+	 */
     set(id, name, title)
     {
         this.customers[id] = { id: id, name: name, title: title };
     }	
     
-    get(id) {
+	/**
+	 * Get a value.
+	 * 
+	 * @param {id} The id of the value to get.
+	 * 
+	 * @return {mixed} The value.
+	 */
+    get(id) 
+	{
         return this.customers[id];
     }
-
-    toObject()
-    {
-        return this.customers;
-    }
+	
+	/**
+	 * Get keys.
+	 * 
+	 * @return The keys.
+	 */
+	keys()
+	{
+		return super.keys(this.customers);
+	}
 }
 
 /**
@@ -104,8 +131,7 @@ var test = new class IterableTest extends TestCase {
 		
 		// Test if looping trough our customers work as expected.
 		let index = 0; // Index of the expected data.
-		for (let [customerId, customer] of customers) {
-			this.assertTextEquals(customerId, expected[index].id);
+		for (let customer of customers) {
 			this.assertTextEquals(JSON.stringify(customer), JSON.stringify(expected[index]));
 			index++;
 		}
