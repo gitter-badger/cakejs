@@ -31,6 +31,7 @@ ifneq ($(wildcard dist/tests/.*),)
 	@rm -r dist/tests
 endif
 	@cp -R tests dist/tests
+	@babel --stage 0 --optional runtime --out-dir dist/tests/Fixture dist/tests/Fixture > /dev/null
 	@babel --stage 0 --optional runtime --out-dir dist/tests/TestCase dist/tests/TestCase > /dev/null
 	@babel --stage 0 --optional runtime --out-dir dist/tests/test_app/TestApp dist/tests/test_app/TestApp > /dev/null
 	@babel --stage 0 --optional runtime --out-dir dist/tests/test_app/Plugin/TestPlugin/src dist/tests/test_app/Plugin/TestPlugin/src > /dev/null
