@@ -57,6 +57,16 @@ export var ConnectionManager = new class
 		return true;
 	}
 	
+	
+	configured()
+	{
+		var keys = [];
+		for(var key in this._configurations){
+			keys.push(key);
+		}
+		return keys;
+	}
+	
 	/**
 	 * Retreives the configuration of datasource
 	 * 
