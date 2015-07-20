@@ -17,7 +17,7 @@
 
 //Types
 import {Type} from '../Type';
-import {Text} from '../../Utility/Type';
+import {Text} from '../../Utility/Text';
 
 export class UuidType extends Type
 {
