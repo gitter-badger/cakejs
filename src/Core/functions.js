@@ -25,6 +25,8 @@ global.pluginSplit = function(name, dotAppend = false, plugin = null)
 	return [plugin, name];
 };
 
+global.sprintf = require("sprintf-js").sprintf;
+
 /*
  * Date Format 1.2.3
  * (c) 2007-2009 Steven Levithan <stevenlevithan.com>
