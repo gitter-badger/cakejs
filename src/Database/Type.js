@@ -15,6 +15,8 @@
 
 //CakeJS.Database.Type
 
+import {ClassLoader} from '../Core/ClassLoader';
+
 function strval(value)
 {
 	if(typeof value === 'object'){
@@ -52,6 +54,23 @@ export class Type
 	};
 	
 	static _builtTypes = {};
+	
+	static build(name)
+	{
+		if(name in Type._builtTypes[name]){
+			return Type._builtTypes[name];
+		}
+		
+		if(name in Type._basicTypes[name]){
+			return Type._builtTypes[name] = '';
+		}
+		
+		if(!(name in _types)){
+			throw new InvalidArgumentException(sprintf('Unknown type "%s"', name));
+		}
+		var ClassPrototype = ClassLoader.loadClass(name, 'Database/Type');
+		return Type._builtTypes[name] = new ClassPrototype(name);
+	}
 
 	_name = null;
 	
