@@ -27,9 +27,6 @@ import {CaseExpression} from './CaseExpression'
 import {BetweenExpression} from './BetweenExpression'
 import {Comparison} from './Comparison'
 
-//Requires
-var sprintf = require("sprintf-js").sprintf;
-
 //Utilities
 import isEmpty from '../../Utilities/isEmpty'
 import isArray from '../../Utilities/isArray'

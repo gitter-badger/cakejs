@@ -29,9 +29,6 @@ import isArray from '../../Utilities/isArray'
 import toArray from '../../Utilities/toArray'
 import count from '../../Utilities/count'
 
-//Requires
-var sprintf = require("sprintf-js").sprintf;
-
 /**
  * @internal
  */

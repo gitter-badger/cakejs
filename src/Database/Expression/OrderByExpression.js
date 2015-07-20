@@ -26,9 +26,6 @@ import {QueryExpression} from './QueryExpression'
 //Utilities
 import merge from '../../Utilities/merge'
 
-//Requires
-var sprintf = require("sprintf-js").sprintf;
-
 /**
  * @internal
  */

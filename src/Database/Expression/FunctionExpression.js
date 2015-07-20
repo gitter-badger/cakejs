@@ -23,9 +23,6 @@
 //Types
 import {QueryExpression} from './QueryExpression'
 
-//Requires
-var sprintf = require("sprintf-js").sprintf;
-
 //Utilities
 import isEmpty from '../../Utilities/isEmpty'
 import isArray from '../../Utilities/isArray'

@@ -34,9 +34,6 @@ import toArray from '../../Utilities/toArray'
 import count from '../../Utilities/count'
 import merge from '../../Utilities/merge'
 
-//Requires
-var sprintf = require("sprintf-js").sprintf;
-
 /**
  * @internal
  */

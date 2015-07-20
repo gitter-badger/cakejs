@@ -23,9 +23,6 @@
 //Types
 import {ExpressionInterface} from '../ExpressionInterface'
 
-//Requires
-var sprintf = require("sprintf-js").sprintf;
-
 /**
  * @internal
  */

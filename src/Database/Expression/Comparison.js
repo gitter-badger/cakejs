@@ -26,9 +26,6 @@ import {ExpressionInterface} from '../ExpressionInterface'
 //Utilities
 import isEmpty from '../../Utilities/isEmpty'
 
-//Requires
-var sprintf = require("sprintf-js").sprintf;
-
 /**
  * @internal
  */
