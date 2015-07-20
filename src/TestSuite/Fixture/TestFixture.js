@@ -101,7 +101,6 @@ export class TestFixture
 		
 		for (let field in this.fields) {
 			let data = this.fields[field];
-			
 			if (field === '_constraints' || field === '_indexes' || field === '_options') {
 				continue;
 			}
@@ -150,30 +149,49 @@ export class TestFixture
 	create(db)
 	{	
 		if (this._schema === null) {
-			console.log('schema is null');
 			return false;
 		}
 
 		try {
-			console.log('1');
+			console.log('==============================');
 			let queries = this._schema.createSql(db);
-			console.log('2');
-			console.log(queries);
 			for (let i = 0; i < queries.length; i++) {
-				console.log(queries[i]);
+				console.log(queries[i]); 
 				//await db.execute(queries[i]);
 			}
-
-			this.created.push('test');
+			console.log('==============================');
 			
-			console.log(this.created);
+			this.created.push(db.configName());
 		} catch (e) {
+			console.log("E");
 			let msg = sprintf(
 				'Fixture creation for "%s" failed "%s"',
 				this.table,
 				e.getMessage()
 			);
 	
+			return false;
+		}
+		
+		return true;
+	}
+	
+	drop(db)
+	{
+		if (this._schema === null) {
+			return false;
+		}
+		
+		try {
+			sql = this._schema.dropSql(db);
+			for (let i = 0; i < sql.length; i++) {
+				console.log(sql[i]);
+			}
+			let index = this.created.indexOf(db.configName());
+			if (index !== -1) {
+				this.created.splice(index, 1);
+			}
+		} catch (e) {
 			return false;
 		}
 		

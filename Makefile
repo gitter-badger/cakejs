@@ -7,6 +7,9 @@ install:
 	@npm install -s -g browserify
 	@npm install > /dev/null
 
+watch:
+	@babel --watch --stage 0 --optional runtime --out-dir dist/src src
+
 build: clean index
 	@rsync -ax --exclude dist --exclude tests --exclude node_modules --exclude Makefile --exclude LICENSE --exclude npm-debug.log --exclude package.json --exclude README.md --exclude utils * dist
 	@babel --stage 0 --optional runtime --out-dir dist/src dist/src > /dev/null
@@ -36,7 +39,7 @@ endif
 	@babel --stage 0 --optional runtime --out-dir dist/tests/TestCase dist/tests/TestCase > /dev/null
 	@babel --stage 0 --optional runtime --out-dir dist/tests/test_app/TestApp dist/tests/test_app/TestApp > /dev/null
 	@babel --stage 0 --optional runtime --out-dir dist/tests/test_app/Plugin/TestPlugin/src dist/tests/test_app/Plugin/TestPlugin/src > /dev/null
-	@mocha --recursive --slow 300 --timeout 5000 --ui exports -r dist/tests/bootstrap.js dist/tests/TestCase
+	@mocha --recursive --slow 300 --timeout 5000 --ui exports -r dist/tests/bootstrap.js dist/tests/TestCase/TestSuite/FixtureTest
 
 define release
 	VERSION=`node -pe "require('./package.json').version"` && \

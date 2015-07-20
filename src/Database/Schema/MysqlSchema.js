@@ -289,7 +289,11 @@ export class MysqlSchema extends BaseSchema
 			}
 		}
 		var hasLength = ['integer', 'string'];
-		if(hasLength.indexOf(data['type']) !== -1 && ('length' in data || 'precision' in data)){
+		if(hasLength.indexOf(data['type']) !== -1 && 'length' in data && data['length'] !== null){
+			out += '('+data['length']+')';
+		}
+		var hasPrecision = ['float', 'decimal'];
+		if(hasPrecision.indexOf(data['type']) !== -1 && 'length' in data && data['length'] !== null && 'precision' in data && data['precision'] !== null){
 			out += '('+data['length']+','+data['precision']+')';
 		}
 		var hasUnsigned = ['float', 'decimal', 'integer', 'biginteger'];
@@ -313,7 +317,7 @@ export class MysqlSchema extends BaseSchema
 		if('default' in data && data['type'] === 'timestamp' && data['default'].toLowerCase() === 'current_timestamp'){
 			out += ' DEFAULT CURRENT_TIMESTAMP';
 		}
-		if('comment' in data && data['comment'] !== ''){
+		if('comment' in data && !isEmpty(data['comment'])){
 			out += ' COMMENT ' + this._driver.schemaValue(data['comment']);
 		}
 		return out;

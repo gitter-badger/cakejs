@@ -136,7 +136,9 @@ export class Table
 		if(attrs['type'] in Table._columnExtras){
 			valid = Hash.merge(valid, Table._columnExtras[attrs['type']]);
 		}
-		this._columns[name] = Hash.merge(attrs, valid);
+		
+		this._columns[name] = Hash.merge(valid, attrs);
+
 		return this;
 	}
 	
@@ -271,7 +273,7 @@ export class Table
 	
 	options(options = null)
 	{
-		if(option === null){
+		if(options === null){
 			return this._options;
 		}
 		this._options = Hash.merge(this._options, options);
@@ -304,7 +306,6 @@ export class Table
 		for(var name in this._indexes){
 			columns.push(dialect.indexSql(this, name));
 		}
-		
 		return dialect.createTableSql(this, columns, constraints, indexes);
 	}
 	
