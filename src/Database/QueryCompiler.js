@@ -33,9 +33,6 @@ import isNumeric from '../Utilities/isNumeric'
 import toArray from '../Utilities/toArray'
 import count from '../Utilities/count'
 
-//Requires
-var sprintf = require("sprintf-js").sprintf;
-
 /**
  * @internal
  */

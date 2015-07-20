@@ -24,9 +24,6 @@
 import isEmpty from '../Utilities/isEmpty'
 import toArray from '../Utilities/toArray'
 
-//Requires
-var sprintf = require("sprintf-js").sprintf;
-
 /**
  * @internal
  */

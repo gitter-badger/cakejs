@@ -37,11 +37,6 @@ import count from '../Utilities/count'
 import getArrayKeysAndValues from '../Utilities/getArrayKeysAndValues'
 import uuid from '../Utilities/uuid'
 
-//Requires
-var sprintf = require("sprintf-js").sprintf;
-
-
-
 export class Query extends ExpressionInterface 
 {
 	constructor(connection)
