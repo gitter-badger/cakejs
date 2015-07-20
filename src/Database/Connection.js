@@ -16,30 +16,37 @@
 //CakeJS.Database.Connection
 
 //Types
-import {InvalidParameterException} from '../Exception/InvalidParameterException'
-import {MissingParameterException} from '../Exception/MissingParameterException'
-import {MissingConfigException} from '../Exception/MissingConfigException'
+import {InvalidParameterException} from '../Exception/InvalidParameterException';
+import {MissingParameterException} from '../Exception/MissingParameterException';
+import {MissingConfigException} from '../Exception/MissingConfigException';
+import {Type} from './Type';
 
 //Singelton instances
-import {DriverManager} from './DriverManager'
+import {DriverManager} from './DriverManager';
 
 //Utilities
-import clone from '../Utilities/clone'
+import clone from '../Utilities/clone';
 
 export class Connection
 {
 	
 	_description = null;
 	
-	constructor(config)
+	constructor(config, configName)
 	{
 		this._config = config;
+		this._configName = configName;
 		
 		var driver = '';
 		if('driver' in config && config.driver !== null){
 			driver = config['driver'];
 		}
 		this.driver(driver, config);
+	}
+	
+	configName()
+	{
+		return this._configName;
 	}
 	
 	driver(driver = null, config = {})
@@ -99,5 +106,23 @@ export class Connection
 			return this._description;
 		}
 		return this._description[name];
+	}
+	
+	cast(value, type)
+	{
+		if(typeof type === 'string'){
+			type = Type.build(type);
+		}
+		if(type instanceof Type){
+			value = type.toDatabase(value, this._driver);
+			type = type.toStatement(value, this._driver);
+		}
+		return [value, type];
+	}
+	
+	quote(value, type)
+	{
+		var [value, type] = this.cast(value, type);
+		return this._driver.quote(value, type);
 	}
 }
