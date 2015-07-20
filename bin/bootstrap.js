@@ -12,7 +12,7 @@ global.APP = require('path').resolve(TEST_APP, APP_DIR);
 global.WWW_ROOT = require('path').resolve(TEST_APP, 'webroot');
 global.CONFIG = require('path').resolve(TEST_APP, 'config');
 
-require('..');
+require('../..');
 
 CakeJS.Core.Configure.write('debug', true);
 CakeJS.Core.Configure.write('App.paths', {
