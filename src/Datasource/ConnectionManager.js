@@ -68,7 +68,7 @@ export var ConnectionManager = new class
 			throw new MissingConfigException();
 		}
 		if(!(name in this._connections)){
-			this._connections[name] = new Connection(this._configurations[name]);
+			this._connections[name] = new Connection(this._configurations[name], name);
 		}
 		return this._connections[name];
 	}
