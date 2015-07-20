@@ -29,9 +29,6 @@ import isNumeric from '../Utilities/isNumeric'
 import count from '../Utilities/count'
 import merge from '../Utilities/merge'
 
-//Requires
-var sprintf = require("sprintf-js").sprintf;
-
 export class Query extends Database.Query 
 {
 	constructor(connection, table)
