@@ -25,7 +25,8 @@ import {Type} from './Type';
 import {DriverManager} from './DriverManager';
 
 //Collection
-import Collection from '../Collection/Collection';
+import * as Schema from './Schema/Collection';
+var SchemaCollection = Schema.Collection;
 
 //Utilities
 import clone from '../Utilities/clone';
@@ -146,6 +147,6 @@ export class Connection
 			//this._schemaCollection = new CachedCollection(this, this._config['cacheMetadata']);
 		}
 		
-		this._schemaCollection = new Collection(this);
+		this._schemaCollection = new SchemaCollection(this);
 	}
 }
