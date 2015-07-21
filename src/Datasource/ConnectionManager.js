@@ -70,7 +70,8 @@ export var ConnectionManager = new class
 	
 	alias(from, to)
 	{
-		if(to in this._configurations && from in this._configurations){
+		console.log(from, to);
+		if(!(to in this._configurations) && !(from in this._configurations)){
 			throw new MissingConfigException();
 		}
 		this._aliasMap[to] = from;
