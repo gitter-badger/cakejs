@@ -18,6 +18,8 @@
 //Exception
 import {MissingEntityException} from './Exception/MissingEntityException';
 import {FinderNotFoundException} from './Exception/FinderNotFoundException';
+import {RuntimeException} from '../Exception/RuntimeException';
+
 
 //Types
 import {Collection} from '../Collection/Collection';
@@ -32,11 +34,17 @@ import isEmpty from '../Utilities/isEmpty';
 import isArray from '../Utilities/isArray';
 import toArray from '../Utilities/toArray';
 import count from '../Utilities/count';
-import {Marshaller} from './Marshaller'
-import uuid from '../Utilities/uuid'
+import {Marshaller} from './Marshaller';
+import uuid from '../Utilities/uuid';
 
-export class Table 
+export class Table
 {
+	static DEFAULT_VALIDATOR = 'default';
+	
+	static VALIDATOR_PROVIDER_NAME = 'table';
+	
+	static RULES_CLASS = 'RulesChecker';
+	
 	constructor(config)
 	{
 		config = new Collection(config);	
@@ -160,7 +168,9 @@ export class Table
 	{
 		if(schema === null){
 			if(this._schema === null){
-				this.connection().schemaCollection().describe(this.table());
+				this._schema = this._initializeSchema(
+					this.connection().schemaCollection().describe(this.table())
+				);
 			}
 			return this._schema;
 		}
@@ -180,6 +190,7 @@ export class Table
 				schema.addConstraint(name, value);
 			}
 		}
+		
 		this._schema = schema;
 		return this._schema;
 	}
@@ -200,7 +211,7 @@ export class Table
 		if(key !== null){
 			this._primaryKey = key;
 		}
-		if(this._primaryKey === null){
+		if(this._primaryKey === null || typeof this._primaryKey === 'undefined'){
 			key = toArray(this.schema().primaryKey());
 			if(count(key) === 1){
 				key = key[0];
@@ -215,7 +226,7 @@ export class Table
 		if(key !== null){
 			this._displayField = key;
 		}
-		if(this._displayField === null){
+		if(this._displayField === null || typeof this._displayField === 'undefined'){
 			var schema = this.schema();
 			var primary = toArray(this.primaryKey());
 			this._displayField = primary.shift();
@@ -257,7 +268,7 @@ export class Table
 	marshaller() 
 	{
 		return new Marshaller(this);
-	}
+	} 
 	
 	/**
 	 * TODO: comments.
@@ -316,7 +327,8 @@ export class Table
 		
 		let data = entity.extract(description._columns, true);
 		
-		var entityCheck = null;
+		var entityCheck = null; 
+
 		if (('id' in data) && data.id !== null) {
 			entityCheck = await this.find().where({id: data.id}).first();
 		}
@@ -333,13 +345,9 @@ export class Table
 	async _insert(entity, data)
 	{
 		let primary = this.primaryKey();
-		if (primary === null) {
+		if (primary === null || typeof primary === 'undefined') {
 			throw new RuntimeException('Cannot insert row in ' + this.table() + 
 					' table, it has no primary key.');
-		}
-		
-		if (!('id' in data) || (data['id'] === null)) {
-			data['id'] = uuid(null);
 		}
 		
 		// Extract all keys.
@@ -354,10 +362,20 @@ export class Table
 		let statement = await this.query().insert(keys).values(data).execute();		
 	}
 	
+	newId(primary = false)
+	{
+		if(!primary || count(primary) > 1){
+			return null;
+		}
+		var typeName = this.schema().columnType(primary[0]);
+		var type = Type.build(typeName);
+		return type.newId();
+	}
+	
 	async _update(entity, data)
 	{
 		let primary = this.primaryKey();
-		if (primary === null) {
+		if (primary === null || typeof primary === 'undefined') {
 			throw new RuntimeException('Cannot insert row in ' + this.table() + 
 					' table, it has no primary key.');
 		}
@@ -396,5 +414,5 @@ export class Table
 			return this[finder](query, options);
 		}
 		throw new FinderNotFoundException(this.constructor.name, finder);		
-	}
+	} 
 }
