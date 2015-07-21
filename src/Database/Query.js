@@ -16,26 +16,25 @@
 //CakeJS.Database.Query
 
 //Exceptions
-import {NotImplementedException} from '../Exception/NotImplementedException'
-import {RuntimeException} from '../Exception/RuntimeException'
+import {NotImplementedException} from '../Exception/NotImplementedException';
+import {RuntimeException} from '../Exception/RuntimeException';
 
 //Types
-import {CollectionInterface} from '../Collection/CollectionInterface'
-import {ValueBinder} from './ValueBinder'
+import {CollectionInterface} from '../Collection/CollectionInterface';
+import {ValueBinder} from './ValueBinder';
 
 //Expressions
-import {ExpressionInterface} from './ExpressionInterface'
-import {QueryExpression} from './Expression/QueryExpression'
-import {ValuesExpression} from './Expression/ValuesExpression'
+import {ExpressionInterface} from './ExpressionInterface';
+import {QueryExpression} from './Expression/QueryExpression';
+import {ValuesExpression} from './Expression/ValuesExpression';
 
 //Utilities
-import merge from '../Utilities/merge'
-import isEmpty from '../Utilities/isEmpty'
-import isArray from '../Utilities/isArray'
-import toArray from '../Utilities/toArray'
-import count from '../Utilities/count'
-import getArrayKeysAndValues from '../Utilities/getArrayKeysAndValues'
-import uuid from '../Utilities/uuid'
+import merge from '../Utilities/merge';
+import isEmpty from '../Utilities/isEmpty';
+import isArray from '../Utilities/isArray';
+import toArray from '../Utilities/toArray';
+import count from '../Utilities/count';
+import getArrayKeysAndValues from '../Utilities/getArrayKeysAndValues';
 
 export class Query extends ExpressionInterface 
 {
@@ -322,11 +321,6 @@ export class Query extends ExpressionInterface
 			throw new RuntimeException('At least 1 column is required to perform an insert.');
 		}
 		
-		//Forcing add of ID, at the moment
-		if(!isEmpty(columns) && columns.indexOf('id') === -1){
-			columns.push('id');
-		}
-		
 		this._dirty();
 		this._type = 'insert';
 		this._parts['insert'][1] = columns;
@@ -359,11 +353,6 @@ export class Query extends ExpressionInterface
 		if(typeof data === 'object' && data instanceof ValuesExpression){
 			this._parts['values'] = data;
 			return this;
-		}
-		
-		//Forcing uuid
-		if(!('id' in data)){
-			data.id = uuid(null);
 		}
 		
 		this._parts['values'].add(data);
