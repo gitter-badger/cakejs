@@ -21,6 +21,9 @@ import {Configure} from '../Core/Configure';
 //Exceptions
 import {AssertionException} from './Exception/AssertionException';
 
+// Fixtures
+import {FixtureManager} from './Fixture/FixtureManager';
+
 //Utilities
 import {Hash} from '../Utilities/Hash';
 
@@ -30,6 +33,9 @@ var assert = require("assert");
 export class TestCase
 {
 	_configure = null;
+	
+	dropTables = false;
+	fixtureManager = null;
 	
 	/**
      * Setup the test case, backup the static object values so they can be restored.
@@ -42,6 +48,10 @@ export class TestCase
 	{
 		if(this._configure === null){
 			this._configure = Configure.read();
+		}
+		
+		if (this.fixtureManager === null) {
+			this.fixtureManager = new FixtureManager();
 		}
 	}
 	
@@ -58,6 +68,21 @@ export class TestCase
 		}
 	}
 	
+	/**
+	 * @todo not working...
+	 */
+	loadFixtures(args)
+	{
+		if (this.fixtureManager === null) {
+			throw new Exception('No fixture manager to load the test fixture');
+		}
+		
+		for (let i = 0; i < args.length; i++) {
+			let className = args[i];
+
+			this.fixtureManager.loadSingle(className, null, this.dropTables);
+		}
+	}
 	/**
 	 * Test if two strings are different, ignoring differnces in new newlines.
 	 * Helpful for doing cross platform tests of blocks of text.

@@ -14,23 +14,38 @@
  */
 
 //Uses
-var TestCase = CakeJS.TestSuite.TestCase;
-var FixtureManager = CakeJS.TestSuite.Fixture.FixtureManager;
+var TestFixture = CakeJS.TestSuite.Fixture.TestFixture;
 
-import {ArticlesFixture} from '../../Fixture/ArticlesFixture';
-
-var test = new class FixtureTest extends TestCase
+export class ArticlesFixture extends TestFixture
 {
-	fixtures = [ 'app.articles' ];
-	
-	testFixtures()
-	{
-		//
-		// @todo Get this.loadFixtures() to work...
-		//
-	   this.fixtureManager.fixturize(this);
-	   this.fixtureManager.load(this);
-	}
+	fields = {
+		id: {type: 'integer'},
+		title: {type: 'string', length: 255, null: false},
+		body: 'text'
+	};
 
+	records = [
+		{
+			id: 1,
+			title: 'title A',
+			body: 'body A'
+		},
+		{
+			id: 2,
+			title: 'title B',
+			body: 'body B'
+		},
+		{
+			id: 3,
+			title: 'title C',
+			body: 'body C'
+		},
+		{
+			id: 4,
+			title: 'Testar',
+			body: 'test'
+		}
+	];
+	
+	connection = 'test';
 }
-module.exports = test.moduleExports();

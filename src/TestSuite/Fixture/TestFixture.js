@@ -57,6 +57,8 @@ export class TestFixture
 	
 	records = [];
 	
+	dropTables = false;
+	
 	_schema = null;
 
 	constructor()
@@ -138,7 +140,7 @@ export class TestFixture
 	
 	schema(schema = null)
 	{
-		if (schema === true) {
+		if (schema) {
 			this._schema = schema;
 			return;
 		}
@@ -153,17 +155,16 @@ export class TestFixture
 		}
 
 		try {
-			console.log('==============================');
+			//
+			// @todo Execute query
+			//
 			let queries = this._schema.createSql(db);
 			for (let i = 0; i < queries.length; i++) {
 				console.log(queries[i]); 
 				//await db.execute(queries[i]);
 			}
-			console.log('==============================');
-			
 			this.created.push(db.configName());
 		} catch (e) {
-			console.log("E");
 			let msg = sprintf(
 				'Fixture creation for "%s" failed "%s"',
 				this.table,
@@ -185,6 +186,10 @@ export class TestFixture
 		try {
 			sql = this._schema.dropSql(db);
 			for (let i = 0; i < sql.length; i++) {
+				
+				//
+				// @todo Fix so the query executes.
+				//
 				console.log(sql[i]);
 			}
 			let index = this.created.indexOf(db.configName());
@@ -196,5 +201,76 @@ export class TestFixture
 		}
 		
 		return true;
+	}
+	
+	insert(db)
+	{
+		if (this.records.length === 0) {
+			return false;
+		}
+		
+		let records = this._getRecords();
+
+		let fields = records['fields'];
+		let types = records['types'];
+		let values = records['values'];
+	
+		console.log('TextFixture.insert()');
+		console.log('Fields:');
+		console.log(fields);
+		console.log('Types:');
+		console.log(types);
+		console.log('Values:');
+		console.log(values);
+		console.log('Table:');
+		console.log(this.table);
+		
+		
+		// @todo fix so insert works... values, types and fields are generated in _getRecords
+		// 
+		//let query = db.query().insert(fields, types).into(this.table);		
+	}
+	
+	async truncate(db)
+	{
+		let sql = this._schema.truncateSql(db);
+		for (let i = 0; i < sql.length; i++) {
+			let stmt = sql[i];
+			
+			await db.execute(stmt);
+		}
+		
+		return true;
+	}
+	
+	_getRecords()
+	{
+		let fields = [];
+		let values = [];
+		let types = [];
+		let columns = this._schema.columns();
+				
+		for (let i = 0; i < this.records.length; i++) {
+			let record = this.records[i];
+			
+			for (let key in record) {
+				if ((columns.indexOf(key) !== -1) && fields.indexOf(key) === -1) {
+					fields.push(key);
+				}
+			}
+		}
+		
+		for (let i = 0; i < fields.length; i++) {
+			types[i] = this._schema.column(fields[i])['type'];
+		}
+		
+		for (let i = 0; i < this.records.length; i++) {
+			let record = this.records[i];			
+			values.push(record);
+		}
+		
+		let result = { 'fields': fields, 'values': values, 'types': types };
+		
+		return result;
 	}
 }

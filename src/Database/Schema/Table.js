@@ -317,7 +317,7 @@ export class Table
 	
 	truncateSql(connection)
 	{
-		var dialect = connection.driver.schemaDialect();
+		var dialect = connection.driver().schemaDialect();
 		return dialect.truncateTableSql(this);
 	}
 }

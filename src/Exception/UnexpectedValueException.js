@@ -13,24 +13,15 @@
  * @license     http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-//Uses
-var TestCase = CakeJS.TestSuite.TestCase;
-var FixtureManager = CakeJS.TestSuite.Fixture.FixtureManager;
+//CakeJS.Exception.InvalidArgumentException
 
-import {ArticlesFixture} from '../../Fixture/ArticlesFixture';
+//Types
+import {FatalException} from '../Core/Exception/FatalException'
 
-var test = new class FixtureTest extends TestCase
+export class UnexpectedValueException extends FatalException
 {
-	fixtures = [ 'app.articles' ];
-	
-	testFixtures()
+	constructor(text)
 	{
-		//
-		// @todo Get this.loadFixtures() to work...
-		//
-	   this.fixtureManager.fixturize(this);
-	   this.fixtureManager.load(this);
+		super('Unexpected value exception:'+text);
 	}
-
 }
-module.exports = test.moduleExports();

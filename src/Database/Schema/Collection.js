@@ -16,8 +16,8 @@
 //CakeJS.Database.Schema.Collection
 
 //Exception
-import {NotImplementedException} from '../Exception/NotImplementedException'
-import {InvalidParameterException} from '../Exception/InvalidParameterException'
+import {NotImplementedException} from '../../Exception/NotImplementedException'
+import {InvalidParameterException} from '../../Exception/InvalidParameterException'
 
 
 export class Collection
@@ -28,11 +28,11 @@ export class Collection
 		this._dialect = connection.driver().schemaDialect();
 	}
 	
-	await listTables()
+	async listTables()
 	{
 		var [sql, params] = this._dialect.listTablesSql(this._connection.config());
 		var result = [];
-		var statement = this._connection.execute();
+		var statement = await this._connection.execute();
 	}
 	
 	describe(name, options = {})

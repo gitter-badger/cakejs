@@ -67,7 +67,7 @@ export class Connection
 	
 	config()
 	{
-		return this._configuration;
+		return this._config;
 	}
 	
 	async oldQuery(sql)
@@ -142,11 +142,13 @@ export class Connection
 			return this._schemaCollection;
 		}
 		
-		if ('cacheMetadata' in this._config['cacheMetadata']) {
+		if ('cacheMetadata' in this._config) {
 			throw new NotImplementedException();
 			//this._schemaCollection = new CachedCollection(this, this._config['cacheMetadata']);
 		}
 		
 		this._schemaCollection = new SchemaCollection(this);
+		
+		return this._schemaCollection;
 	}
 }
