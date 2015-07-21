@@ -24,6 +24,9 @@ import {Type} from './Type';
 //Singelton instances
 import {DriverManager} from './DriverManager';
 
+//Collection
+import Collection from '../Collection/Collection';
+
 //Utilities
 import clone from '../Utilities/clone';
 
@@ -31,6 +34,7 @@ export class Connection
 {
 	
 	_description = null;
+	_schemaCollection = null;
 	
 	constructor(config, configName)
 	{
@@ -124,5 +128,24 @@ export class Connection
 	{
 		var [value, type] = this.cast(value, type);
 		return this._driver.quote(value, type);
+	}
+	
+	schemaCollection(collection = null)
+	{
+		if (collection !== null) {
+			this._schemaCollection = collection;
+			return this._schemaCollection;
+		}
+		
+		if (this._schemaCollection !== null) {
+			return this._schemaCollection;
+		}
+		
+		if ('cacheMetadata' in this._config['cacheMetadata']) {
+			throw new NotImplementedException();
+			//this._schemaCollection = new CachedCollection(this, this._config['cacheMetadata']);
+		}
+		
+		this._schemaCollection = new Collection(this);
 	}
 }
