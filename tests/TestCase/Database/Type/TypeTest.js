@@ -26,7 +26,7 @@ var test = new class TypeTest extends TestCase
 	/**
 	 * Tests Type build and assert the type returned by the static method build
 	 */
-	test_build()
+	testBuild()
 	{
 		var type = CakeJS.Database.Type.build('biginteger');
 		this.assertType(type, CakeJS.Database.Type_.IntegerType);
