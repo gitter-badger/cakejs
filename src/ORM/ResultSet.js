@@ -72,4 +72,9 @@ export class ResultSet extends CollectionInterface
 	{
 		return this.toArray();		
 	}
+	
+	inspect()
+	{
+		return this._statement.results;
+	}
 }
