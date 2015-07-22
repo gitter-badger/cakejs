@@ -10,6 +10,9 @@ install:
 watch:
 	@babel --watch --stage 0 --optional runtime --out-dir dist/src src
 
+rebuild: index
+	@node utils/rebuild.js
+
 build: clean index
 	@rsync -ax --exclude dist --exclude tests --exclude node_modules --exclude Makefile --exclude LICENSE --exclude npm-debug.log --exclude package.json --exclude README.md --exclude utils * dist
 	@babel --stage 0 --optional runtime --out-dir dist/src dist/src > /dev/null
