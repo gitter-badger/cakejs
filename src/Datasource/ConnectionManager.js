@@ -88,8 +88,11 @@ export var ConnectionManager = new class
 	 * 
 	 * @param {string} name name of datasource
 	 */
-	get(name)
+	get(name, useAliases = true)
 	{
+		if(useAliases && name in this._aliasMap){
+			name = this._aliasMap[name];
+		}
 		if(!(name in this._configurations)){
 			throw new MissingConfigException();
 		}
