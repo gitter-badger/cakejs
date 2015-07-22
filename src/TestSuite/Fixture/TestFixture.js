@@ -37,7 +37,7 @@ export class TestFixture
 	 * 
 	 * @type {string}
 	 */
-	connection = 'test';
+	connection = 'cake';
 	
 	/**
 	 * Full Table Name
@@ -57,12 +57,13 @@ export class TestFixture
 	
 	records = [];
 	
-	dropTables = false;
+	dropTables = true;
 	
 	_schema = null;
 
 	constructor()
 	{
+		
 	}
 	
 	construct()
@@ -70,7 +71,7 @@ export class TestFixture
 		if (this.connection !== null) {
 			let connection = this.connection;
 			if (connection.indexOf('test') !== 0) {
-				throw new Exception("Invalid datasource name "+connection+" for "+this.name+'  Fixture datasource names must begin with "test".');				
+				throw new Exception("Invalid datasource name "+connection+" for "+this.constructor.name+'  Fixture datasource names must begin with "test".');				
 			}
 		}
 	}
@@ -129,7 +130,7 @@ export class TestFixture
 		}
 		
 		if ('_options' in this.fields) {
-			this._schema = this.fields['_options'];
+			this._schema.options(this.fields['_options']);
 		}
 	}
 	
@@ -148,62 +149,39 @@ export class TestFixture
 		return this._schema;
 	}
 	
-	create(db)
+	async create(db)
 	{	
 		if (this._schema === null) {
 			return false;
 		}
-
-		try {
-			//
-			// @todo Execute query
-			//
-			let queries = this._schema.createSql(db);
-			for (let i = 0; i < queries.length; i++) {
-				console.log(queries[i]); 
-				//await db.execute(queries[i]);
-			}
-			this.created.push(db.configName());
-		} catch (e) {
-			let msg = sprintf(
-				'Fixture creation for "%s" failed "%s"',
-				this.table,
-				e.getMessage()
-			);
-	
-			return false;
+				
+		let queries = this._schema.createSql(db);
+		for (let i = 0; i < queries.length; i++) {
+			await db.query(queries[i]);
 		}
-		
+		this.created.push(db.configName());		
 		return true;
 	}
 	
-	drop(db)
-	{
+	async drop(db)
+	{		
 		if (this._schema === null) {
 			return false;
 		}
 		
-		try {
-			sql = this._schema.dropSql(db);
-			for (let i = 0; i < sql.length; i++) {
-				
-				//
-				// @todo Fix so the query executes.
-				//
-				console.log(sql[i]);
-			}
-			let index = this.created.indexOf(db.configName());
-			if (index !== -1) {
-				this.created.splice(index, 1);
-			}
-		} catch (e) {
-			return false;
+		let sql = this._schema.dropSql(db);
+		for (let i = 0; i < sql.length; i++) {
+			await db.query(sql[i]);
+		}
+		let index = this.created.indexOf(db.configName());
+		if (index !== -1) {
+			this.created.splice(index, 1);
 		}
 		
 		return true;
 	}
 	
-	insert(db)
+	async insert(db)
 	{
 		if (this.records.length === 0) {
 			return false;
@@ -214,21 +192,16 @@ export class TestFixture
 		let fields = records['fields'];
 		let types = records['types'];
 		let values = records['values'];
-	
-		console.log('TextFixture.insert()');
-		console.log('Fields:');
-		console.log(fields);
-		console.log('Types:');
-		console.log(types);
-		console.log('Values:');
-		console.log(values);
-		console.log('Table:');
-		console.log(this.table);
+				
+		let query = db.newQuery().insert(fields, types).into(this.table);
 		
+		for (let row of values) {
+			query.values(row);
+		}
 		
-		// @todo fix so insert works... values, types and fields are generated in _getRecords
-		// 
-		//let query = db.query().insert(fields, types).into(this.table);		
+		let statement = await query.execute();
+		
+		return statement;
 	}
 	
 	async truncate(db)

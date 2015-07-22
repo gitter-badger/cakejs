@@ -21,7 +21,7 @@ import {Configure} from '../Core/Configure';
 //Exceptions
 import {AssertionException} from './Exception/AssertionException';
 
-// Fixtures
+// Types
 import {FixtureManager} from './Fixture/FixtureManager';
 
 //Utilities
@@ -34,6 +34,7 @@ export class TestCase
 {
 	_configure = null;
 	
+	autoFixtures = true;
 	dropTables = false;
 	fixtureManager = null;
 	
@@ -44,7 +45,7 @@ export class TestCase
      *
      * @return {void}
      */
-	setUp()
+	async setUp()
 	{
 		if(this._configure === null){
 			this._configure = Configure.read();
@@ -52,6 +53,9 @@ export class TestCase
 		
 		if (this.fixtureManager === null) {
 			this.fixtureManager = new FixtureManager();
+			this.fixtureManager._initDb();
+			await this.fixtureManager.fixturize(this);
+			await this.fixtureManager.load(this);			
 		}
 	}
 	
@@ -71,16 +75,19 @@ export class TestCase
 	/**
 	 * @todo not working...
 	 */
-	loadFixtures(args)
+	async loadFixtures(...args)
 	{
 		if (this.fixtureManager === null) {
 			throw new Exception('No fixture manager to load the test fixture');
 		}
 		
+		if (typeof args === 'string') {
+			args = [ args ];
+		}
+		
 		for (let i = 0; i < args.length; i++) {
 			let className = args[i];
-
-			this.fixtureManager.loadSingle(className, null, this.dropTables);
+			await this.fixtureManager.loadSingle(className, null, this.dropTables);
 		}
 	}
 	/**
@@ -548,6 +555,12 @@ export class TestCase
 				});
 			}
 		}
+		tests['before'] = () => {
+
+		};		
+		tests['after'] = async () => {
+			await this.fixtureManager.shutdown();
+		};
 		return tests;
 	}
 }

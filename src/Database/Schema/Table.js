@@ -291,7 +291,7 @@ export class Table
 	
 	createSql(connection)
 	{
-		var dialect = connection._driver.schemaDialect();
+		var dialect = connection.driver().schemaDialect();
 
 		var columns = [];
 		var constraints = [];
@@ -311,7 +311,7 @@ export class Table
 	
 	dropSql(connection)
 	{
-		var dialect = connection.driver.schemaDialect();
+		var dialect = connection.driver().schemaDialect();
 		return dialect.dropTableSql(this);
 	}
 	

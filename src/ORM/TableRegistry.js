@@ -42,7 +42,7 @@ export var TableRegistry = new class
 		this._tables = {};
 	}
 	
-	get(name, config)
+	async get(name, config)
 	{
 		var table = null;
 		config = typeof config !== 'undefined' ? config : {};
@@ -80,12 +80,14 @@ export var TableRegistry = new class
 			}
 			if(!Hash.has(config, "connection")){
 				config = Hash.insert(config, "connection", ConnectionManager.get("default"));
-				config = Hash.insert(config, "schema", Hash.get(config, "connection")._config.database);
+				//config = Hash.insert(config, "schema", Hash.get(config, "connection")._config.database);
 			}
 			this._tables[name] = config;
 		}
 		var tableClass = ClassLoader.loadClass(Hash.get(this._tables[name], "className"), "Model/Table");
-		return new tableClass(config);
+		var obj = new tableClass(config);
+		await obj.schema();
+		return obj;
 	}
 	
 	clear()

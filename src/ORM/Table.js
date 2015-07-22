@@ -45,6 +45,8 @@ export class Table
 	
 	static RULES_CLASS = 'RulesChecker';
 	
+	_schema = null;
+	
 	constructor(config)
 	{
 		config = new Collection(config);	
@@ -166,11 +168,18 @@ export class Table
 	
 	schema(schema = null)
 	{
-		if(schema === null){
+		if(schema === null || typeof schema === 'undefined'){
 			if(this._schema === null){
-				this._schema = this._initializeSchema(
-					this.connection().schemaCollection().describe(this.table())
-				);
+				return new Promise(async (resolve, reject) => {
+					try{
+						this._schema = this._initializeSchema(
+							await this.connection().schemaCollection().describe(this.table())
+						);
+						resolve(this._schema);
+					}catch(e){
+						reject(e);
+					}
+				});
 			}
 			return this._schema;
 		}
@@ -288,9 +297,9 @@ export class Table
 	/**
 	 * TODO: comments
 	 */
-	patchEntity(entity, data, options)
+	async patchEntity(entity, data, options)
 	{		
-		return this.marshaller().merge(entity, data, options);
+		return await this.marshaller().merge(entity, data, options);
 	}
 	
 	query(){
@@ -319,7 +328,7 @@ export class Table
 	
 	async _processSave(entity, options)
 	{
-		let description = this.connection().describe(this.table());
+		let description = await this.connection().describe(this.table());
 		let columns = {};
 		for (let columnName of description._columns) {
 			let column = description[columnName];

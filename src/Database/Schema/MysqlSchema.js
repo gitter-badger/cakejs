@@ -23,6 +23,7 @@ import {Table} from './Table';
 
 //Utilities
 import isEmpty from '../../Utilities/isEmpty';
+import {Hash} from '../../Utilities/Hash';
 
 // Baseclass
 import {BaseSchema} from './BaseSchema';
@@ -63,12 +64,11 @@ export class MysqlSchema extends BaseSchema
 		if(matches === null){
 			throw new Exception('Unable to parse column type from "'+column+'"');
 		}
-		
 		var col = matches[1].toLowerCase();
 		var length = null;
 		var precision = null;
 		
-		if(matches.length >= 1){
+		if(typeof matches[2] !== 'undefined'){
 			length = matches[2];
 			if(matches[2].indexOf(',') !== -1){
 				var [length, precision] = length.split(',');
@@ -84,8 +84,7 @@ export class MysqlSchema extends BaseSchema
 		if((col === 'tinyint' && length === 1) || col === 'boolean'){
 			return {'type': 'boolean', 'length': null};
 		}
-		
-		var unsigned = ((matches.length >= 2) && matches[3].toLowerCase() === 'unsigned');
+		var unsigned = (typeof matches[3] !== 'undefined' && matches[3].toLowerCase() === 'unsigned');
 		if(col.indexOf('bigint') !== -1 || col === 'bigint'){
 			return {'type': 'biginteger', 'length': length, 'unsigned': unsigned};
 		}
@@ -207,13 +206,13 @@ export class MysqlSchema extends BaseSchema
 	
 	describeForeignKeySql(tableName, config)
 	{
-		var sql = 'SELECT * FROM information_schema.key_column_usage AS kcu'+
-            'INNER JOIN information_schema.referential_constraints AS rc'+
-            'ON ('+
+		var sql = ' SELECT * FROM information_schema.key_column_usage AS kcu'+
+            ' INNER JOIN information_schema.referential_constraints AS rc'+
+            ' ON ('+
             '    kcu.CONSTRAINT_NAME = rc.CONSTRAINT_NAME'+
             '    AND kcu.CONSTRAINT_SCHEMA = rc.CONSTRAINT_SCHEMA'+
-            ') '+
-            'WHERE kcu.TABLE_SCHEMA = ? AND kcu.TABLE_NAME = ? AND rc.TABLE_NAME = ?';
+            ' ) '+
+            ' WHERE kcu.TABLE_SCHEMA = ? AND kcu.TABLE_NAME = ? AND rc.TABLE_NAME = ?';
 		
 		return [sql, [config['database'], tableName, tableName]];
 	}

@@ -38,4 +38,9 @@ export class PDOStatement extends StatementDecorator
 		}
 		this._columns[column] = value;
 	}
+	
+	fetchAll(type = 'num')
+	{
+		return this.results;
+	}
 }

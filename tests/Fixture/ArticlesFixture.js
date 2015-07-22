@@ -18,6 +18,8 @@ var TestFixture = CakeJS.TestSuite.Fixture.TestFixture;
 
 export class ArticlesFixture extends TestFixture
 {
+	connection = 'test';
+	
 	fields = {
 		id: {type: 'integer'},
 		title: {type: 'string', length: 255, null: false},
@@ -39,8 +41,11 @@ export class ArticlesFixture extends TestFixture
 			id: 3,
 			title: 'title C',
 			body: 'body C'
+		},
+		{
+			id: 4,
+			title: 'Testar',
+			body: 'test'
 		}
 	];
-	
-	connection = 'test';
 }

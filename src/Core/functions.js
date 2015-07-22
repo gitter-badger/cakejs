@@ -27,6 +27,67 @@ global.pluginSplit = function(name, dotAppend = false, plugin = null)
 
 global.sprintf = require("sprintf-js").sprintf;
 
+Object.values = function(object)
+{
+	if(typeof object !== 'object'){
+		return [];
+	}
+	var values = [];
+	if(object instanceof Array){
+		for(var i = 0; i < object.length; i++){
+			values.push(object[i]);
+		}
+	}else{
+		for(var key in object){
+			values.push(object[key]);
+		}
+	}
+	return values;
+}
+
+Object.forEachSync = function(object, callback)
+{
+	if(typeof object !== 'object'){
+		return [];
+	}
+	if(object instanceof Array){
+		for(var i = 0; i < object.length; i++){
+			if(callback(object[i], i) === false){
+				break;
+			}
+		}
+	}else{
+		for(var key in object){
+			if(callback(object[key], key) === false){
+				break;
+			}
+		}
+	}
+}
+
+Object.forEach = async function(object, callback)
+{
+	if(typeof object === 'object' && object instanceof Promise){
+		object = await object;
+	}
+	if(typeof object !== 'object'){
+		return [];
+	}
+	if(object instanceof Array){
+		for(var i = 0; i < object.length; i++){
+			if(await callback(object[i], i) === false){
+				break;
+			}
+		}
+	}else{
+		for(var key in object){
+			if(await callback(object[key], key) === false){
+				break;
+			}
+		}
+	}
+}
+
 /*
  * Date Format 1.2.3
  * (c) 2007-2009 Steven Levithan <stevenlevithan.com>

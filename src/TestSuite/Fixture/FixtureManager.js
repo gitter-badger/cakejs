@@ -16,7 +16,7 @@
 //CakeJS.TestSuite.Fixture.FixtureManager
 
 //Utilities
-import {isEmpty} from '../../Utilities/isEmpty';
+import isEmpty from '../../Utilities/isEmpty';
 import {Inflector} from '../../Utilities/Inflector';
 
 // Datasource
@@ -28,6 +28,7 @@ import {ClassLoader} from '../../Core/ClassLoader'
 // Exception
 import {NotImplementedException} from '../../Exception/NotImplementedException';
 import {UnexpectedValueException} from '../../Exception/UnexpectedValueException';
+import {Exception} from '../../Core/Exception/Exception';
 
 export class FixtureManager
 {
@@ -84,11 +85,11 @@ export class FixtureManager
 	 */
 	initFixture(test)
 	{
-		test.construct();
-		test.init();
+			test.construct();
+			test.init();
 	}
 	
-	load(test)
+	async load(test)
 	{		
 		if (!('fixtures' in test)) {
 			return;
@@ -99,41 +100,32 @@ export class FixtureManager
 			return;
 		}
 		
-		try {
-			let createTables = (db, fixtures) => {
+			let createTables = async (db, fixtures) => {
 				let schemaCollection = db.schemaCollection();
 				let tables = schemaCollection.listTables();
 				for (let f in fixtures) {
 					let fixture = fixtures[f];
-					if (fixture.created.indexOf(db.configName())) {
-						this._setupTable(fixture, db, tables, test.dropTables);
+					if (fixture.created.indexOf(db.configName()) === -1) {
+						await this._setupTable(fixture, db, tables, test.dropTables);
 					} else {
 						fixture.truncate(db);
 					}
 				}				
 			}
 			
-			this._runOperation(fixtures, createTables);
+			await this._runOperation(fixtures, createTables);
 			
-			let insert = (db, fixtures) => {
+			let insert = async (db, fixtures) => {
 				for (let f in fixtures) {
 					let fixture = fixtures[f];
-					fixture.insert(db);
+					await fixture.insert(db);
 				}
 			}
 			
-			this._runOperation(fixtures, insert);
-		} catch (e) {
-			let msg = sprintf(
-					'Unable to insert fixtures for "%s" test case. %s',
-					test.constructor.name,
-					e.getMessage()
-			);
-			throw new Exception(msg);
-		}
+			await this._runOperation(fixtures, insert);
 	}
 	
-	_runOperation(fixtures, operation)
+	async _runOperation(fixtures, operation)
 	{
 		if (typeof operation !== 'function') {
 			throw new InvalidParameterException();
@@ -142,10 +134,8 @@ export class FixtureManager
 		let dbs = this._fixtureConnections(fixtures);
 		for (let connection in dbs) {
 			let fixtures = dbs[connection];
-			
 			let db = ConnectionManager.get(connection, false);
-			
-			operation(db, fixtures);			
+			await operation(db, fixtures);			
 		}
 	}
 	
@@ -168,12 +158,16 @@ export class FixtureManager
 	fixturize(test) 
 	{
 		this._initDb();
-		if (test.length === 0) {
+		if (!('fixtures' in test)) {
 			return;
 		}
 		
 		if (typeof test.fixtures === 'string') {
 			test.fixtures = test.trim().split(',');
+		}
+		
+		if(test.fixtures.length === 0){
+			return;
 		}
 		
 		this._loadFixtures(test);
@@ -182,6 +176,14 @@ export class FixtureManager
 	_loadFixtures(test)
 	{
 		if (!('fixtures' in test)) {
+			return;
+		}
+		
+		if (typeof test.fixtures === 'string') {
+			test.fixtures = test.trim().split(',');
+		}
+		
+		if(test.fixtures.length === 0){
 			return;
 		}
 		
@@ -202,18 +204,16 @@ export class FixtureManager
 			
 			let baseNamespace = '';
 			if (type === 'app') {
-				baseNamespace = APP;
+				baseNamespace = TESTS;
 			}
-			//baseNamespace.trim().replace(new RegExp('/[\\\/]$/'), '');
 			
 			name = Inflector.camelize(name.replace('\\', ''));
 			let nameSegments = [
 				baseNamespace,
-				'Test/Fixture',
+				'Fixture',
 				additionalPath
 			];
-			
-			
+						
 			let classPath = '';
 			for (let i = 0; i < nameSegments.length; i++) {
 				classPath += nameSegments[i] + DS;
@@ -227,7 +227,7 @@ export class FixtureManager
 				this.initFixture(this._loaded[fixture]);
 				this._fixtureMap[name] = this._loaded[fixture];
 			} else {
-				let msg = sprintf(
+				let msg = global.sprintf(
 					'Referenced fixture class "%s" not found. Fixture "%s" was referenced in test case "%s".',
 					className,
 					fixture,
@@ -243,61 +243,56 @@ export class FixtureManager
 		return this._loaded;
 	}
 	
-	loadSingle(name, db = null, dropTables = true)
-	{
-		console.log(name);
-		
+	async loadSingle(name, db = null, dropTables = true)
+	{		
 		if (name in this._fixtureMap) {
-		console.log('2');
 			let fixture = this._fixtureMap[name];
 			if (db === null) {
-		console.log('2.1');
 				db = ConnectionManager.get(fixture.connection);
-		console.log('2.2');
 			}
-			
-		console.log('3');
 			if (fixture.created.indexOf(db.configName()) === -1) {
-		console.log('3.1');
 				let sources = db.schemaCollection().listTables();
-		console.log('3.2');
-				
-				this._setupTable(fixture, db, sources, dropTables);
-		console.log('3.3');				
+				await this._setupTable(fixture, db, sources, dropTables);
 			}
 			
-		console.log('4');
 			if (dropTables === false) {
-		console.log('4.1');
 				fixture.truncate(db);
 			}
-		console.log('5');
-			fixture.insert(db);
-		console.log('6');
-			
+			await fixture.insert(db);
 		} else {
-			throw new UnexpectedValueException(sprintf('Referenced fixture class %s not found', name));
+			throw new UnexpectedValueException(global.sprintf('Referenced fixture class %s not found', name));
 		}
 	}
 
-	_setupTable(fixture, db, sources, drop)
+	async _setupTable(fixture, db, sources, drop)
 	{
 		if (fixture.created.length > 0 && fixture.created.indexOf(db.configName()) !== -1) {
 			return;
 		}
-		
 		let table = fixture.table;
-		
 		let exists = (table in sources);
-		
 		if (drop && exists) {
-			fixture.drop(db);
-			fixture.create(db);
+			await fixture.drop(db);
+			await fixture.create(db);
 		} else if (!exists) {
-			fixture.create(db);
+			await fixture.create(db);
 		} else {
 			fixture.created.push(db.configName());
-			fixture.truncate(db);
+			await fixture.truncate(db);
 		}
+	}
+	
+	async shutdown()
+	{
+		let shutdownFunction = async (db, fixtures) => {
+			let connection = db.configName();
+			await Object.forEach(fixtures, async (fixture) => {
+				if (!isEmpty(fixture.created) && fixture.created.indexOf(connection) !== -1) {
+					await fixture.drop(db);
+				}
+			});
+		};
+		
+		await this._runOperation(Object.keys(this._loaded), shutdownFunction);
 	}
 }

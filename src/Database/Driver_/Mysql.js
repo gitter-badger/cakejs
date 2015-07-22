@@ -116,8 +116,11 @@ export class Mysql extends Driver
 		this._connected = false;
 	}
 	
-	execute(sql, placeholderData)
+	execute(sql = null, placeholderData = {})
 	{
+		if(sql === null){
+			throw new Exception("SQL String is missing");
+		}
 		return new Promise(async (resolve, reject) => {
 			try{
 				if(!this._connected){
@@ -287,6 +290,7 @@ export class Mysql extends Driver
 			}
 		}catch(e){
 			console.log(e);
+			throw e;
 		}
 		return description;
 	}

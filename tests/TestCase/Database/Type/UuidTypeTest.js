@@ -37,7 +37,7 @@ var test = new class UuidTypeTest extends TestCase
 	{
 		var customers = CakeJS.ORM.TableRegistry.get('customers');
 		var entity = customers.newEntity();
-		entity = customers.patchEntity(entity, {
+		entity = await customers.patchEntity(entity, {
 			name: 'Robert'
 		});
 		await customers.save(entity);

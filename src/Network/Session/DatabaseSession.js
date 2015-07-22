@@ -83,7 +83,7 @@ export class DatabaseSession extends SessionHandlerInterface
 			.first();		
 		if(entity === null){
 			var entity = this._table.newEntity();
-			entity = this._table.patchEntity(entity, {
+			entity = await this._table.patchEntity(entity, {
 				id: id,
 				expires: new Date(new Date().getTime()+this._timeout),
 				created: new Date()
@@ -113,7 +113,7 @@ export class DatabaseSession extends SessionHandlerInterface
 			.first();
 		if(entity === null){
 			entity = this._table.newEntity();
-			entity = this._table.patchEntity(entity, {
+			entity = await this._table.patchEntity(entity, {
 				id: id,
 				created: new Date()
 			});

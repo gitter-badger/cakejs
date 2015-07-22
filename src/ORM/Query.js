@@ -145,7 +145,7 @@ export class Query extends Database.Query
 	async _execute()
 	{
 		//await this.triggerBeforeFind();
-		var statement = await this.execute();		
+		var statement = await this.execute();
 		return new ResultSet(this, statement);
 	}
 	
@@ -225,7 +225,6 @@ export class Query extends Database.Query
 	
 	async _all()
 	{
-		
 		if(typeof this._results !== 'undefined' && this._results !== null){
 			return this._results;
 		}
@@ -233,7 +232,6 @@ export class Query extends Database.Query
 		if(typeof this._cache !== 'undefined' && this._cache !== null){
 			var results = this._cache.fetch(this);
 		}
-		
 		if(typeof this._results === 'undefined' || this._results === null){
 			var results = await this._execute();
 			results = this._decorateResults(results);
@@ -241,7 +239,6 @@ export class Query extends Database.Query
 				this._cache.store(this, results);
 			}
 		}
-		
 		this._results = results;
 		return this._results;
 	}

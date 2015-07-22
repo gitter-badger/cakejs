@@ -13,39 +13,9 @@
  * @license     http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-//Uses
-var TestFixture = CakeJS.TestSuite.Fixture.TestFixture;
+//CakeJS.Datasource.EntityInterface
 
-export class ArticlesFixture extends TestFixture
+export class EntityInterface
 {
-	fields = {
-		id: {type: 'integer'},
-		title: {type: 'string', length: 255, null: false},
-		body: 'text'
-	};
-
-	records = [
-		{
-			id: 1,
-			title: 'title A',
-			body: 'body A'
-		},
-		{
-			id: 2,
-			title: 'title B',
-			body: 'body B'
-		},
-		{
-			id: 3,
-			title: 'title C',
-			body: 'body C'
-		},
-		{
-			id: 4,
-			title: 'Testar',
-			body: 'test'
-		}
-	];
 	
-	connection = 'test';
 }

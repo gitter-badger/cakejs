@@ -13,19 +13,30 @@
  * @license     http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
+//CakeJS.ORM.Entity
+
 // Exceptions
 import {InvalidArgumentException} from '../Exception/InvalidArgumentException';
 
 //Utilities
 import {Inflector} from '../Utilities/Inflector';
 
+import {EntityInterface} from '../Datasource/EntityInterface';
+
 /**
  * Entity class.
  * 
  * @class
  */
-export class Entity 
+export class Entity extends EntityInterface
 {
+	_properties = {};
+	_dirty = {};
+	_errors = {};
+	_accessible = { '*': true };
+	_original = {};
+	_new = true;
+	
 	/**
 	 * Constructor.
 	 * 
@@ -35,13 +46,7 @@ export class Entity
 	 */
 	constructor(properties = null, options = [])
 	{
-		this._properties = {};
-		this._dirty = {};
-		this._errors = {};
-		this._accessible = { '*': true };
-		this._original = {};
-		this._new = true;
-		
+		super();		
 		if (properties !== null) {
 			for (let key in properties) {
 				this.set(key, properties[key]);				
@@ -167,7 +172,7 @@ export class Entity
 	 * Check if property exists.
 	 * 
 	 * @param {string} property The property to check.
-	 * 
+	 *	
 	 * @return {boolean} Returns true if it exists otherwise false.
 	 */
 	has(property)
@@ -305,5 +310,10 @@ export class Entity
 		this._accessible[property] = set;
 		
 		return this;
+	}
+	
+	inspect()
+	{
+		return this._properties;
 	}
 }

@@ -20,6 +20,7 @@ import {InvalidParameterException} from '../Exception/InvalidParameterException'
 import {MissingParameterException} from '../Exception/MissingParameterException';
 import {MissingConfigException} from '../Exception/MissingConfigException';
 import {Type} from './Type';
+import {Query} from './Query';
 
 //Singelton instances
 import {DriverManager} from './DriverManager';
@@ -30,6 +31,7 @@ var SchemaCollection = Schema.Collection;
 
 //Utilities
 import clone from '../Utilities/clone';
+import isEmpty from '../Utilities/isEmpty';
 
 export class Connection
 {
@@ -67,7 +69,7 @@ export class Connection
 	
 	config()
 	{
-		return this._config;
+		return clone(this._config);
 	}
 	
 	async oldQuery(sql)
@@ -82,6 +84,18 @@ export class Connection
 	{
 		var statement = this.prepare(sql);
 		await statement.execute();
+		return statement;
+	}
+	
+	async execute(query, params = [], types = [])
+	{
+		if(!isEmpty(params)){
+			var statement = this.prepare(query);
+			statement.bind(params, types);
+			await statement.execute();
+		}else{
+			var statement = await this.query(query);
+		}
 		return statement;
 	}
 	
@@ -129,6 +143,11 @@ export class Connection
 	{
 		var [value, type] = this.cast(value, type);
 		return this._driver.quote(value, type);
+	}
+	
+	newQuery()
+	{
+		return new Query(this);
 	}
 	
 	schemaCollection(collection = null)

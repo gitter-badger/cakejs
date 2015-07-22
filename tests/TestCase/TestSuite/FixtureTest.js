@@ -15,22 +15,42 @@
 
 //Uses
 var TestCase = CakeJS.TestSuite.TestCase;
-var FixtureManager = CakeJS.TestSuite.Fixture.FixtureManager;
+var TableRegistry = CakeJS.ORM.TableRegistry;
 
-import {ArticlesFixture} from '../../Fixture/ArticlesFixture';
+import {ArticlesTable} from '../../test_app/TestApp/Model/Table/ArticlesTable';
 
 var test = new class FixtureTest extends TestCase
 {
 	fixtures = [ 'app.articles' ];
+	autoFixtures = true;
 	
-	testFixtures()
+	async testFixtures1()
 	{
-		//
-		// @todo Get this.loadFixtures() to work...
-		//
-	   this.fixtureManager.fixturize(this);
-	   this.fixtureManager.load(this);
+		let articles = (await TableRegistry.get('Articles')).query();
+		articles = articles.find('all').all();
+		//console.log(articles);
+	}
+	
+	async testFixtures2()
+	{
+		let articles = await TableRegistry.get('Articles');
+		let entity = articles.newEntity();
+		entity = await articles.patchEntity(entity, {
+			id: 999,
+			title: 'Hej'
+		});
+		this.assertTrue(await articles.save(entity));
 	}
 
+	async testFixtures3()
+	{
+		let articles = (await TableRegistry.get('Articles')).find('all').all();
+		//console.log(articles);
+	}
+	
+	async testFixtures4()
+	{
+		let articles = (await TableRegistry.get('Articles')).find('all').all();
+	}
 }
 module.exports = test.moduleExports();
