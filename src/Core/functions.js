@@ -45,6 +45,23 @@ Object.values = function(object)
 	return values;
 }
 
+Object.clone = function(from)
+{
+	if (from == null || typeof from != "object") return from;
+		if (from.constructor != Object && from.constructor != Array) return from;
+		if (from.constructor == Date || from.constructor == RegExp || from.constructor == Function ||
+			from.constructor == String || from.constructor == Number || from.constructor == Boolean)
+			return new from.constructor(from);
+
+		var to = new from.constructor();
+
+		for (var name in from)
+		{
+			to[name] = typeof to[name] == "undefined" ? Object.clone(from[name], null) : to[name];
+		}
+		return to;
+}
+
 Object.forEachSync = function(object, callback)
 {
 	if(typeof object !== 'object'){
@@ -85,6 +102,64 @@ Object.forEach = async function(object, callback)
 				break;
 			}
 		}
+	}
+}
+
+Object.cast = function(object)
+{
+	if(typeof object === 'undefined' || object === null){
+		return {};
+	}
+	if(typeof object === 'object'){
+		var newObject = {};
+		if(object instanceof Array){
+			for(var i = 0; i < object.length; i++){
+				newObject[i] = Object.clone(object[i]);
+			}
+		}else if('toObject' in object){
+			newObject = object.toObject();
+		}else{
+			for(var key in object){
+				newObject[key] = Object.clone(object[key]);
+			}
+		}
+		return newObject;
+	}else{
+		return {0: object};
+	}
+}
+
+Object.merge = function(...args)
+{
+	var newObject = {};
+	for(var arg of args){
+		arg = Object.clone(arg);
+		for(var key in arg){
+			newObject[key] = arg[key];
+		}
+	}
+    return newObject;
+}
+
+Array.cast = function(object)
+{
+	if(typeof object === 'undefined' || object === null){
+		return [];
+	}
+	if(typeof object === 'object'){
+		var newArray = [];
+		if(object instanceof Array){
+			for(var i = 0; i < object.length; i++){
+				newArray.push(Object.clone(object[i]))
+			}
+		}else{
+			for(var key in object){
+				newArray.push(Object.clone(object[key]))
+			}
+		}
+		return newArray;
+	}else{
+		return [clone(object)];
 	}
 }
 

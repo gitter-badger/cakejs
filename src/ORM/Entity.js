@@ -72,13 +72,9 @@ export class Entity extends EntityInterface
 	 * 
 	 * @return {void}
 	 */
-	set(property, value, options)
+	set(property, value = null, options = {})
 	{	
 		let guard = false;
-		
-		if (options === undefined) {
-			options = {};
-		}
 		
 		let isString = (typeof property === 'string');
 		if (isString && property !== '') {
@@ -88,16 +84,17 @@ export class Entity extends EntityInterface
 			property = copy;
 		} else {
 			guard = true;
-			options = value;
+			options = Object.cast(value);
 		}
 		
 		if (!(typeof property === 'object')) {
 			throw new InvalidArgumentException('Cannot set empty property');
 		}
 		
+		options = Object.merge(options,{'setter': true, 'guard': guard});
+		
 		for (let key in property) {
 			let value = property[key];
-			
 			if (('guard' in options && options['guard'] === true) && this.accessible(key) === false) {
 				continue;
 			}

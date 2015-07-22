@@ -76,8 +76,10 @@ export class Marshaller
 			console.log('Table is null');
 			return;
 		}
-		
+		let errors = {};
+		//let errors = this._validate(Object.merge(data, keys), options, isNew);
 		let schema = this._table.schema();
+		let properties = {};
 		let marshalledAssocs = {};
 		if (schema === null) {
 			console.log('Schema is null');
@@ -111,7 +113,7 @@ console.log('J');
 			
 			properties[key] = value;
 		});
-		
+
 		if (!('fieldList' in options)) {
 			entity.set(properties);
 			entity.errors(errors);
