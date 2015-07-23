@@ -24,18 +24,22 @@ var test = new class FixtureTest extends TestCase
 	fixtures = [ 'app.articles' ];
 	autoFixtures = true;
 	
-	async testFixtures1()
+	/**
+	 * 
+	 */
+	async test_Fixtures_List()
 	{
-		let articles = (await TableRegistry.get('Articles')).query();
-		articles = articles.find('all').all();
-		
-		console.log(articles);
+		let articles = (await TableRegistry.get('Articles')).query().find('all');
+		articles = await articles.all();
 	}
 	
-	async testFixtures2()
+	/**
+	 * 
+	 */
+	async test_Fixtures_Save()
 	{
 		let articles = await TableRegistry.get('Articles');
-		let article = articles.newEntity({'title': 'Cake', 'body': 'JS...' });
+		let article = articles.newEntity();
 		article = await articles.patchEntity(article, {
 				id: 999,
 				title: 'Hej',
@@ -46,20 +50,6 @@ var test = new class FixtureTest extends TestCase
 		if (!result) {
 			this.assertTrue(false);
 		}
-	}
-
-	async testFixtures3()
-	{
-		let articles = (await TableRegistry.get('Articles')).query();
-		articles = articles.find('all').all();
-		console.log(articles);
-	}
-	
-	async testFixtures4()
-	{
-		/*
-		let articles = (await TableRegistry.get('Articles')).find('all').all();
-		*/
 	}
 }
 module.exports = test.moduleExports();
