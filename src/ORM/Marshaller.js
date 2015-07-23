@@ -17,9 +17,14 @@
 
 // Types
 import {Type} from '../Database/Type';
+import {TupleComparison} from '../Database/Expression/TupleComparison';
 
+// Exceptions
+import {NotImplementedException} from '../Exception/NotImplementedException';
+
+//Utilities
 import isEmpty from '../Utilities/isEmpty';
-
+import Text from '../Utility/Text';
 
 /**
  * 
@@ -66,7 +71,8 @@ export class Marshaller
 			});
 		}
 		
-		let errors = {}; //this._validate(data, options, true);
+		let errors = {}; 
+		//this._validate(data, options, true);
 		let properties = {};
 
 		Object.forEachSync(data, (value, key) => {
@@ -76,10 +82,8 @@ export class Marshaller
 			
 			let columnType = schema.columnType(key);
 			if (key in propertyMap) {
-			/*
 				let assoc = propertyMap[key]['association'];
 				let value = this._marshalAssociation(assoc, value, propertyMap[key]);
-			*/
 			} else if (value === '' && primaryKey.indexOf(key)) {
 				return;
 			} else if (columnType){
@@ -89,6 +93,7 @@ export class Marshaller
 			
 			properties[key] = value;			
 		});
+		
 		if (!('fieldList' in options)) {
 			entity.set(properties);
 			entity.errors(errors);
@@ -96,8 +101,6 @@ export class Marshaller
 			return entity;
 		}
 
-		
-		
 		Object.forEachSync(Array.cast(options['fieldList']), (field) => {
 			if (field in properties) {
 				entity.set(field, properties[field])
@@ -182,27 +185,9 @@ export class Marshaller
 			}
 		});
 		
-//		let properties = this._table.connection().describe(this._table.table());
-		/*
-		console.log("===========");
-		console.log(properties);
-		console.log("===========");
+		entity.errors(errors);
 		
-		let schema = this._table.table().schema().
-		console.log(schema);
-		
-		for (let propertyName of properties._columns) {
-			let property = properties[propertyName];
-			if (property.Field in data) {
-				entity.set(property.Field, data[property.Field]);
-			} else {
-				entity.set(property.Field, null);
-			}
-		}	
-		
-		return  entity;
-		*/
-	   return null;
+		return entity;
 	}
 	
 	_buildPropertyMap(options)
@@ -245,6 +230,11 @@ export class Marshaller
         return this._mergeJoinData(original, assoc, value, options);
     }	
 	
+	_validate(data, options)
+	{
+		throw new NotImplementedException();
+	}
+	
 	_prepareDataAndOptions(data, options)
 	{
 		options['validate'] = true;
@@ -254,5 +244,96 @@ export class Marshaller
 		}
 		
 		return { data, options };
+	}
+	
+	_marshalAssociation(assoc, value, options)
+	{
+		if (typeof value !== object) {
+			return;
+		}
+		
+		let targetTable = assoc.target();
+		let marshaller = targetTable.marshaller();
+		types = [];
+		if (types.indexOf(assoc.type())) {
+			return marshaller.one(value, Array.cast(options));
+		}
+		if (assoc.type() === Association::MANY_TO_MANY) {
+			return marshaller._belongsToMany(assoc, value, Array.cast(options));
+		}
+		
+		if (assoc.type() === Association::ONE_TO_MANY && typeof value === 'object' && '_ids' in value) {
+			return this._loadAssociatedByIds(assoc, value['_ids']);
+		}
+		
+		return marshaller.many(value, Array.cast(options));
+	}
+	
+	_loadAssociatedByIds(assoc, ids)
+	{
+		let target = assoc.target();
+		let primaryKey = Array.cast(target.primaryKey());
+		let multi = primaryKey.length > 1;
+		let filter = {};
+		
+		Object.forEachSync(primaryKey, function(key) {
+			return target.alias() + '.' + key;
+		});
+		
+		if (multi) {
+			// count(current ... ?
+			if (ids.length !== primaryKey.length) {
+				return [];
+			}
+			filter = new TupleComparison(primaryKey, ids, [], 'IN');
+		} else {
+			let name = primaryKey[0] + ' IN';
+			filter = { name: ids };
+		}
+		
+		return target.find().where(filter).toArray();
+	}
+	
+	_mergeJoinData(original, assoc, value, options)
+	{
+		let associated = ('associated' in options) ? options['associated'] : {};
+		let extra = {};
+		
+		original.forEachSync(function(entity) {
+			entity.accessible('__joinData', true);
+			
+			joinData = entity.get('__joinData');
+			if (joinData && joinData instanceof EntityInterface) {
+				// spl_object_hash
+				extra[Text.uuid()] = joinData;
+			}
+		});
+		
+		let joint = assoc.junction();
+		let marshaller = joint.marshaller();
+		
+		let nested = {};
+		if ('__joinData' in associated) {
+			nested = Object.cast(associated['__joinData']);
+		}
+		
+		options['accessibleFields'] = { '__joinData': true };
+		let records = this.mergeMany(original, value, options);
+		records.forEachSync((record) => {
+			let hash = Text.uuid(); // spl_object_hash
+			let value = record.get('__joinData');
+			
+			if (typeof value !== 'object') {
+				record.unsetProperty('__joinData');
+				return;
+			}
+			
+			if (hash in extra) {
+				record.set('__joinData', marshaller.merge(extra[hash], value, nested));
+			} else {
+				joinData = marshaller.one(value, nested);
+				record.set('__joinData', joinData);
+			}
+		});
 	}
 }

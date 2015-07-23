@@ -18,7 +18,7 @@
  * https://github.com/cakephp/cakephp/blob/master/src/Database/Expression/TupleComparison.php
  */
 
-//CakeJS.Database.Expression.TurpleComparison
+//CakeJS.Database.Expression.TupleComparison
 
 //Types
 import {Comparison} from './Comparison'
@@ -32,7 +32,7 @@ import count from '../../Utilities/count'
 /**
  * @internal
  */
-export class TurpleComparison extends Comparison
+export class TupleComparison extends Comparison
 {
 	constructor(fields, values, types = [], conjunction = '=')
 	{

@@ -13,11 +13,12 @@
  * @license     http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-//CakeJS.ORM.ResultSet
+//CakeJS.ORM.Association
 
-export class RulesChecker
+export class Association
 {
-	static CREATE = 'create';
-	static UPDATE = 'update';
-	static DELETE = 'delete';
+	static ONE_TO_ONE = 'oneToOne';
+	static ONE_TO_MANY = 'oneToMany';
+	static MANY_TO_MANY = 'manyToMany';
+	static MANY_TO_ONE = 'manyToOne';
 }
