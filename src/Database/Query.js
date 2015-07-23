@@ -476,7 +476,10 @@ export class Query extends ExpressionInterface
 	
 	_conjugate(part, append, conjunction, types)
 	{
-		var expression = !isEmpty(this._parts[part]) ? this._parts[part] : this.newExpr();
+		if(isEmpty(append)){
+			return;
+		}
+		var expression = this._parts[part] ? this._parts[part] : this.newExpr();
 		
 		if(typeof append === 'function'){
 			append = append(this.newExpr(), this);
