@@ -42,7 +42,7 @@ endif
 	@babel --stage 0 --optional runtime --out-dir dist/tests/TestCase dist/tests/TestCase > /dev/null
 	@babel --stage 0 --optional runtime --out-dir dist/tests/test_app/TestApp dist/tests/test_app/TestApp > /dev/null
 	@babel --stage 0 --optional runtime --out-dir dist/tests/test_app/Plugin/TestPlugin/src dist/tests/test_app/Plugin/TestPlugin/src > /dev/null
-	@mocha --bail --recursive --slow 300 --timeout 5000 --ui exports -r dist/tests/bootstrap.js dist/tests/TestCase/TestSuite/FixtureTest
+	@mocha --recursive --slow 300 --timeout 5000 --ui exports -r dist/tests/bootstrap.js dist/tests/TestCase
 
 define release
 	VERSION=`node -pe "require('./package.json').version"` && \
