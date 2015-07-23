@@ -22,6 +22,7 @@ import {Exception} from '../../Core/Exception/Exception';
 //Utilities
 import {Hash} from '../../Utilities/Hash';
 import count from '../../Utilities/count';
+import isEmpty from '../../Utilities/isEmpty';
 
 export class Table
 {
@@ -84,22 +85,22 @@ export class Table
 	};
 	
 	static _validIndexType = [
-		Table.INDEX_INDEX,
-		Table.INDEX_FULLTEXT
+		'index',
+		'fulltext'
 	];
 	
 	static _validConstraintTypes = [
-		Table.CONSTRAINT_PRIMARY,
-        Table.CONSTRAINT_UNIQUE,
-        Table.CONSTRAINT_FOREIGN
+		'primary',
+        'unique',
+        'foreign'
 	];
 	
 	static $_validForeignKeyActions = [
-        Table.ACTION_CASCADE,
-        Table.ACTION_SET_NULL,
-        Table.ACTION_SET_DEFAULT,
-        Table.ACTION_NO_ACTION,
-        Table.ACTION_RESTRICT
+        'cascade',
+        'setNull',
+        'setDefault',
+        'noAction',
+        'restrict'
     ];
 	
 	_table = null;
@@ -108,7 +109,7 @@ export class Table
 	
 	_indexes = [];
 	
-	_constraints = [];
+	_constraints = {};
 	
 	_options = [];
 	
@@ -161,7 +162,7 @@ export class Table
 	
 	columnType(name, type = null)
 	{
-		if(!(name in this._columns[name])){
+		if(!(name in this._columns)){
 			return null;
 		}
 		if(type !== null){
@@ -195,7 +196,37 @@ export class Table
 	
 	addIndex(name, attrs)
 	{
-		throw new NotImplementedException();
+		if (typeof attrs === 'string') {
+			attrs = { 'type': attrs };
+		}
+		
+		attrs = Object.intersectKey(attrs, Table._indexKeys);
+		attrs = Object.merge(Table._indexKeys, attrs);
+		
+		delete attrs['references'];
+		delete attrs['update'];
+		delete attrs['delete'];
+		
+		if (Table._validIndexTypes.indexOf(attrs['type']) === -1) {
+			throw new Exception(String.sprintf('Invalid index type "%s"', attrs['type']));
+		}
+		
+		if (isEmpty(attrs['columns'])) {
+			throw new Exception('Indexes must have at least one column.');
+		}
+		
+		attrs['columns'] = Array.cast(attrs['columns']);
+		Object.forEachSync(attrs['columns'], (field) => {
+			if (isEmpty(this._columns[field])) {
+				throw new Exception(String.sprintf(
+					'Columns used in indexes must be added to the Table schema first. ' +
+                    'The column "%s" was not found.',
+                    field						
+				));
+			}
+		});
+		this._indexes[name] = attrs;
+		return this;
 	}
 	
 	indexes()
@@ -217,27 +248,75 @@ export class Table
 	
 	primaryKey()
 	{
-		this._constraints.forEach((data, name) => {
+		var returnArray = [];
+		Object.forEachSync(this._constraints, (data, name) => {
 			if(data['type'] === Table.CONSTRAINT_PRIMARY){
-				return data['columns'];
+				returnArray = data['columns'];
+				return false;
 			}
 		});
-		return [];
+		return returnArray;
 	}
 	
-	addConstraints(name, attrs)
+	addConstraint(name, attrs)
 	{
-		throw new NotImplementedException();
+		if (typeof attrs === 'string') {
+			attrs = { 'type': attrs };
+		}
+		
+		attrs = Object.intersectKey(attrs, Table._indexKeys);
+		attrs = Object.merge(Table._indexKeys, attrs);
+				
+		if (Table._validConstraintTypes.indexOf(attrs['type']) === -1){
+			throw new Exception(String.sprintf('Invalid constraint type "%s"', attrs['type']));
+		}
+
+		attrs['columns'] = Array.cast(attrs['columns']);
+		Object.forEachSync(attrs['columns'], (field) => {
+			if(isEmpty(this._columns[field])){
+				throw new Exception(String.sprintf(
+					'Columns used in constraints must be added to the Table schema first. '+
+                    'The column "%s" was not found.',
+                    field
+				));
+			}
+		});
+		
+		if(attrs['type'] === Table.CONSTRAINT_FOREIGN){
+			attrs = this._checkForeignKey(attrs);
+			
+			if(name in this._constraints){
+				this._constraints[name]['columns'] = Object.merge(
+					this._constraints[name]['columns'],
+					attrs['columns']
+				);
+		
+				this._constraints[name]['references'][1] = Object.merge(
+					Array.cast(this._constraints[name]['references'][1]),
+					[attrs['references'][1]]
+				);
+				return this;
+			}
+		}else{
+			delete attrs['references'];
+			delete attrs['update'];
+			delete attrs['delete'];
+		}
+
+		this._constraints[name] = attrs;
+		return this;
 	}
 	
-	hasAutoincrement()
+	hasAutoIncrement()
 	{
-		this._constraints.forEach((column) => {
+		var status = false;
+		Object.forEachSync(this._constraints,(column) => {
 			if('autoIncrement' in column && column['autoIncrement']){
-				return true;
+				status = true;
+				return false;
 			}
 		});
-		return [];
+		return status;
 	}
 	
 	_checkForeignKey(attrs)

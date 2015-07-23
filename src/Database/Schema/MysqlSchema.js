@@ -296,14 +296,14 @@ export class MysqlSchema extends BaseSchema
 			out += '('+data['length']+','+data['precision']+')';
 		}
 		var hasUnsigned = ['float', 'decimal', 'integer', 'biginteger'];
-		if(hasUnsigned.indexOf(data['type']) && 'unsigned' in data && data['unsigned'] === true){
+		if(hasUnsigned.indexOf(data['type']) !== -1 && 'unsigned' in data && data['unsigned'] === true){
 			out += ' UNSIGNED';
 		}
 		if('null' in data && data['null'] === false){
 			out += ' NOT NULL';
 		}
-		var addAutoIncrement = ([name] == table.primaryKey() && !table.hasAutoIncrement());
-		if(['integer', 'biginteger'].indexOf(data['type']) && (data['autoIncrement'] === true || addAutoIncrement)){
+		var addAutoIncrement = (Array.equals([name], table.primaryKey()) && !table.hasAutoIncrement());
+		if(['integer', 'biginteger'].indexOf(data['type']) !== -1 && (data['autoIncrement'] === true || addAutoIncrement)){
 			out += ' AUTO_INCREMENT';
 		}
 		if('null' in data && data['null'] === true){

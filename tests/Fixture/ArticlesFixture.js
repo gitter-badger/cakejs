@@ -15,6 +15,7 @@
 
 //Uses
 var TestFixture = CakeJS.TestSuite.Fixture.TestFixture;
+var Text = CakeJS.Utility.Text;
 
 export class ArticlesFixture extends TestFixture
 {
@@ -23,27 +24,26 @@ export class ArticlesFixture extends TestFixture
 	fields = {
 		id: {type: 'integer'},
 		title: {type: 'string', length: 255, null: false},
-		body: 'text'
+		body: 'text',
+		_constraints: {
+			primary: { type: 'primary', columns: ['id'] }
+		}
 	};
 
 	records = [
 		{
-			id: 1,
 			title: 'title A',
 			body: 'body A'
 		},
 		{
-			id: 2,
 			title: 'title B',
 			body: 'body B'
 		},
 		{
-			id: 3,
 			title: 'title C',
 			body: 'body C'
 		},
 		{
-			id: 4,
 			title: 'Testar',
 			body: 'test'
 		}

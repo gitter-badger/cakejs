@@ -26,31 +26,43 @@ var test = new class FixtureTest extends TestCase
 	
 	async testFixtures1()
 	{
+		/*
 		let articles = (await TableRegistry.get('Articles')).query();
 		articles = articles.find('all').all();
-		//console.log(articles);
+		*/
 	}
 	
 	async testFixtures2()
 	{
 		let articles = await TableRegistry.get('Articles');
-		let entity = articles.newEntity();
+		let entity = articles.newEntity({'title': 'hej', 'body': 'hejsan' });
+		let e2 = await articles.save(entity);
+		/*
 		entity = await articles.patchEntity(entity, {
 			id: 999,
-			title: 'Hej'
+			title: 'Hej',
+			body: 'Testar testar'
 		});
-		this.assertTrue(await articles.save(entity));
+		
+		let e2 = await articles.save(entity);
+		
+		console.log(e2);		
+		*/
 	}
 
 	async testFixtures3()
 	{
+		/*
 		let articles = (await TableRegistry.get('Articles')).find('all').all();
+		*/
 		//console.log(articles);
 	}
 	
 	async testFixtures4()
 	{
+		/*
 		let articles = (await TableRegistry.get('Articles')).find('all').all();
+		*/
 	}
 }
 module.exports = test.moduleExports();

@@ -217,8 +217,12 @@ export class Entity extends EntityInterface
 	 */
 	extract(properties, onlyDirty = false)
 	{
+		properties = Array.cast(properties);
 		let result = {};
-		for (let property of properties) {
+		for (let i = 0; i < properties.length; i++) {
+			let property = properties[i];
+			
+			
 			if (!onlyDirty || this.dirty(property)) {
 				result[property] = this.get(property);
 			}
@@ -232,7 +236,7 @@ export class Entity extends EntityInterface
 	dirty(property = null, isDirty = null)
 	{
 		if (property === null) {
-			return this._dirty.length > 0;
+			return !isEmpty(this._dirty);
 		}
 		
 		if (isDirty === null) {
@@ -240,8 +244,9 @@ export class Entity extends EntityInterface
 		}
 		
 		if (isDirty === false) {
-			if (property in this._dirty)
+			if (property in this._dirty) {
 				delete this._dirty[property];
+			}
 			return false;
 		}
 		
@@ -259,8 +264,8 @@ export class Entity extends EntityInterface
 	 */
 	clean()
 	{
-		this._dirty = [];
-		this._errors = [];
+		this._dirty = {};
+		this._errors = {};
 	}
 	
 	/**
@@ -277,6 +282,8 @@ export class Entity extends EntityInterface
 				this._dirty[property] = true;
 			}
 		}
+		
+		return this._new = persisted;
 	}
 	
 	/**
@@ -312,5 +319,10 @@ export class Entity extends EntityInterface
 	inspect()
 	{
 		return this._properties;
+	}
+	
+	errors(err) 
+	{
+		
 	}
 }

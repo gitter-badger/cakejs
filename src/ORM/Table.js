@@ -20,10 +20,10 @@ import {MissingEntityException} from './Exception/MissingEntityException';
 import {FinderNotFoundException} from './Exception/FinderNotFoundException';
 import {RuntimeException} from '../Exception/RuntimeException';
 
-
 //Types
 import {Collection} from '../Collection/Collection';
 import {Query} from './Query';
+import {Type} from '../Database/Type';
 
 //Singelton instances
 import {ClassLoader} from '../Core/ClassLoader';
@@ -36,6 +36,9 @@ import toArray from '../Utilities/toArray';
 import count from '../Utilities/count';
 import {Marshaller} from './Marshaller';
 import uuid from '../Utilities/uuid';
+
+// ORM
+import {RulesChecker} from './RulesChecker';
 
 export class Table
 {
@@ -132,10 +135,8 @@ export class Table
 		}
 		
 		if(typeof this._alias === 'undefined' || this._alias === null){
-			alias = this.constructor.name.replace(/Table$/,"");
-			if(isEmpty(alias)){
-				alias = this._table;
-			}
+			alias = this.constructor.name;
+			alias = alias.substr(0, alias.length - 5) ? alias.substr(0, alias.length - 5) : this._table;
 			this._alias = alias;
 		}
 		
@@ -215,14 +216,14 @@ export class Table
 		return schema.column(field) !== null;
 	}
 	
-	primaryKey(key)
+	primaryKey(key = null)
 	{
 		if(key !== null){
 			this._primaryKey = key;
 		}
 		if(this._primaryKey === null || typeof this._primaryKey === 'undefined'){
-			key = toArray(this.schema().primaryKey());
-			if(count(key) === 1){
+			key = Array.cast(this.schema().primaryKey());
+			if(key.length === 1){
 				key = key[0];
 			}
 			this._primaryKey = key;
@@ -283,7 +284,7 @@ export class Table
 	 * TODO: comments.
 	 */
 	newEntity(data = null, options = [])
-	{				
+	{			
 		if (data === null) {
 			var entityClass = this.entityClass();
 			return new entityClass({ registryAlias: this.registryAlias() });
@@ -302,8 +303,19 @@ export class Table
 		return await this.marshaller().merge(entity, data, options);
 	}
 	
-	query(){
+	query()
+	{
 		return new Query(this.connection(), this);
+	}
+	
+	async exists(conditions)
+	{
+		var resultSet = await this.find('all')
+				.select({'existing': 1})
+				.where(conditions)
+				.limit(1)
+				.all();
+		return resultSet.count() > 0;
 	}
 	
 	async load()
@@ -328,50 +340,98 @@ export class Table
 	
 	async _processSave(entity, options)
 	{
-		let description = await this.connection().describe(this.table());
-		let columns = {};
-		for (let columnName of description._columns) {
-			let column = description[columnName];
+		let primaryColumns = Array.cast(this.primaryKey());
+		
+		if ('checkExisting' in options && primaryColumns && entity.isNew() && entity.has(primaryColumns)) {
+			let alias = this.alias();
+			let conditions = {};
+			await Object.forEach(entity.extract(primaryColumns), async (v, k) => {
+				conditions[alias + '.' + k] = v;
+			});
+			entity.isNew(await this.exists(conditions) === false);
 		}
 		
-		let data = entity.extract(description._columns, true);
-		
-		var entityCheck = null; 
-
-		if (('id' in data) && data.id !== null) {
-			entityCheck = await this.find().where({id: data.id}).first();
+		let mode = entity.isNew() ? RulesChecker.CREATE : RulesChecker.UPDATE;
+		if ('checkRules' in options && !this.checkRules(entity, mode, options)) {
+			return false;
 		}
 		
-		if(entityCheck === null){
-			await this._insert(entity, data);
-		}else{
-			await this._update(entity, data);
+//		options['associated'] = this._associations.normalizeKeys(options['associated']);
+		
+		let data = entity.extract(this.schema().columns(), true);
+		let isNew = entity.isNew();
+		
+		let success = false;
+		if (isNew) {
+			success = this._insert(entity, data);
+		} else {
+			success = this._update(entity, data);
+		}
+ 		
+		if (success) {
+			// TODO: success = this._associations.saveChildren...
+/*
+			if ((!('atomic' in options) || options.atomic === false) && 
+				((!('_primary' in options) || !options._primary))) {
+				entity.isNew(false);
+				entity.source(this.registryAlias());
+			}
+			*/
+			entity.clean();
+			
+			success = true;
 		}
 		
-		return true;
+		if (success && isNew) {
+			entity.unsetProperty(this.primaryKey());
+			entity.isNew(true);
+		}
+		if (success) {
+			return entity;
+		}
+		
+		return false;
 	}
 	
 	async _insert(entity, data)
 	{
-		let primary = this.primaryKey();
+		let primary = Array.cast(this.primaryKey());
 		if (primary === null || typeof primary === 'undefined') {
 			throw new RuntimeException('Cannot insert row in ' + this.table() + 
 					' table, it has no primary key.');
 		}
 		
-		// Extract all keys.
 		let keys = [];
-		for (let key in data) {
-			if (data.hasOwnProperty(key)) {
-				keys.push(key);
-			}
+		for(var i = 0; i < primary.length; i++){
+			keys[i] = null;
 		}
-					
-		// Execute SQL statement.
-		let statement = await this.query().insert(keys).values(data).execute();		
+		var id = Array.cast(this._newId(primary)).concat(keys);
+		primary = Object.cast(primary, id);
+		var filteredKeys = {};
+		Object.forEachSync(primary, (value, key) => {
+			if(typeof value === 'undefined' || value === null || value === false || String(value).length === 0){
+				return;
+			}
+			filteredKeys[key] = value;
+		});
+		
+		data = Object.merge(filteredKeys, data);
+		
+		if(count(primary) > 1){
+			throw new NotImplementedException();
+		}
+		var success = false;
+		if(isEmpty(data)){
+			return success;
+		}
+		let statement = await this.query().insert(Object.keys(data))
+				.values(data)
+				.execute()
+		
+		return success;
 	}
 	
-	newId(primary = false)
+	_newId(primary = false)
 	{
 		if(!primary || count(primary) > 1){
 			return null;
@@ -424,4 +484,12 @@ export class Table
 		}
 		throw new FinderNotFoundException(this.constructor.name, finder);		
 	} 
+	
+	/**
+	 * @TODO not implemented
+	 */
+	checkRules(entity, operation = RulesChecker.CREATE, options = null)
+	{
+		return true;
+	}
 }

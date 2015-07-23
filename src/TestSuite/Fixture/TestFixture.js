@@ -115,10 +115,11 @@ export class TestFixture
 			let constraints = this.fields['_constraints'];
 			for (let name in constraints) {
 				let data = constraints[name];
-				
+								
 				this._schema.addConstraint(name, data)
 			}
 		}
+
 
 		if ('_indexes' in this.fields) {
 			let indexes = this.fields['_indexes'];

@@ -15,22 +15,11 @@
 
 //CakeJS.Database.Type
 
+// Singelton instances
 import {ClassLoader} from '../Core/ClassLoader';
 
-function strval(value)
-{
-	if(typeof value === 'object'){
-		return '';
-	}
-	return ""+value;
-}
-
-function boolval(value)
-{
-	return value == true;
-}
-
-var _buildedTypes = [];
+// Exceptions
+import {NotImplementedException} from '../Exception/NotImplementedException';
 
 export class Type
 {
@@ -48,9 +37,9 @@ export class Type
 	};
 
 	static _basicTypes = {
-		'string': {'callback': strval},
-		'text': {'callback': strval},
-		'boolean': {'callback': boolval},
+		'string': {'callback': ['Type', 'strval']},
+		'text': {'callback': ['Type', 'strval']},
+		'boolean': {'callback': ['Type', 'boolval']},
 	};
 	
 	static _builtTypes = {};
@@ -62,7 +51,7 @@ export class Type
 		}
 		
 		if(name in Type._basicTypes){
-			return Type._basicTypes[name] = String('');
+			return Type._builtTypes[name] = new this(name);
 		}
 		
 		if(!(name in Type._types)){
@@ -104,11 +93,13 @@ export class Type
 		if(value === null){
 			return null;
 		}
-		if(this.name in Type._basicTypes){
-			var typeInfo = Type._basicTypes[this.name];
+		if(this._name in Type._basicTypes){
+			var typeInfo = Type._basicTypes[this._name];
 			if('callback' in typeInfo){
-				var callback = typeInfo['callback'];
-				return callback(value);
+				if(typeInfo['callback'][0] !== 'Type'){
+					throw new NotImplementedException();
+				}
+				return Type[typeInfo['callback'][1]](value);
 			}
 		}
 		return value;
@@ -119,9 +110,8 @@ export class Type
 		if(value === null){
 			return null;
 		}
-		
-		if(this.name in Type._basicTypes){
-			var typeInfo = Type._basicTypes[this.name];
+		if(this._name in Type._basicTypes){
+			var typeInfo = Type._basicTypes[this._name];
 			if('pdo' in typeInfo){
 				var callback = typeInfo['pdo'];
 				return callback(value);
@@ -138,6 +128,22 @@ export class Type
 	
 	marshal(value)
 	{
-		return _basicTypeCast(value);
+		return this._basicTypeCast(value);
+	}
+	
+	static boolval(value)
+	{
+		if(typeof value === 'string' && !/^[0-9]$/.test(value) ){
+			return value.toLowerCase(value) === 'true' ? true : false;
+		}
+		return !isEmpty(value);
+	}
+	
+	static strval(value)
+	{
+		if(typeof value === 'object'){
+			value = '';
+		}
+		return String(value);
 	}
 }

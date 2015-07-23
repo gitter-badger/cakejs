@@ -27,6 +27,8 @@ global.pluginSplit = function(name, dotAppend = false, plugin = null)
 
 global.sprintf = require("sprintf-js").sprintf;
 
+String.sprintf = global.sprintf;
+
 Object.values = function(object)
 {
 	if(typeof object !== 'object'){
@@ -105,11 +107,22 @@ Object.forEach = async function(object, callback)
 	}
 }
 
-Object.cast = function(object)
+Object.cast = function(object = null, object2 = null)
 {
 	if(typeof object === 'undefined' || object === null){
 		return {};
 	}
+	if(
+		(object !== null && typeof object === 'object' && object instanceof Array) &&
+		(object2 !== null && typeof object2 === 'object' && object2 instanceof Array)
+	){
+		var newObject = {};
+		for(var i = 0; i < object.length; i++){
+			newObject[object[i]] = object2[i];
+		}
+		return newObject;
+	}
+	
 	if(typeof object === 'object'){
 		var newObject = {};
 		if(object instanceof Array){
@@ -141,6 +154,86 @@ Object.merge = function(...args)
     return newObject;
 }
 
+Object.intersectKey = function(objectToCheck, ...objectList)
+{
+	var returnObject = {};
+	objectToCheck = Object.cast(objectToCheck);
+	for(let object of objectList){
+		object = Object.cast(object);
+		for(var key in object){
+			if(key in objectToCheck){
+				returnObject[key] = objectToCheck[key];
+			}
+		}
+	}
+	return returnObject;
+}
+
+Object.intersect = function(arr1)
+{
+  var retArr = {},
+    argl = arguments.length,
+    arglm1 = argl - 1,
+    k1 = '',
+    arr = {},
+    i = 0,
+    k = '';
+
+  arr1keys: for (k1 in arr1) {
+    arrs: for (i = 1; i < argl; i++) {
+      arr = arguments[i];
+      for (k in arr) {
+        if (arr[k] === arr1[k1]) {
+          if (i === arglm1) {
+            retArr[k1] = arr1[k1];
+          }
+          // If the innermost loop always leads at least once to an equal value, continue the loop until done
+          continue arrs;
+        }
+      }
+      // If it reaches here, it wasn't found in at least one array, so try next value
+      continue arr1keys;
+    }
+  }
+
+  return retArr;
+}
+
+Object.intersectValue = Object.intersect;
+
+Object.equals = function(object1, object2) {
+    for (propName in object1) {
+        if (object1.hasOwnProperty(propName) != object2.hasOwnProperty(propName)) {
+            return false;
+        }
+        else if (typeof object1[propName] != typeof object2[propName]) {
+            return false;
+        }
+    }
+    for(propName in object2) {
+        if (object1.hasOwnProperty(propName) != object2.hasOwnProperty(propName)) {
+            return false;
+        }
+        else if (typeof object1[propName] != typeof object2[propName]) {
+            return false;
+        }
+        if(!object1.hasOwnProperty(propName))
+          continue;
+        if (object1[propName] instanceof Array && object2[propName] instanceof Array) {
+           if (!Array.equals(object1[propName],object2[propName]))
+                        return false;
+        }
+        else if (object1[propName] instanceof Object && object2[propName] instanceof Object) {
+           if (!object1[propName].equals(object2[propName]))
+                        return false;
+        }
+        else if(object1[propName] != object2[propName]) {
+           return false;
+        }
+    }
+    return true;
+}
+
 Array.cast = function(object)
 {
 	if(typeof object === 'undefined' || object === null){
@@ -159,9 +252,26 @@ Array.cast = function(object)
 		}
 		return newArray;
 	}else{
-		return [clone(object)];
+		return [Object.clone(object)];
 	}
 }
+
+Array.equals = function (array1, array2) {
+    if (!array2)
+        return false;
+    if (array1.length != array2.length)
+        return false;
+    for (var i = 0, l=array1.length; i < l; i++) {
+        if (array1[i] instanceof Array && array2[i] instanceof Array) {
+            if (!array1[i].equals(array2[i]))
+                return false;       
+        }           
+        else if (array1[i] != array2[i]) { 
+            return false;   
+        }           
+    }       
+    return true;
+}   
 
 /*
  * Date Format 1.2.3

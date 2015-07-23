@@ -18,6 +18,9 @@
 // Types
 import {Type} from '../Database/Type';
 
+import isEmpty from '../Utilities/isEmpty';
+
+
 /**
  * 
  */
@@ -41,20 +44,68 @@ export class Marshaller
 	 * 
 	 * @return {Entity} The created entity.
 	 */
-	one(data, options = [])
+	one(data, options = {})
 	{
-		let properties = this._table.connection().describe(this._table.table());
+		let result = this._prepareDataAndOptions(data, options);
+
+		data = result.data;
+		options = result.options;
+			
+		let propertyMap = this._buildPropertyMap(options);
+		
+		let schema = this._table.schema();
+		let primaryKey = schema.primaryKey();
 		let entityClass = this._table.entityClass();
 		let entity = new entityClass();
-		
-		for (let propertyName of properties._columns) {
-			let property = properties[propertyName];
-			if (property.Field in data) {
-				entity.set(property.Field, data[property.Field]);
-			} else {
-				entity.set(property.Field, null);
-			}
+
+		entity.source(this._table.registryAlias());
+
+		if ('accessibleFields' in options) {
+			Object.forEachSync(options['accessibleFields'], (value, key) => {
+				entity.accessible(key, value);
+			});
 		}
+		
+		let errors = {}; //this._validate(data, options, true);
+		let properties = {};
+
+		Object.forEachSync(data, (value, key) => {
+			if (key in errors && !isEmpty(errors[key])) {
+				return;
+			} 
+			
+			let columnType = schema.columnType(key);
+			if (key in propertyMap) {
+			/*
+				let assoc = propertyMap[key]['association'];
+				let value = this._marshalAssociation(assoc, value, propertyMap[key]);
+			*/
+			} else if (value === '' && primaryKey.indexOf(key)) {
+				return;
+			} else if (columnType){
+				var converter = Type.build(columnType);
+				value = converter.marshal(value);
+			}
+			
+			properties[key] = value;			
+		});
+		if (!('fieldList' in options)) {
+			entity.set(properties);
+			entity.errors(errors);
+
+			return entity;
+		}
+
+		
+		
+		Object.forEachSync(Array.cast(options['fieldList']), (field) => {
+			if (field in properties) {
+				entity.set(field, properties[field])
+			}
+		});
+
+		
+		entity.errors(errors);
 		
 		return entity;
 	}	
@@ -89,21 +140,16 @@ export class Marshaller
 		
 		Object.forEach(data, (value, key) => {
 		let columnType = schema.columnType(key);
+		
 		let original = entity.get(key);			
 			if (key in propertyMap) {
-console.log('E');
 				let assoc = propertyMap[key]['association'];
-console.log('F');
 				let value = this._mergeAssociation(original, assoc, value, propertyMap[key]);
-console.log('G');
 				marshalledAssocs[key] = true;
-			} else if (columnType) {
+			} else if (columnType) {				
 				let converter = Type.build(columnType);
-console.log('H');
 				let value = typeof converter.marshal(value);
-console.log('I');
 				let isObject = (typeof value === 'object');
-console.log('J');
 				if ((!isObject && original === value) ||
 					 (isObject && original == value)
                 ) {
@@ -118,7 +164,7 @@ console.log('J');
 			entity.set(properties);
 			entity.errors(errors);
 			
-			marshalledAssocs.forEach((value, field) => {
+			Object.forEach(marshalledAssocs, (value, field) => {
 				if (value instanceof EntityInterface) {
 					entity.dirty(field, properties[field].dirty());
 				}
@@ -198,4 +244,15 @@ console.log('J');
         }
         return this._mergeJoinData(original, assoc, value, options);
     }	
+	
+	_prepareDataAndOptions(data, options)
+	{
+		options['validate'] = true;
+		let tableName = this._table.alias();
+		if (tableName in data) {
+			data = data[tableName];
+		}
+		
+		return { data, options };
+	}
 }

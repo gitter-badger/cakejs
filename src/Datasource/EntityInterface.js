@@ -17,5 +17,13 @@
 
 export class EntityInterface
 {
+	_registryAlias = null;
 	
+	source(alias = null)
+	{
+		if (alias === null) {
+			return this._registryAlias;
+		}
+		this._registryAlias = alias;
+	}
 }
