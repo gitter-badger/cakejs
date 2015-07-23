@@ -42,12 +42,12 @@ var test = new class EntityTest extends TestCase
 	/**
 	 * 
 	 */
-	test_Properties_Unset()
+	async test_Properties_Unset()
 	{
 		let key = 'TestProperty';
 		let value = 94;
 		
-		let customers = TableRegistry.get('Customers').newEntity();
+		let customers = (await TableRegistry.get('Customers')).newEntity();
 		
 		customers.set(key, value);
 		this.assertTrue(customers.has(key));
@@ -61,14 +61,14 @@ var test = new class EntityTest extends TestCase
 	 * 
 	 * @type type
 	 */
-	test_Table_NewEntity()
+	async test_Table_NewEntity()
 	{
 		var expected = {
 			name: 'Cake',
 			phone: '010-12345'
 		};
 		
-		this.Customers = TableRegistry.get('Customers');
+		this.Customers = await TableRegistry.get('Customers');
 		
 		var entity = this.Customers.newEntity(expected);
 		
@@ -80,14 +80,14 @@ var test = new class EntityTest extends TestCase
 	 * 
 	 * @type type
 	 */
-	test_Table_PatchEntity()
+	async test_Table_PatchEntity()
 	{
 		var expected = {
 			name: 'Cake',
 			phone: '010-12345'
 		};
 		
-		this.Customers = TableRegistry.get('Customers');
+		this.Customers = await TableRegistry.get('Customers');
 		
 		var entity = this.Customers.newEntity();
 		entity = this.Customers.patchEntity(entity, expected);
@@ -102,6 +102,7 @@ var test = new class EntityTest extends TestCase
 	 */
 	async test_Table_Count()
 	{
+		this.Customers = await TableRegistry.get('Customers');
 		let results = await this.Customers.find('all').all();
 		let count = results.count();
 	}
@@ -112,7 +113,7 @@ var test = new class EntityTest extends TestCase
 	
 	async test_Table_NewId()
 	{
-		this.Customers = TableRegistry.get('Customers');
+		this.Customers = await TableRegistry.get('Customers');
 		let entity = this.Customers.newEntity();
 		entity = this.Customers.patchEntity(entity, { id: '12345', name: 'Cake', phone: '010-12345' });
 		this.assertTrue(await this.Customers.save(entity));		
@@ -123,7 +124,7 @@ var test = new class EntityTest extends TestCase
 	 */
 	async test_Table_SaveAndLoadEntities()
 	{
-		this.Customers = TableRegistry.get('Customers');
+		this.Customers = await TableRegistry.get('Customers');
 		let entities = await this.Customers.find('all').first();
 		
 		let entity = this.Customers.newEntity();
@@ -137,7 +138,7 @@ var test = new class EntityTest extends TestCase
 	 */
 	async testToArray()
 	{
-		this.Customers = TableRegistry.get('Customers');
+		this.Customers = await TableRegistry.get('Customers');
 		let entities = await this.Customers.find('all').all();		
 	}
 	
