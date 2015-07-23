@@ -32,15 +32,5 @@ var test = new class UuidTypeTest extends TestCase
 		this.assertType(uuidType, CakeJS.Database.Type_.UuidType);
 		this.assertTrue(/^[a-f0-9]{8}\-[a-f0-9]{4}\-[a-f0-9]{4}\-[a-f0-9]{4}\-[a-f0-9]{12}$/.test(uuidType.newId()));
 	}
-	
-	async testInsertUuid()
-	{
-		var customers = CakeJS.ORM.TableRegistry.get('customers');
-		var entity = customers.newEntity();
-		entity = await customers.patchEntity(entity, {
-			name: 'Robert'
-		});
-		await customers.save(entity);
-	}
 }
 module.exports = test.moduleExports();
