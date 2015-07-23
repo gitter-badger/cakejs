@@ -93,6 +93,7 @@ export var SessionManager = new class
 	
 	async create()
 	{
+		await this.engine.initialize();
 		var id = null;
 		do{			
 			id = uuid(null, 'uuids');
