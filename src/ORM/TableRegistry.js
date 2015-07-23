@@ -80,7 +80,6 @@ export var TableRegistry = new class
 			}
 			if(!Hash.has(config, "connection")){
 				config = Hash.insert(config, "connection", ConnectionManager.get("default"));
-				//config = Hash.insert(config, "schema", Hash.get(config, "connection")._config.database);
 			}
 			this._tables[name] = config;
 		}
