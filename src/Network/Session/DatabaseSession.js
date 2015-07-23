@@ -17,6 +17,7 @@
 
 //Singelton instances
 import {TableRegistry} from '../../ORM/TableRegistry';
+import {ConnectionManager} from '../../Datasource/ConnectionManager';
 
 //Types
 import {SessionHandlerInterface} from './SessionHandlerInterface';
@@ -29,6 +30,7 @@ import clone from '../../Utilities/clone';
 //Exceptions
 import {InvalidArgumentException} from '../../Exception/InvalidArgumentException';
 import {MissingConfigException} from '../../Exception/MissingConfigException';
+import {Exception} from '../../Core/Exception/Exception';
 
 //Requires
 var cookie = require("cookie");
@@ -40,7 +42,7 @@ var cookie = require("cookie");
  */
 export class DatabaseSession extends SessionHandlerInterface 
 {
-	_table = {};
+	_table = null;
 	_timeout = 1440 * SECOND;
 	_sessions = {};
 	
@@ -51,7 +53,26 @@ export class DatabaseSession extends SessionHandlerInterface
 			throw new MissingConfigException('Missing Session.handler.model');
 		}
 		this._timeout = Hash.get(this._options, 'timeout') * SECOND;
-		this._table = TableRegistry.get(Hash.get(this._options, 'handler.model'));
+		this._connection = ConnectionManager.get('default');
+	}
+	
+	async initialize()
+	{
+		if(this._table !== null){
+			return true;
+		}
+		var statement = await this._connection.query("SHOW TABLES LIKE 'sessions'");
+		if(statement._results.length === 0){
+			var sql = "CREATE TABLE `sessions` (\n"+
+			"`id` char(36) NOT NULL,\n"+
+			"`data` blob,\n"+
+			"`expires` datetime DEFAULT NULL,\n"+
+			"`created` datetime DEFAULT NULL,\n"+
+			"PRIMARY KEY (`id`)\n"+
+			") ENGINE=InnoDB DEFAULT CHARSET=latin1;";
+			await this._connection.execute(sql);
+		}
+		this._table = await TableRegistry.get(Hash.get(this._options, 'handler.model'));
 	}
 	
 	/**
@@ -62,6 +83,7 @@ export class DatabaseSession extends SessionHandlerInterface
 	 */
 	async has(id)
 	{
+		await this.initialize();
 		var item = await this._table
 			.find()
 			.where({id: id})
@@ -77,18 +99,19 @@ export class DatabaseSession extends SessionHandlerInterface
 	 */
 	async read(id)
 	{
+		await this.initialize();
 		var entity = await this._table
 			.find()
 			.where({id: id})
 			.first();		
 		if(entity === null){
-			var entity = this._table.newEntity();
-			entity = await this._table.patchEntity(entity, {
+			var entity = await this._table.patchEntity(this._table.newEntity(), {
 				id: id,
 				expires: new Date(new Date().getTime()+this._timeout),
 				created: new Date()
 			});
-			if(await this._table.save(entity) !== true){
+			if(await this._table.save(entity) === false){
+				console.log(new Error().stack);
 				process.exit(0);
 			}			
 		}
@@ -107,6 +130,7 @@ export class DatabaseSession extends SessionHandlerInterface
 	 */
 	async write(id, data = null)
 	{
+		await this.initialize();
 		var entity = await this._table
 			.find()
 			.where({id: id})
@@ -115,14 +139,16 @@ export class DatabaseSession extends SessionHandlerInterface
 			entity = this._table.newEntity();
 			entity = await this._table.patchEntity(entity, {
 				id: id,
-				created: new Date()
+				created: new Date().format('mysqlDateTime')
 			});
 		}
-		entity.set('expires', new Date(new Date().getTime()+this._timeout).format('mysqlDateTime'));
+		entity.expires = new Date(new Date().getTime()+this._timeout).format('mysqlDateTime');
 		if(data !== null){
-			entity.set('data', JSON.stringify(data));
+			entity.data = JSON.stringify(data)
 		}
-		if(await this._table.save(entity) !== true){
+		
+		if(await this._table.save(entity) === false){
+			console.log(new Error().stack);
 			process.exit(0);
 		}			
 	}
@@ -135,6 +161,7 @@ export class DatabaseSession extends SessionHandlerInterface
 	 */
 	async destroy(id)
 	{
+		await this.initialize();
 		await this._table
 				.query()
 				.delete()

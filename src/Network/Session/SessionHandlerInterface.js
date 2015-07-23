@@ -31,6 +31,10 @@ export class SessionHandlerInterface
 		this._options = config;
 	}
 	
+	initialize(){
+		return true;
+	}
+	
 	open(savePath, name)
 	{
 		return true;
