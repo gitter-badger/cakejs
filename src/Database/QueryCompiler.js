@@ -143,7 +143,7 @@ export class QueryCompiler
 		var parts = this._stringifyExpressions(parts, generator);
 		for(var k in parts){
 			var p = parts[k];
-			if(isNumeric(k)){
+			if(!isNumeric(k)){
 				p = p + ' ' + k;
 			}
 			normalized.push(p);
