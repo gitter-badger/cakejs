@@ -559,7 +559,9 @@ export class TestCase
 
 		};		
 		tests['after'] = async () => {
-			await this.fixtureManager.shutdown();
+			if(this.fixtureManager !== null){
+				await this.fixtureManager.shutdown();
+			}
 		};
 		return tests;
 	}
