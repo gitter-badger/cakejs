@@ -136,13 +136,12 @@ export class Mysql extends Driver
 							inner_resolve([rows, fields]);
 						});
 					}catch(error){
-						console.log("MySQL Error: "+error);
 						return inner_reject(error);
 					}
 				});
 				resolve(result);
 			}catch(error){
-				reject(error);
+				reject(new Exception(String.sprintf("Mysql Error: (%s) with query (%s)", error, sql)));
 			}
 		});
 	}
