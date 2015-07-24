@@ -12,9 +12,9 @@ export class CustomersFixture extends TestFixture
 	connection = 'test';
 	
 	fields = {
-		id: {type: 'integer'},
-		name: {type: 'string', length: 255, null: false},
-		phone: { type: 'string', length: 60 },
+		id: 'integer',
+		name: {type: 'string', null: false},
+		phone: 'string',
 		_constraints: {
 			primary: { type: 'primary', columns: ['id'] }
 		}
