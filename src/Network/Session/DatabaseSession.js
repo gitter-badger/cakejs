@@ -104,9 +104,10 @@ export class DatabaseSession extends SessionHandlerInterface
 			.find()
 			.where({id: id})
 			.first();
-		console.log("Read", entity);
+//		console.log("Read", entity);
 		if(entity === null){
-			var entity = await this._table.patchEntity(this._table.newEntity(), {
+			entity = this._table.newEntity();
+			entity = await this._table.patchEntity(entity, {
 				id: id,
 				expires: new Date(new Date().getTime()+this._timeout).format('mysqlDateTime'),
 				created: new Date().format('mysqlDateTime')
@@ -153,7 +154,6 @@ export class DatabaseSession extends SessionHandlerInterface
 			console.log(new Error().stack);
 			process.exit(0);
 		}		
-		console.log("Write",entity);
 	}
 	
 	/**
@@ -164,7 +164,6 @@ export class DatabaseSession extends SessionHandlerInterface
 	 */
 	async destroy(id)
 	{
-		return true;
 		await this.initialize();
 		await this._table
 				.query()
