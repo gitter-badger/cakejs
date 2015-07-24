@@ -366,27 +366,27 @@ export class Table
 			return false;
 		}
 		
-//		options['associated'] = this._associations.normalizeKeys(options['associated']);
+		//options['associated'] = this._associations.normalizeKeys(options['associated']);
 		
 		let data = entity.extract(this.schema().columns(), true);
 		let isNew = entity.isNew();
 		
 		let success = false;
 		if (isNew) {
-			success = this._insert(entity, data);
+			success = await this._insert(entity, data);
 		} else {
-			success = this._update(entity, data);
+			success = await this._update(entity, data);
 		}
  		
 		if (success) {
 			// TODO: success = this._associations.saveChildren...
-/*
+
 			if ((!('atomic' in options) || options.atomic === false) && 
 				((!('_primary' in options) || !options._primary))) {
 				entity.isNew(false);
 				entity.source(this.registryAlias());
 			}
-			*/
+
 			entity.clean();
 			
 			success = true;
@@ -412,13 +412,13 @@ export class Table
 		}
 		
 		let keys = [];
-		for(var i = 0; i < primary.length; i++){
-			keys[i] = null;
-		}
+		await Object.forEach(primary, async (value) => {
+			keys.push(null);
+		});
 		var id = Array.cast(this._newId(primary)).concat(keys);
 		primary = Object.cast(primary, id);
 		var filteredKeys = {};
-		Object.forEachSync(primary, (value, key) => {
+		await Object.forEach(primary, async (value, key) => {
 			if(typeof value === 'undefined' || value === null || value === false || String(value).length === 0){
 				return;
 			}
@@ -434,9 +434,25 @@ export class Table
 		if(isEmpty(data)){
 			return success;
 		}
+
 		let statement = await this.query().insert(Object.keys(data))
 				.values(data)
 				.execute()
+		
+		if (statement.rowCount() !== 0) {
+			success = entity;
+			entity.set(filteredKeys, { 'guard': false });
+			let schema = this.schema();
+			let driver = this.connection().driver();
+			await Object.forEach(primary, async (value, key) => {
+				if (key in data) {
+					let id = statement.lastInsertId(this.table(), key);
+					let type = schema.columnType(key);
+					entity.set(key, Type.build(type).toNode(id, driver));
+					return false;
+				}
+			});
+		}
 		
 		return success;
 	}
@@ -469,6 +485,8 @@ export class Table
 					
 		// Execute SQL statement.
 		let statement = await this.query().update().set(data).where({id: data.id}).execute();		
+		
+		return statement;
 	}
 	
 	find(type = 'all', options = {})
