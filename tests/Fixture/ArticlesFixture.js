@@ -18,12 +18,10 @@ var TestFixture = CakeJS.TestSuite.Fixture.TestFixture;
 var Text = CakeJS.Utility.Text;
 
 export class ArticlesFixture extends TestFixture
-{
-	connection = 'test';
-	
+{	
 	fields = {
-		id: {type: 'integer'},
-		title: {type: 'string', length: 255, null: false},
+		id: 'integer',
+		title: {type: 'string', null: false},
 		body: 'text',
 		_constraints: {
 			primary: { type: 'primary', columns: ['id'] }
