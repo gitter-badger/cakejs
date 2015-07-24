@@ -283,7 +283,7 @@ export class Table
 	/**
 	 * TODO: comments.
 	 */
-	newEntity(entity, data = null, options = [])
+	newEntity(data = null, options = [])
 	{			
 		if (data === null) {
 			var entityClass = this.entityClass();
