@@ -51,7 +51,6 @@ export class Marshaller
 	 */
 	one(data, options = {})
 	{
-		console.log("JAG AR INNE JAK");
 		let result = this._prepareDataAndOptions(data, options);
 
 		data = result.data;
