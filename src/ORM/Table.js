@@ -283,11 +283,15 @@ export class Table
 	/**
 	 * TODO: comments.
 	 */
-	newEntity(data = null, options = [])
+	newEntity(entity, data = null, options = [])
 	{			
 		if (data === null) {
 			var entityClass = this.entityClass();
 			return new entityClass({ registryAlias: this.registryAlias() });
+		}
+		
+		if (!('associated' in options)) {
+			options['associated'] = this._associations.keys();
 		}
 		
 		let marshaller = this.marshaller();

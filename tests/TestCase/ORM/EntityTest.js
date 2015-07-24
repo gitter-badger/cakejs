@@ -23,6 +23,8 @@ var TableRegistry = CakeJS.ORM.TableRegistry;
 
 var test = new class EntityTest extends TestCase
 {
+	fixtures = [ 'app.customers' ];
+	
 	/**
 	 * 
 	 */
@@ -90,10 +92,10 @@ var test = new class EntityTest extends TestCase
 		this.Customers = await TableRegistry.get('Customers');
 		
 		var entity = this.Customers.newEntity();
-		entity = this.Customers.patchEntity(entity, expected);
-		
-		this.assertTextEquals('Cake', entity.get('name'));
-		this.assertTextEquals('010-12345', entity.get('phone'));
+		entity = await this.Customers.patchEntity(entity, expected);
+		console.log(entity);
+		this.assertTextEquals('Cake', entity.name);
+		this.assertTextEquals('010-12345', entity.phone);
 	}
 
 
