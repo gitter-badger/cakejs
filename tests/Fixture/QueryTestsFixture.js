@@ -20,9 +20,9 @@ var Text = CakeJS.Utility.Text;
 export class QueryTestsFixture extends TestFixture
 {	
 	fields = {
-		id: {type: 'uuid'},
-		column_a: {type: 'string', length: 255},
-		column_b: {type: 'string', length: 255},
+		id: 'uuid',
+		column_a: 'string',
+		column_b: 'string',
 		_constraints: {
 			primary: { type: 'primary', columns: ['id'] }
 		}
