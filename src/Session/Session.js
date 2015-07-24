@@ -41,7 +41,7 @@ class SessionData
 	async read(keyPath = null)
 	{
 		if(keyPath === null){
-			return this.__session.engine.read(this.__session.keyValue);
+			return await this.__session.engine.read(this.__session.keyValue);
 		}
 		if(typeof keyPath !== 'string' || keyPath.trim() === ''){
 			throw new InvalidParameterException(keyPath, 'string');
@@ -59,7 +59,7 @@ class SessionData
 	async write(keyPath, value = null)
 	{
 		if(typeof keyPath === 'object'){
-			var data = await this.__session.engine.read(this.__session.keyValue);
+			var data = await this.read();
 			data = Hash.merge(data, keyPath);
 			await this.__session.engine.write(this.__session.keyValue, data);
 			return true;
@@ -70,8 +70,13 @@ class SessionData
 		if(value === null){
 			throw new InvalidParameterException(keyPath, 'string');
 		}
-		var object = await this.__session.engine.read(this.__session.keyValue);
+		var object = await this.read();
+		console.log("PRE");
+		console.log(object)
+		console.log(this.__session.keyValue);
+		console.log(keyPath, value);
 		await this.__session.engine.write(this.__session.keyValue, Hash.insert(object, keyPath, value));
+		console.log(object);
 		return true;
 	}
 	

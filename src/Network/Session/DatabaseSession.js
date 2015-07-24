@@ -65,7 +65,7 @@ export class DatabaseSession extends SessionHandlerInterface
 		if(statement._results.length === 0){
 			var sql = "CREATE TABLE `sessions` (\n"+
 			"`id` char(36) NOT NULL,\n"+
-			"`data` blob,\n"+
+			"`data` text,\n"+
 			"`expires` datetime DEFAULT NULL,\n"+
 			"`created` datetime DEFAULT NULL,\n"+
 			"PRIMARY KEY (`id`)\n"+
@@ -103,12 +103,13 @@ export class DatabaseSession extends SessionHandlerInterface
 		var entity = await this._table
 			.find()
 			.where({id: id})
-			.first();		
+			.first();
+		console.log("Read", entity);
 		if(entity === null){
 			var entity = await this._table.patchEntity(this._table.newEntity(), {
 				id: id,
-				expires: new Date(new Date().getTime()+this._timeout),
-				created: new Date()
+				expires: new Date(new Date().getTime()+this._timeout).format('mysqlDateTime'),
+				created: new Date().format('mysqlDateTime')
 			});
 			if(await this._table.save(entity) === false){
 				console.log(new Error().stack);
@@ -118,7 +119,7 @@ export class DatabaseSession extends SessionHandlerInterface
 		if(entity.get('data') === null){
 			return {};
 		}
-		return JSON.parse(entity.get('data'));
+		return JSON.parse(entity.data);
 	}
 	
 	/**
@@ -139,18 +140,20 @@ export class DatabaseSession extends SessionHandlerInterface
 			entity = this._table.newEntity();
 			entity = await this._table.patchEntity(entity, {
 				id: id,
+				expires: new Date(new Date().getTime()+this._timeout).format('mysqlDateTime'),
 				created: new Date().format('mysqlDateTime')
 			});
 		}
 		entity.expires = new Date(new Date().getTime()+this._timeout).format('mysqlDateTime');
 		if(data !== null){
-			entity.data = JSON.stringify(data)
+			entity.data = JSON.stringify(data);
 		}
 		
 		if(await this._table.save(entity) === false){
 			console.log(new Error().stack);
 			process.exit(0);
-		}			
+		}		
+		console.log("Write",entity);
 	}
 	
 	/**
@@ -161,6 +164,7 @@ export class DatabaseSession extends SessionHandlerInterface
 	 */
 	async destroy(id)
 	{
+		return true;
 		await this.initialize();
 		await this._table
 				.query()
