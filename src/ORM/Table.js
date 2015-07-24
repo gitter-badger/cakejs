@@ -285,10 +285,12 @@ export class Table
 	 * TODO: comments.
 	 */
 	newEntity(data = null, options = [])
-	{			
+	{
 		if (data === null) {
 			var entityClass = this.entityClass();
-			return new entityClass({}, {'source': this.registryAlias()});
+			var entity = new entityClass({}, {'source': this.registryAlias()});
+			entity.createProperties(Object.keys(this.schema()._columns));
+			return entity;
 			//return new entityClass({ registryAlias: this.registryAlias() });
 		}
 		

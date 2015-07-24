@@ -51,6 +51,7 @@ export class Marshaller
 	 */
 	one(data, options = {})
 	{
+		console.log("JAG AR INNE JAK");
 		let result = this._prepareDataAndOptions(data, options);
 
 		data = result.data;
@@ -62,6 +63,7 @@ export class Marshaller
 		let primaryKey = schema.primaryKey();
 		let entityClass = this._table.entityClass();
 		let entity = new entityClass();
+		entity.createProperties(Object.keys(schema._columns));
 
 		entity.source(this._table.registryAlias());
 

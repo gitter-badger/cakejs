@@ -64,6 +64,29 @@ export class Entity extends EntityInterface
 	}
 	
 	/**
+	 * Used to create properties for object since
+	 * no dynamic setter and getter is available
+	 */
+	createProperties(key)
+	{
+		if(typeof key === 'object' && key instanceof Array){
+			for(let item of key){
+				this.createProperties(item);
+			}
+			return;
+		}
+		if(typeof key !== 'string'){
+			throw new Exception("Key must be a string");
+		}
+		if (this.hasOwnProperty(key) === false) {
+			Object.defineProperty(this, key, {
+				set: (x) => { this.set(key, x); },
+				get: () => { return this._properties[key]; }
+			});				
+		}
+	}
+	
+	/**
 	 * Set a property for this entity.
 	 * 
 	 * @param {property} The property to set.
@@ -105,12 +128,7 @@ export class Entity extends EntityInterface
 				this._original[key] = this._properties[key];
 			}
 			
-			if (this.hasOwnProperty(key) === false) {
-				Object.defineProperty(this, key, {
-					set: (x) => { this.set(key, x); },
-					get: () => { return this._properties[key]; }
-				});				
-			}
+			this.createProperties(key);
 			
 			if ('setter' in options && options['setter'] !== true) {
 				this._properties[key] = value;
@@ -317,7 +335,7 @@ export class Entity extends EntityInterface
 	
 	inspect()
 	{
-		return this._properties;
+		return JSON.stringify(this._properties);
 	}
 	
 	errors(err) 
