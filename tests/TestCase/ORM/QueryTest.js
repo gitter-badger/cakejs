@@ -20,43 +20,44 @@ var TestCase = CakeJS.TestSuite.TestCase;
 
 var test = new class QueryTest extends TestCase
 {
+	fixtures = [ 'app.query_tests' ];
+	autoFixtures = true;
+	
 	/**
 	 * Tests QueryBuilder constructs correct SQL query
 	 * when selecting all
 	 */
 	async testSelect_All()
 	{
-		/*this._table = await CakeJS.ORM.TableRegistry.get("table");
-		var sqlQuery = CakeJS.ORM.TableRegistry
-			.get("table")
+		this.QueryTables = await CakeJS.ORM.TableRegistry.get("QueryTests");
+		var sqlQuery = this.QueryTables
 			.find('all')
 			.sql();
-		console.log(sqlQuery);
-		this.assertEquals(sqlQuery, "SELECT * FROM tables");*/
+		this.assertEquals(sqlQuery, "SELECT * FROM query_tests");
 	}
 	
 	/**
 	 * Tests QueryBuilder constructs correct SQL query
 	 * when selecting columnA and columnB
 	 */
-	testSelect_Specific()
+	async testSelect_Specific()
 	{
-		var sqlQuery = CakeJS.ORM.TableRegistry
-			.get("table")
+		this.QueryTables = await CakeJS.ORM.TableRegistry.get("QueryTests");
+		var sqlQuery = this.QueryTables
 			.find()
 			.select(['columnA', 'columnB'])
 			.sql();
-		this.assertEquals(sqlQuery, "SELECT tables.columnA AS `tables__columnA`, tables.columnB AS `tables__columnB` FROM tables");
+		this.assertEquals(sqlQuery, "SELECT query_tests.columnA AS `query_tests__columnA`, query_tests.columnB AS `query_tests__columnB` FROM query_tests");
 	}
 	
 	/**
 	 * Tests QueryBuilder constructs correct SQL query
 	 * when performing a indexless insert
 	 */
-	testInsert()
+	async testInsert()
 	{
-		var sqlQuery = CakeJS.ORM.TableRegistry
-			.get("table")
+		this.QueryTables = await CakeJS.ORM.TableRegistry.get("QueryTests");
+		var sqlQuery = this.QueryTables
 			.query()
 			.insert(['columnA', 'columnB'])
 			.values({
@@ -64,38 +65,38 @@ var test = new class QueryTest extends TestCase
 				'columnB': 'valueB'
 			})
 			.sql();
-		this.assertEquals(sqlQuery, "INSERT INTO tables (columnA, columnB, id) VALUES (:0, :1, :2)");
+		this.assertEquals(sqlQuery, "INSERT INTO query_tests (columnA, columnB) VALUES (:0, :1)");
 	}
 	
 	/**
 	 * Tests QueryBuilder constructs correct SQL query
 	 * when performing a update with set and where statements
 	 */
-	testUpdate()
+	async testUpdate()
 	{
-		var sqlQuery = CakeJS.ORM.TableRegistry
-			.get("table")
+		this.QueryTables = await CakeJS.ORM.TableRegistry.get("QueryTests");
+		var sqlQuery = this.QueryTables
 			.query()
 			.update()
 			.set({'columnA': 'newValueA'})
 			.where({'columnB': 'valueB'})
 			.sql();
-		this.assertEquals(sqlQuery, "UPDATE tables SET columnA = :0 WHERE (columnB = :1)");
+		this.assertEquals(sqlQuery, "UPDATE query_tests SET columnA = :0 WHERE (columnB = :1)");
 	}
 	
 	/**
 	 * Tests QueryBuilder constructs correct SQL query
 	 * when performing a delete with a where statement
 	 */
-	testDelete()
+	async testDelete()
 	{
-		var sqlQuery = CakeJS.ORM.TableRegistry
-			.get("table")
+		this.QueryTables = await CakeJS.ORM.TableRegistry.get("QueryTests");
+		var sqlQuery = this.QueryTables
 			.query()
 			.delete()
 			.where({'columnB': 'valueB'})
 			.sql();
-		this.assertEquals(sqlQuery, "DELETE FROM tables WHERE (columnB = :0)");
+		this.assertEquals(sqlQuery, "DELETE FROM query_tests WHERE (columnB = :0)");
 	}
 }
 module.exports = test.moduleExports();
