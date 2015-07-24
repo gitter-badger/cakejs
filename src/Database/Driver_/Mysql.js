@@ -126,6 +126,8 @@ export class Mysql extends Driver
 				if(!this._connected){
 					await this.connect();
 				}
+				
+				//console.log("SQL BEGIN");
 				var result = await new Promise((inner_resolve, inner_reject) => {
 					try{
 						this._connection.config.namedPlaceholders = true;
@@ -139,6 +141,7 @@ export class Mysql extends Driver
 						return inner_reject(error);
 					}
 				});
+				//console.log("SQL END");
 				resolve(result);
 			}catch(error){
 				reject(new Exception(String.sprintf("Mysql Error: (%s) with query (%s)", error, sql)));
