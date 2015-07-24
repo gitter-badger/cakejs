@@ -37,7 +37,7 @@ export class TestFixture
 	 * 
 	 * @type {string}
 	 */
-	connection = 'cake';
+	connection = 'test';
 	
 	/**
 	 * Full Table Name
