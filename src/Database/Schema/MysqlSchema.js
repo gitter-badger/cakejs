@@ -281,7 +281,7 @@ export class MysqlSchema extends BaseSchema
 			switch(data['type']){
 				case 'string':
 					out += !isEmpty(data['fixed']) ? ' CHAR' : ' VARCHAR';
-					if(!('length' in data)){
+					if(!('length' in data) || data['length'] === null || data['length'] === 0){
 						data['length'] = 255;
 					}
 					break;
