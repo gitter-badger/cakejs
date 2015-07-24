@@ -71,12 +71,7 @@ class SessionData
 			throw new InvalidParameterException(keyPath, 'string');
 		}
 		var object = await this.read();
-		console.log("PRE");
-		console.log(object)
-		console.log(this.__session.keyValue);
-		console.log(keyPath, value);
 		await this.__session.engine.write(this.__session.keyValue, Hash.insert(object, keyPath, value));
-		console.log(object);
 		return true;
 	}
 	
