@@ -86,16 +86,15 @@ var test = new class EntityTest extends TestCase
 	{
 		var expected = {
 			name: 'Cake',
-			phone: '010-12345'
+			phone: '01012345'
 		};
 		
 		this.Customers = await TableRegistry.get('Customers');
 		
 		var entity = this.Customers.newEntity();
 		entity = await this.Customers.patchEntity(entity, expected);
-		console.log(entity);
-		this.assertTextEquals('Cake', entity.name);
-		this.assertTextEquals('010-12345', entity.phone);
+		this.assertTextEquals(expected.name, entity.name);
+		this.assertTextEquals(expected.phone, entity.phone);
 	}
 
 
@@ -118,7 +117,7 @@ var test = new class EntityTest extends TestCase
 		this.Customers = await TableRegistry.get('Customers');
 		let entity = this.Customers.newEntity();
 		entity = this.Customers.patchEntity(entity, { id: '12345', name: 'Cake', phone: '010-12345' });
-		this.assertTrue(await this.Customers.save(entity));		
+		this.assertTrue(await (this.Customers.save(entity) !== false));		
 	}
 	
 	/**
@@ -132,7 +131,7 @@ var test = new class EntityTest extends TestCase
 		let entity = this.Customers.newEntity();
 		
 		entity = this.Customers.patchEntity(entity, { name: 'Cake', phone: '010-12345' });
-		this.assertTrue(await this.Customers.save(entity));
+		this.assertTrue(await (this.Customers.save(entity) !== false));
 	}
 	
 	/**

@@ -55,7 +55,7 @@ export class Marshaller
 
 		data = result.data;
 		options = result.options;
-			
+				
 		let propertyMap = this._buildPropertyMap(options);
 		
 		let schema = this._table.schema();
@@ -76,6 +76,7 @@ export class Marshaller
 		let properties = {};
 
 		Object.forEachSync(data, (value, key) => {
+			
 			if (key in errors && !isEmpty(errors[key])) {
 				return;
 			} 
@@ -100,9 +101,10 @@ export class Marshaller
 
 			return entity;
 		}
-
+		
 		Object.forEachSync(Array.cast(options['fieldList']), (field) => {
 			if (field in properties) {
+				
 				entity.set(field, properties[field])
 			}
 		});
@@ -141,7 +143,7 @@ export class Marshaller
 		}
 		let propertyMap = this._buildPropertyMap(options);
 		
-		Object.forEach(data, (value, key) => {
+		await Object.forEach(data, async (value, key) => {
 		let columnType = schema.columnType(key);
 		
 		let original = entity.get(key);			

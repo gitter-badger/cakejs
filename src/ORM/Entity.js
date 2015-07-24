@@ -116,7 +116,6 @@ export class Entity extends EntityInterface
 				this._properties[key] = value;
 				continue;
 			}						
-			
 			this._properties[key] = value;
 		}
 		

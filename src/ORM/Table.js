@@ -86,7 +86,7 @@ export class Table
 			behaviors = (config.extract('behaviors'));
 		}
 		if(!isEmpty(config.extract('associations'))){
-			associations (config.extract('associations'));
+			associations = (config.extract('associations'));
 		}
 		if(!isEmpty(config.extract('validator'))){
 			if(!isArray(config.extract('validator'))){
@@ -99,6 +99,7 @@ export class Table
 				}
 			}
 		}
+		
 		this.initialize(config);
 	}
 	
@@ -287,12 +288,15 @@ export class Table
 	{			
 		if (data === null) {
 			var entityClass = this.entityClass();
-			return new entityClass({ registryAlias: this.registryAlias() });
+			return new entityClass({}, {'source': this.registryAlias()});
+			//return new entityClass({ registryAlias: this.registryAlias() });
 		}
 		
+		/*
 		if (!('associated' in options)) {
 			options['associated'] = this._associations.keys();
 		}
+		*/
 		
 		let marshaller = this.marshaller();
 		
