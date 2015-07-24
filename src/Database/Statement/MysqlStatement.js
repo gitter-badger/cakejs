@@ -21,23 +21,41 @@ import {PDOStatement} from './PDOStatement';
 export class MysqlStatement extends PDOStatement
 {
 	_results = [];
+	_statementInfo = null;
 	async execute(params = null)
 	{
 		var results = await this._driver.execute(this._statement, this._columns);
-		if(typeof results[0].fieldCount === 'undefined'){
+		if(typeof results[0] === 'object' && results[0] instanceof Array){
 			for(var mysqlRow of results[0]){
-				var newRow = {};
-				for(var key in mysqlRow){
-					newRow[key] = mysqlRow[key];
-				}
-				this._results.push(newRow);
+				this._results.push(Object.cast(mysqlRow));
 			}
-			}
+		}else if(results[0] !== null && typeof results[0] === 'object'){
+			this._statementInfo = Object.cast(results[0]);
+		}
 		return this;
+	}
+	
+	rowCount()
+	{
+		if ('affectedRows' in this._statementInfo) {
+			return this._statementInfo.affectedRows;
+		}
+		
+		return this._results.length;
+	}
+	
+	lastInsertId(table = null, column = null)
+	{
+		if ('insertId' in this._statementInfo) {
+			return this._statementInfo.insertId;
+		}
+		
+		throw new Exception('No insert id was found');
 	}
 	
 	get results()
 	{
 		return this._results;
 	}
+	
 }
