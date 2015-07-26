@@ -32,16 +32,13 @@ import {Hash} from '../Utilities/Hash';
 //Requires
 var fs = require('fs');
 
-export var Configure = new class 
+export class Configure
 {
-	constructor()
-	{
-		this._engines = {};
-		this._values = {
-			'debug': false
-		};
-		this._package = new Collection(JSON.parse(fs.readFileSync(CAKE_CORE_INCLUDE_PATH+DS+"package.json")));
-	}
+	static _engines = {};
+	static _values = {
+		'debug': false
+	};
+	static _package = new Collection(JSON.parse(fs.readFileSync(CAKE_CORE_INCLUDE_PATH+DS+"package.json")));
 	
 	/**
      * Used to store a dynamic variable in Configure.
@@ -66,14 +63,14 @@ export var Configure = new class
      * @param {mixed} value Value to set for var
      * @return {boolean} True if write was successful
      */
-	write(config, value = null)
+	static write(config, value = null)
 	{
 		if(typeof config === 'object'){
 			for(var key in config){
-				this._values = Hash.insert(this._values, key, config[key]);
+				Configure._values = Hash.insert(Configure._values, key, config[key]);
 			}
 		}else{
-			this._values = Hash.insert(this._values, config, value);
+			Configure._values = Hash.insert(Configure._values, config, value);
 		}
 		return true;
 	}
@@ -91,12 +88,12 @@ export var Configure = new class
 	 * @param {string} variable Variable to obtain. Use '.' to access array elements,
 	 * @return {Collection|string} value stored in configure, or null.
 	 */
-	read(variable = null)
+	static read(variable = null)
 	{
 		if(variable === null){
-			return clone(this._values);
+			return clone(Configure._values);
 		}
-		return Hash.get(this._values, variable);
+		return Hash.get(Configure._values, variable);
 	}
 	
 	/**
@@ -105,12 +102,12 @@ export var Configure = new class
 	 * @param {string} variable Variable name to check for
 	 * @return {boolean} True if variable is there
 	 */
-	check(variable = null)
+	static check(variable = null)
 	{
 		if(variable === null){
-			return !isEmpty(this._values);
+			return !isEmpty(Configure._values);
 		}
-		return Hash.has(this._values, variable);
+		return Hash.has(Configure._values, variable);
 	}
 	
 	/**
@@ -125,9 +122,9 @@ export var Configure = new class
      * @param {string} variable the var to be deleted
      * @return {void}
      */
-	delete(variable)
+	static delete(variable)
 	{
-		this._values = Hash.remove(this._values, variable);
+		Configure._values = Hash.remove(Configure._values, variable);
 	}
 	
 	/**
@@ -139,10 +136,10 @@ export var Configure = new class
      * @param {string} variable The key to read and remove.
      * @return {Object|null}
      */
-	consume(variable)
+	static consume(variable)
 	{
-		var value = Hash.get(this._values, variable);
-		this._values = Hash.remove(this._values, variable);
+		var value = Hash.get(Configure._values, variable);
+		Configure._values = Hash.remove(Configure._values, variable);
 		return value;
 	}
 	
@@ -162,9 +159,9 @@ export var Configure = new class
      * @param {ConfigEngineInterface} engine The engine to append.
      * @return {void}
      */
-	config(name, engine)
+	static config(name, engine)
 	{
-		this._engines[name] = engine;
+		Configure._engines[name] = engine;
 	}
 	
 	/**
@@ -173,13 +170,13 @@ export var Configure = new class
 	 * @param {string|null} name Engine name
 	 * @return {Array|boolean} Array of the configured Engine objects or a boolean value if engine by name is configured
 	 */
-	configured(name = null)
+	static configured(name = null)
 	{
 		if(name !== null){
-			return (name in this._engines);
+			return (name in Configure._engines);
 		}
 		var keys = [];
-		for(var key in this._engines){
+		for(var key in Configure._engines){
 			keys.push(key);
 		}
 		return keys;
@@ -192,25 +189,25 @@ export var Configure = new class
 	 * @param {string} name Name of engine to drop
 	 * @return {boolean} Success
 	 */
-	drop(name)
+	static drop(name)
 	{
-		if(!(name in this._engines)){
+		if(!(name in Configure._engines)){
 			return false;
 		}
-		delete this._engines[name];
+		delete Configure._engines[name];
 		return true;
 	}
 	
-	load(key, config = 'default', merge = true){
-		var engine = this._getEngine(config);
+	static load(key, config = 'default', merge = true){
+		var engine = Configure._getEngine(config);
 		if(engine === false){
 			return false;
 		}
 		var values = engine.read(key);
 		if(merge){
-			values = Hash.merge(this._values, values);
+			values = Hash.merge(Configure._values, values);
 		}
-		return this.write(values);
+		return Configure.write(values);
 	}
 	
 	/**
@@ -242,7 +239,7 @@ export var Configure = new class
      * @return bool success
      * @throws CakeJS.Core.Exception.Exception if the adapter does not implement a `dump` method.
      */
-	dump(key, config = 'default', keys = [])
+	static dump(key, config = 'default', keys = [])
 	{
 		throw new NotImplementedException();
 	}
@@ -254,15 +251,15 @@ export var Configure = new class
      * @param {string} config The name of the configured adapter
      * @return {ConfigureEngineInterface} Engine instance or false
      */
-	_getEngine(config)
+	static _getEngine(config)
 	{
-		if(!(config in this._engines)){
+		if(!(config in Configure._engines)){
 			if(config !== 'default'){
 				return false;
 			}
-			this.config(config, new JsonConfig());
+			Configure.config(config, new JsonConfig());
 		}
-		return this._engines[config];
+		return Configure._engines[config];
 	}
 	
 	/**
@@ -275,9 +272,9 @@ export var Configure = new class
      *
      * @return {string} Current version of CakeJS
      */
-	version(key, config = 'default', keys = [])
+	static version(key, config = 'default', keys = [])
 	{
-		return this._package.extract('version');
+		return Configure._package.extract('version');
 	}
 	
 	/**
@@ -290,7 +287,7 @@ export var Configure = new class
      * @param {Array} data Either an array of data to store, or leave empty to store all values.
      * @return {boolean} Success
      */
-	store(name, cacheConfig = 'default', data = null)
+	static store(name, cacheConfig = 'default', data = null)
 	{
 		throw new NotImplementedException();
 	}
@@ -303,7 +300,7 @@ export var Configure = new class
      * @param {string} cacheConfig Name of the Cache configuration to read from.
      * @return {boolean} Success.
      */
-	restore(name, cacheConfig = 'default')
+	static restore(name, cacheConfig = 'default')
 	{
 		throw new NotImplementedException();
 	}
@@ -313,9 +310,9 @@ export var Configure = new class
      *
      * @return {boolean} Success.
      */
-	clear()
+	static clear()
 	{
-		this._values = {};
+		Configure._values = {};
 		return true;
 	}	
 }

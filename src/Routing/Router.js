@@ -39,43 +39,41 @@ function replaceAll(string, find, replace)
   return string.replace(new RegExp(escapeRegExp(find), 'g'), replace);
 }
 
-export var Router = new class 
+export class Router
 {
-	constructor()
+	static _templates = {
+		"action": '(\/[a-zA-Z0-9\_]*)?',
+		"param": '(\/[a-zA-Z0-9\_\-]+)?'
+	};
+	static _filters = [];
+	static _routes = [];
+	static _controllers = [];
+	
+	static initialize()
 	{
-		this._templates = {
-			"action": '(\/[a-zA-Z0-9\_]*)?',
-			"param": '(\/[a-zA-Z0-9\_\-]+)?'
-		}
-		this._filters = [];
-		this._routes = [];
-		this._controllers = [];
-	}
-	initialize()
-	{
-		this._templates["controller"] = "("+ControllerManager.getControllerNames().join("|")+")";
-		if(this._routes.length === 0){
+		Router._templates["controller"] = "("+ControllerManager.getControllerNames().join("|")+")";
+		if(Router._routes.length === 0){
 			for(var name of ControllerManager.getControllerNames()){
-				this.connect("\/("+(name+"|"+Inflector.underscore(name))+"):action:param:param:param:param:param:param:param", {controller: name}, {shiftController: true});
-				this._controllers.push(name);
+				Router.connect("\/("+(name+"|"+Inflector.underscore(name))+"):action:param:param:param:param:param:param:param", {controller: name}, {shiftController: true});
+				Router._controllers.push(name);
 			}
 		}
-		for(var item of this._routes){
+		for(var item of Router._routes){
 			var filter = {
 				regexp: null,
 				defaults: item.defaults,
 				options: item.options
 			};
-			for(var key in this._templates){
-				item.route = replaceAll(item.route, ":"+key, this._templates[key]);
+			for(var key in Router._templates){
+				item.route = replaceAll(item.route, ":"+key, Router._templates[key]);
 			}
 			item.route = item.route.split("/").join("\\/");
 			filter.regexp = new RegExp(item.route);
-			this._filters.push(filter);
+			Router._filters.push(filter);
 		}
 	}
 	
-	parse(obj)
+	static parse(obj)
 	{
 		var route = {
 			controller: null,
@@ -117,7 +115,7 @@ export var Router = new class
 			if(obj[obj.length - 1] === '/'){
 				obj = obj.substr(0,obj.length - 1);
 			}
-			for(var filter of this._filters){
+			for(var filter of Router._filters){
 				var results = obj.match(filter.regexp);
 				if(results === null || results[0] !== obj){
 					continue;				
@@ -171,20 +169,20 @@ export var Router = new class
 		if(!/^[0-9a-zA-Z\_]{1,}$/.test(route.action)){
 			throw new BadRouteException();
 		}
-		if(this._controllers.indexOf(route.controller) === -1){
+		if(Router._controllers.indexOf(route.controller) === -1){
 			throw new BadRouteException();
 		}
 		return route;
 	}
 	
-	connect(route, defaults, options)
+	static connect(route, defaults, options)
 	{
 		defaults = typeof defaults === 'object' ? defaults: {};
 		options = typeof options === 'object' ? options: {};
-		this._routes.push({route: route, defaults: defaults, options: options});
+		Router._routes.push({route: route, defaults: defaults, options: options});
 	}
 	
-	url(urlOrObject, appendLocalHost = false)
+	static url(urlOrObject, appendLocalHost = false)
 	{
 		var query = {};
 		
@@ -240,7 +238,7 @@ export var Router = new class
 							args.push(item[key]);
 						}
 					}else{
-						this.data = item;
+						Router.data = item;
 					}
 				}
 			}while(items.length > 0);

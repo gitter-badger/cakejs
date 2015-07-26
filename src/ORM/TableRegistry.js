@@ -31,18 +31,15 @@ import {Hash} from '../Utilities/Hash';
 var fs = require('fs');
 var path = require('path');
 
-export var TableRegistry = new class 
+export class TableRegistry
 {
-	constructor()
-	{
-		this._defaultConfig = {
-			"className": "ORM/Table",
-			"entityClass": "ORM/Entity",
-		};
-		this._tables = {};
-	}
+	static _defaultConfig = {
+		"className": "ORM/Table",
+		"entityClass": "ORM/Entity",
+	};
+	static _tables = {};
 	
-	async get(name, config)
+	static async get(name, config)
 	{
 		var table = null;
 		config = typeof config !== 'undefined' ? config : {};
@@ -50,9 +47,9 @@ export var TableRegistry = new class
 			throw new InvalidParameterException(newConfig, 'object');
 		}
 		var tableClass = null;
-		if(!(name in this._tables) || config !== null){
+		if(!(name in TableRegistry._tables) || config !== null){
 			
-			config = Hash.merge(this._defaultConfig, this._config, config);
+			config = Hash.merge(TableRegistry._defaultConfig, TableRegistry._config, config);
 			
 			var plugin = null;
 			var entity = null;
@@ -81,16 +78,16 @@ export var TableRegistry = new class
 			if(!Hash.has(config, "connection")){
 				config = Hash.insert(config, "connection", ConnectionManager.get("default"));
 			}
-			this._tables[name] = config;
+			TableRegistry._tables[name] = config;
 		}
-		var tableClass = ClassLoader.loadClass(Hash.get(this._tables[name], "className"), "Model/Table");
+		var tableClass = ClassLoader.loadClass(Hash.get(TableRegistry._tables[name], "className"), "Model/Table");
 		var obj = new tableClass(config);
 		await obj.schema();
 		return obj;
 	}
 	
-	clear()
+	static clear()
 	{
-		this._tables = {};
+		TableRegistry._tables = {};
 	}
 }

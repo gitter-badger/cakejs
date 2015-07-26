@@ -21,30 +21,27 @@ import {NotImplementedException} from '../Exception/NotImplementedException'
 import {Mysql} from './Driver_/Mysql'
 
 
-export var DriverManager = new class 
+export class DriverManager
 {
-	constructor()
-	{
-		this._connections = {};
-	}
+	static _connections = {};
 	
 	//This will be remade when custom and more drivers are requested
-	get(configuration)
+	static get(configuration)
 	{
 		if(!('driver' in configuration)){
 			throw new MissingConfigException("driver");
 		}
 		var key = JSON.stringify(configuration);
-		if(!(key in this._connections)){
+		if(!(key in DriverManager._connections)){
 			switch(configuration.driver){
 				case "Mysql":
-					this._connections[key] = new Mysql(configuration);
+					DriverManager._connections[key] = new Mysql(configuration);
 					break;
 				default:
 					throw new NotImplementedException();
 					break;
 			}
 		}
-		return this._connections[key];
+		return DriverManager._connections[key];
 	}
-}();
+}

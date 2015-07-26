@@ -28,19 +28,10 @@ import {Collection} from '../Collection/Collection';
 var fs = require('fs');
 var path = require('path');
 
-export var ClassLoader = new class 
+export class ClassLoader
 {
-	constructor()
-	{
-		this._classes = {};
-		this._folders = {};
-		Configure.write('App',{
-			'dir': APP_DIR,
-			'paths': {
-				'plugins': require('path').resolve(ROOT, 'plugins')
-			}
-		});
-	}
+	static _classes = {};
+	static _folders = {};
 	
 	/**
 	 * Checks if class exists and can be loaded dynamically
@@ -48,7 +39,7 @@ export var ClassLoader = new class
 	 * @param {string} className class to be loaded
 	 * @param {string|null} relativePath relative path there the class can be found
 	 */
-	classExists(className, relativePath = null)
+	static classExists(className, relativePath = null)
 	{
 		if(relativePath === null || className.indexOf("/") !== -1){
 			relativePath = className.split("/");
@@ -56,8 +47,8 @@ export var ClassLoader = new class
 			relativePath = relativePath.join("/");
 		}
 		var key = relativePath+"|"+className;
-		if(key in this._classes){
-			return this._classes[key];
+		if(key in ClassLoader._classes){
+			return ClassLoader._classes[key];
 		}
 		if(className.indexOf('.') !== -1){
 			var [plugin, className] = className.split('.');
@@ -80,7 +71,7 @@ export var ClassLoader = new class
 	 * @param {string} className class to be loaded
 	 * @param {string|null} relativePath relative path there the class can be found
 	 */
-	loadClass(className, relativePath = null)
+	static loadClass(className, relativePath = null)
 	{
 		if(relativePath === null || className.indexOf("/") !== -1){
 			relativePath = className.split("/");
@@ -88,8 +79,8 @@ export var ClassLoader = new class
 			relativePath = relativePath.join("/");
 		}
 		var key = relativePath+"|"+className;
-		if(key in this._classes){
-			return this._classes[key];
+		if(key in ClassLoader._classes){
+			return ClassLoader._classes[key];
 		}
 		if(className.indexOf('.') !== -1){
 			var [plugin, className] = className.split('.');
@@ -123,8 +114,8 @@ export var ClassLoader = new class
 		if(typeof loadedFile !== 'function' || Object.getPrototypeOf(loadedFile) === Object.prototype){
 			throw new ClassNotFoundException(className, expectedClassName);
 		}
-		this._classes[key] = loadedFile;
-		return this._classes[key];
+		ClassLoader._classes[key] = loadedFile;
+		return ClassLoader._classes[key];
 	}
 	
 	/**
@@ -133,11 +124,11 @@ export var ClassLoader = new class
 	 * @param {string} relativePath relative path there the classes can be found
 	 * @param {string} plugin if specified relativePath will only apply to plugin/{plugin}/src
 	 */
-	loadFolder(relativePath, plugin = null)
+	static loadFolder(relativePath, plugin = null)
 	{
 		var key = plugin+"|"+relativePath;
-		if(key in this._folders){
-			return this._folders[key];
+		if(key in ClassLoader._folders){
+			return ClassLoader._folders[key];
 		}
 		if(plugin !== null){
 			var folderPath = path.resolve(APP,'..',Configure.read("App.paths.plugins"),plugin,'src',relativePath);
@@ -151,12 +142,19 @@ export var ClassLoader = new class
 		var files = fs.readdirSync(folderPath);
 		for(var i = 0; i < files.length; i++){
 			var file = files[i];
-			if(file.indexOf('.js') !== -1){
+			if(file.indexOf('.js') !== -1 && file !== 'index.js'){
 				var className = (plugin!==null?plugin+".":"")+file.substr(0,file.indexOf('.js'));
-				classes[file.substr(0,file.indexOf('.js'))] = this.loadClass(className, relativePath);
+				classes[file.substr(0,file.indexOf('.js'))] = ClassLoader.loadClass(className, relativePath);
 			}
 		}
-		this._folders[key] = classes;
-		return this._folders[key];
+		ClassLoader._folders[key] = classes;
+		return ClassLoader._folders[key];
 	}
 }
+
+Configure.write('App',{
+	'dir': APP_DIR,
+	'paths': {
+		'plugins': require('path').resolve(ROOT, 'plugins')
+	}
+});

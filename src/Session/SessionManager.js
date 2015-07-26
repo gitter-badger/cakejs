@@ -36,9 +36,9 @@ import uuid from '../Utilities/uuid';
 var fs = require('fs');
 var path = require('path');
 
-export var SessionManager = new class 
+export class SessionManager
 {
-	_config = {
+	static _config = {
 		"defaults": "memory",
 		"handler": {
 			"model": "sessions"
@@ -46,70 +46,70 @@ export var SessionManager = new class
 		"cookie": "cakejs_sessid",
 		"timeout": 1440
 	};
-	_engine = null;
-	_sessions = {};
+	static _engine = null;
+	static _sessions = {};
 	
-	config(config = null)
+	static config(config = null)
 	{		
 		if(config === null){
-			return clone(this._config);
+			return clone(SessionManager._config);
 		}
-		this._config = Hash.merge(this._config, config);		
-		this._engine = null;
+		SessionManager._config = Hash.merge(SessionManager._config, config);		
+		SessionManager._engine = null;
 	}
 	
-	get engine()
+	static get engine()
 	{
-		if(this._engine !== null){
-			return this._engine;
+		if(SessionManager._engine !== null){
+			return SessionManager._engine;
 		}
-		if(!Hash.has(this._config, 'handler.engine')){
-			switch(Hash.get(this._config, 'defaults').toLowerCase()){
+		if(!Hash.has(SessionManager._config, 'handler.engine')){
+			switch(Hash.get(SessionManager._config, 'defaults').toLowerCase()){
 				case "memory":
-					this._config = Hash.insert(this._config, 'handler.engine', 'MemorySession');
+					SessionManager._config = Hash.insert(SessionManager._config, 'handler.engine', 'MemorySession');
 					break;
 				case "database":
-					this._config = Hash.insert(this._config, 'handler.engine', 'DatabaseSession');					
+					SessionManager._config = Hash.insert(SessionManager._config, 'handler.engine', 'DatabaseSession');					
 					break;
 				default:
 					throw new MissingConfigException();
 					break;
 			}
 		}
-		this._engine = ClassLoader.loadClass(Hash.get(this._config, 'handler.engine'),'Network/Session');
-		this._engine = new this._engine(clone(this._config));
-		return this._engine;
+		SessionManager._engine = ClassLoader.loadClass(Hash.get(SessionManager._config, 'handler.engine'),'Network/Session');
+		SessionManager._engine = new SessionManager._engine(clone(SessionManager._config));
+		return SessionManager._engine;
 	}
 	
-	get keyName()
+	static get keyName()
 	{
-		return Hash.get(this._config, 'cookie');
+		return Hash.get(SessionManager._config, 'cookie');
 	}
 	
-	get timeout()
+	static get timeout()
 	{
-		return Hash.get(this._config, 'timeout');
+		return Hash.get(SessionManager._config, 'timeout');
 	}
 	
-	async create()
+	static async create()
 	{
-		await this.engine.initialize();
+		await SessionManager.engine.initialize();
 		var id = null;
 		do{			
 			id = uuid(null, 'uuids');
-			var has = await this.engine.has(id);
+			var has = await SessionManager.engine.has(id);
 		}while(has);
 		
-		var session = new Session(this.engine, id);
-		this._sessions[id] = session;
+		var session = new Session(SessionManager.engine, id);
+		SessionManager._sessions[id] = session;
 		return session;
 	}
 	
-	async get(idOrObject)
+	static async get(idOrObject)
 	{
 		if(typeof idOrObject === 'object'){
-			if(this.keyName in idOrObject){
-				idOrObject = idOrObject[this.keyName];
+			if(SessionManager.keyName in idOrObject){
+				idOrObject = idOrObject[SessionManager.keyName];
 			}
 		}
 		
@@ -118,11 +118,11 @@ export var SessionManager = new class
 		}
 		
 		if(typeof idOrObject === 'string'){
-			if(idOrObject in this._sessions){
-				return this._sessions[idOrObject];
+			if(idOrObject in SessionManager._sessions){
+				return SessionManager._sessions[idOrObject];
 			}
 		}
 		
-		return await this.create();
+		return await SessionManager.create();
 	}
-};
+}

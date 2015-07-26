@@ -21,33 +21,30 @@ import {ClassLoader} from '../Core/ClassLoader'
 //Requires
 var fs = require('fs');
 
-export var ProcessManager = new class 
+export class ProcessManager
 {
-	constructor()
+	static _processes = {};
+	
+	static get(key)
 	{
-		this._processes = {};
+		return ProcessManager._processes[key];
 	}
 	
-	get(key)
-	{
-		return this._processes[key];
-	}
-	
-	async initialize()
+	static async initialize()
 	{
 		var classes = await ClassLoader.loadFolder('Process');
 		for(var key in classes){
-			this._processes[key.substr(0,key.length-"Process".length)] = new classes[key]();
+			ProcessManager._processes[key.substr(0,key.length-"Process".length)] = new classes[key]();
 		}
-		for(var key in this._processes){
-			await this._processes[key].initialize();
+		for(var key in ProcessManager._processes){
+			await ProcessManager._processes[key].initialize();
 		}
 	}
 	
-	async start()
+	static async start()
 	{
-		for(var key in this._processes){
-			await this._processes[key].start();
+		for(var key in ProcessManager._processes){
+			await ProcessManager._processes[key].start();
 		}
 	}
 }

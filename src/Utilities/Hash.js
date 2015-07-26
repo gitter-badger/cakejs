@@ -22,49 +22,49 @@ var merge = require('./merge');
 //Uses
 var dotaccess = require('dotaccess');
 
-export var Hash = new class 
+export class Hash
 {
-	insert(obj, key, value)
+	static insert(obj, key, value)
 	{
 		obj = clone(obj);
 		dotaccess.set(obj, key, value, true);
 		return obj;
 	}
 	
-	get(obj, key, def)
+	static get(obj, key, def)
 	{
 		return clone(dotaccess.get(obj, key, def));
 	}
 	
-	remove(obj, key)
+	static remove(obj, key)
 	{
 		obj = clone(obj);
 		dotaccess.unset(obj, key);
 		return obj;
 	}
 	
-	merge(...args)
+	static merge(...args)
 	{
 		return merge.apply(merge, args);
 	}
 	
-	has(obj, key)
+	static has(obj, key)
 	{
-		var value = this.get(obj, key);
+		var value = Hash.get(obj, key);
 		if(typeof value === 'undefined' || value === null){
 			return false;
 		}
 		return true;
 	}
 	
-	map(object, prefix = null, list = {})
+	static map(object, prefix = null, list = {})
 	{
 		if(prefix === null){
 			prefix = '';
 		}
 		for(var key in object){
 			if(typeof object[key] === 'object' && object[key].constructor === {}.constructor){
-				this.map(object[key], prefix+(prefix === '' ? '' : '.')+key, list);
+				Hash.map(object[key], prefix+(prefix === '' ? '' : '.')+key, list);
 			}else{
 				list[prefix+(prefix === '' ? '' : '.')+key] = object[key];
 			}

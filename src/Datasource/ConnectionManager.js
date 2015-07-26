@@ -26,14 +26,13 @@ import {Connection} from '../Database/Connection';
 //Utilities
 import clone from '../Utilities/clone';
 
-export var ConnectionManager = new class 
+export class ConnectionManager
 {
-	_configurations = {};
-	_connections = {};
-	_descriptions = {};	
-	_initialized = false;
-	
-	_aliasMap = {};
+	static _configurations = {};
+	static _connections = {};
+	static _descriptions = {};	
+	static _initialized = false;	
+	static _aliasMap = {};
 	
 	/**
 	 * Configures the datasource
@@ -41,44 +40,44 @@ export var ConnectionManager = new class
 	 * @param {object|string} config Key or object
 	 * @param {object} value object containing config for datasource
 	 */
-	config(config, value = null)
+	static config(config, value = null)
 	{
 		if(value === null){
 			for(var key in config){
-				this.config(key, config[key]);
+				ConnectionManager.config(key, config[key]);
 			}
 			return true;
 		}
-		if(config in this._configurations){
+		if(config in ConnectionManager._configurations){
 			throw new AlreadyDefinedException("ConnectionMananger: "+config);
 		}
 		if(typeof value !== 'object'){
 			throw new MissingConfigException();
 		}
-		this._configurations[config] = value;
+		ConnectionManager._configurations[config] = value;
 		return true;
 	}
 	
-	configured()
+	static configured()
 	{
 		var keys = [];
-		for(var key in this._configurations){
+		for(var key in ConnectionManager._configurations){
 			keys.push(key);
 		}
 		return keys;
 	}
 	
-	alias(from, to)
+	static alias(from, to)
 	{
-		if(!(to in this._configurations) && !(from in this._configurations)){
+		if(!(to in ConnectionManager._configurations) && !(from in ConnectionManager._configurations)){
 			throw new MissingConfigException();
 		}
-		this._aliasMap[to] = from;
+		ConnectionManager._aliasMap[to] = from;
 	}
 	
-	dropAlias(name)
+	static dropAlias(name)
 	{
-		delete this._aliasMap[to];
+		delete ConnectionManager._aliasMap[to];
 	}
 	
 	
@@ -88,44 +87,44 @@ export var ConnectionManager = new class
 	 * 
 	 * @param {string} name name of datasource
 	 */
-	get(name, useAliases = true)
+	static get(name, useAliases = true)
 	{
-		if(useAliases && name in this._aliasMap){
-			name = this._aliasMap[name];
+		if(useAliases && name in ConnectionManager._aliasMap){
+			name = ConnectionManager._aliasMap[name];
 		}
-		if(!(name in this._configurations)){
+		if(!(name in ConnectionManager._configurations)){
 			throw new MissingConfigException();
 		}
-		if(!(name in this._connections)){
-			this._connections[name] = new Connection(this._configurations[name], name);
+		if(!(name in ConnectionManager._connections)){
+			ConnectionManager._connections[name] = new Connection(ConnectionManager._configurations[name], name);
 		}
-		return this._connections[name];
+		return ConnectionManager._connections[name];
 	}
 	
-	async initialize()
+	static async initialize()
 	{
-		if(this._initialized){
+		if(ConnectionManager._initialized){
 			return;
 		}
-		for(var name in this._configurations){
-			var connection = await this.get(name);
-			this._descriptions[name] = await connection.driver().describe();
-			connection._description = this._descriptions[name];
+		for(var name in ConnectionManager._configurations){
+			var connection = await ConnectionManager.get(name);
+			ConnectionManager._descriptions[name] = await connection.driver().describe();
+			connection._description = ConnectionManager._descriptions[name];
 		}
-		this._initialized = true;
+		ConnectionManager._initialized = true;
 	}
 	
-	describe(name = null)
+	static describe(name = null)
 	{
-		if(!this._initialized){
+		if(!ConnectionManager._initialized){
 			throw new Exception("ConnectionManager not initialized");
 		}
 		if(name === null){
-			return clone(this._descriptions);
+			return clone(ConnectionManager._descriptions);
 		}
-		if(!(name in this._descriptions)){
+		if(!(name in ConnectionManager._descriptions)){
 			throw new Exception("Datasource missing");
 		}
-		return clone(this._descriptions[name]);
+		return clone(ConnectionManager._descriptions[name]);
 	}
-}();
+}
