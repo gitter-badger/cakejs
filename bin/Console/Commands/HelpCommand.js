@@ -54,6 +54,8 @@ export class HelpCommand extends Command
                 false, 
                 'Show detailed help for a command.'
         ));
+
+        return true;
     }
       
     /**

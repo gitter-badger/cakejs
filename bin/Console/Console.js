@@ -61,6 +61,8 @@ export class Console
         let path = require('path');
         let fs = require('fs');
         
+        let result = true;
+        
         //
         // Begin by loading the configuration file.
         // 
@@ -134,7 +136,14 @@ export class Console
                             let commandInstance = new data[className]();
                             commandInstance.setConsole(this);
                             commandInstance.setName(command);
-                            commandInstance.configure();
+                            if (!commandInstance.configure()) {
+                                this.out(
+                                    '%ERROR% Command%RESET% ' +
+                                    '%COMMAND%' + commandInstance.getName() + 
+                                    '%RESET% ' + 
+                                    '%ERROR%failed on configure.%RESET%');
+                                result = false;
+                            }
                             this._commands[commandInstance.getName()] = commandInstance;
                         }
                     }
@@ -142,7 +151,7 @@ export class Console
             }
         });
         
-        return true;
+        return result;
     }
     
     /**
@@ -151,8 +160,8 @@ export class Console
      * @return {void}
      */
     execute()
-    {        
-        this.about();
+    {     
+        this.about();        
         
         //
         // Get commandline.
@@ -277,5 +286,40 @@ export class Console
     getVersion()
     {
         return this._version;
+    }
+    
+    /**
+     * 
+     */
+    getConfiguration(name, defaultValue = null)
+    {
+        let nested = (name.indexOf('.') !== -1) ? true : false;
+        let at = this._configuration;
+        
+        if (nested) {
+            let names = name.split('.');
+            for (let i = 0; i < names.length; i++) {
+                if (!names[i] in at) {                    
+                    return defaultValue;
+                }
+                at = at[names[i]];                
+            }
+            
+            return at;
+        } else {
+            if (name in at) {
+                return at[name];
+            } else {
+                return defaultValue;
+            }            
+        }        
+    }
+    
+    /**
+     * 
+     */
+    getCurrentWorkingDirectory()
+    {
+        return __dirname;
     }
 }
