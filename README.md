@@ -1,5 +1,6 @@
 # CakeJS Framework
 
+[![npm](https://img.shields.io/badge/IRC-FreeNode-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=cakejs)
 [![npm](https://img.shields.io/npm/l/cakejs.svg?style=flat-square)](LICENSE)
 [![npm](https://img.shields.io/npm/v/cakejs.svg?style=flat-square)]()
 [![npm](https://img.shields.io/npm/dm/cakejs.svg?style=flat-square)]()
