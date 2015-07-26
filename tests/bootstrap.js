@@ -35,7 +35,7 @@ CakeJS.Core.Configure.write('Datasources', {
 	}
 });
 CakeJS.Core.Configure.write('Web.port', 31337);
-CakeJS.Core.Configure.write('Session.defaults', 'database');
-CakeJS.Core.Configure.write('Session.cookie', 'CAKEPHP');
+//CakeJS.Core.Configure.write('Session.defaults', 'database');
+//CakeJS.Core.Configure.write('Session.cookie', 'CAKEPHP');
 CakeJS.Datasource.ConnectionManager.config(CakeJS.Core.Configure.consume('Datasources'));
-CakeJS.Session.SessionManager.config(CakeJS.Core.Configure.consume('Session'));
+//CakeJS.Session.SessionManager.config(CakeJS.Core.Configure.consume('Session'));
