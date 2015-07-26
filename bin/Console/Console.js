@@ -15,235 +15,267 @@
  */
 
 /**
+ * The console class.
  * 
+ * @class
  */
-class Console
+export class Console
 {
+    // "Private" properties.
+    _configuration = {};
+    _commands = {};
+    _version = {
+        major: 0,
+        minor: 2,
+        patch: 0
+    };    
+    
     /**
+     * Constructor.
      * 
+     * @constructor
      */
     constructor()
     {
-        this.configuration = {
-            'plugins': {
-                'path': 'Commands',
-                'plugins': {}
-            },
-            'colors': {
-                'enabled': true,
-                'colors': {
-                    'black': '\x1b[30m',
-                    'red': '\x1b[31m',
-                    'green': '\x1b[32m',
-                    'yellow': '\x1b[33m',
-                    'blue': '\x1b[34m',
-                    'magenta': '\x1b[35m',
-                    'cyan': '\x1b[36m',
-                    'white': '\x1b[37m',
-                    'reset': '\x1b[0m'
-                },
-                'theme': {
-                    'command': 'cyan',
-                    'error': 'red',
-                    'em': 'cyan',
-                    'optional': 'white',
-                    'required': 'magenta',
-                    'reset': 'reset'
-                }
-            },
-            'version': {
-                'major': 0,
-                'minor': 1,
-                'patch': 0
-            }            
-        };
-        let argv = process.argv.slice(2);
-        this.argv = [];
-        for (let i = 0; i < argv.length; i++) {
-            argv[i] = argv[i].trim().replace(/([\n\r])/gi, '');
-            if (argv[i].length > 0) {
-                this.argv.push(argv[i]);
-            }
-        }
-    }
-        
-    /**
-     * 
-     */
-    configure()
-    {
-        let pluginPath = require('path').resolve(
-                __dirname, 
-                this.configuration.plugins.path
-        );
-
-        // load all commands.
-        require('fs').readdirSync(pluginPath).forEach((file) => {
-            if (file.substr(-10) === 'Command.js' && file.length > 10) {
-                let plugins = require(require('path').join(pluginPath, file));
-                for (let plugin in plugins) {
-                    let pluginInstance = new plugins[plugin]();
-                    pluginInstance.configure(this);
-                    this.configuration.plugins.plugins[pluginInstance.getName()] = pluginInstance;
-                }
-            }
-        });      
     }
     
     /**
+     * Display some about stuff.
      * 
+     * @return {void}
      */
     about()
     {
-        this.out('%EM%Welcome to CakeJS console ' + this.getVersion() + '%RESET%');
+        this.out('');
+        this.out('Welcome to %HIGHLIGHT%CakeJS Console%RESET% by addelajnen');
         this.out('');
     }
     
     /**
+     * Configure the console.
      * 
+     * @return {void}
+     */
+    configure()
+    {
+        let path = require('path');
+        let fs = require('fs');
+        
+        //
+        // Begin by loading the configuration file.
+        // 
+        let configPath = path.resolve(__dirname, 'cakejs.json');
+        if (!fs.existsSync(configPath)) {
+            console.log(
+                'Unable to load "' + require('path').basename(configPath) + '" in "' + __dirname + '"');
+            return false;
+        }
+        this._configuration = require(configPath);
+        
+        //
+        // Build path to commands.
+        //
+        let commandPath = path.resolve(
+                __dirname, 
+                this._configuration.commands.path
+        );
+
+        let identifier = this._configuration.commands.identifier;
+        
+        fs.readdirSync(commandPath).forEach((file) => {
+            let basename = path.basename(file);
+
+            //
+            // Decide if file is a command file.
+            //
+            if (basename.substr(-identifier.length) === identifier &&
+                basename.length > identifier.length) {
+            
+                //
+                // Parse classname and command.
+                //
+                let className = path.basename(basename, '.js');
+                let command = basename.replace(identifier, '').toLowerCase();
+                
+                //
+                // Decide if this command should be loaded.
+                //
+                let loadThis = this._configuration.commands.autoLoad === true;
+                if (!loadThis) {
+                    //
+                    // Check if command exists in the _configuration.
+                    //
+                    let load = this._configuration.commands.load;
+                    
+                    for (let i = 0; i < load.length; i++) {
+                        if (command === load[i].toLowerCase()) {
+                            loadThis = true;
+                            break;
+                        }
+                    }
+                }
+                
+                //
+                // Try to load this command if it should be loaded.
+                //
+                if (loadThis) {
+                    
+                    //
+                    // Make sure it is not loaded already.
+                    //
+                    if (!(command in this._commands)) {
+                        
+                        let data = require(path.resolve(commandPath, file));
+                        
+                        //
+                        // Get the class based on the basename.
+                        //
+                        if (className in data) {
+                            let commandInstance = new data[className]();
+                            commandInstance.setConsole(this);
+                            commandInstance.setName(command);
+                            commandInstance.configure();
+                            this._commands[commandInstance.getName()] = commandInstance;
+                        }
+                    }
+                }
+            }
+        });
+        
+        return true;
+    }
+    
+    /**
+     * Execute the command.
+     * 
+     * @return {void}
      */
     execute()
-    {
-        let argv = this.argv;
-
-        if (argv.length > 0) {
-            let plugin = argv[0];
-            
-            if (plugin in this.configuration.plugins.plugins) {
-                let parameters = this.configuration.plugins.plugins[plugin].prepare(argv);
-                if (parameters.errors.length === 0) {
-                    this.configuration.plugins.plugins[plugin].execute(this, parameters.parameters, parameters.values);
-                } else {
-                    this.describe(this.configuration.plugins.plugins[plugin], parameters);
-                }
-            } else {
-                this.out('Command [%COMMAND%' + plugin + '%RESET%] was not found.');
-            }
-        } else {
-            this.help();
-        }
-    }
-    
-    /**
-     * 
-     */
-    help()
-    {
-        this.out('Usage: %COMMAND%command%RESET% [:%OPTIONAL%OPTIONAL_ARG VALUE%RESET%] <%REQUIRED%REQUIRED_ARG%RESET%>');
-        if ('help' in this.configuration.plugins.plugins) {
-            this.out('Use %COMMAND%help%RESET% to list all commands.');
-        }
-    }
-    
-    /**
-     * 
-     */
-    describe(plugin, parameters)
-    {
-        let usage = 'Usage: %COMMAND%' + plugin.getName() + '%RESET% ';
+    {        
+        this.about();
         
-        for (let i = 0; i < plugin.getParameterCount(); i++) {
-            let parameter = plugin.getParameter(i);
-            
-            let parameterStart = '';
-            let parameterEnd = '';
-            if (!('optional' in parameter ) || parameter.optional === false) {
-                parameterStart = '<%REQUIRED%';
-                parameterEnd = '%RESET%> ';
-            } else {
-                parameterStart = '[%OPTIONAL%'
-                parameterEnd = '%RESET%] ';
+        //
+        // Get commandline.
+        //
+        let argv = process.argv.slice(2);
+        if (argv.length === 0) {
+            if ('help' in this._commands) {
+                this.out('Use [%COMMAND%help%RESET%] to list all commands.');
+                this.out('');
             }
             
-            if (!('type' in parameter) || parameter.type === 'parameter') {
-                parameterStart += ':' + parameter.name;
-            }
-            
-            if ('length' in parameter && parameter.length > 0) {
-                if (!('type' in parameter) || parameter.type === 'parameter') {
-                    parameterStart += ' ';
-                }
-                for (let j = 0; j < parameter.length; j++) {
-                    parameterStart += '(' + parameter.name + j + ')';
-                    if (j+1 < parameter.length)
-                        parameterStart += ' ';
-                }   
-            } 
-            
-            usage += parameterStart + parameterEnd;
+            return;
         }
-        this.out(usage);
+        
+        //
+        // Run command.
+        //
+        let command = argv[0].toLowerCase(); 
+        if (!(command in this._commands)) {
+            return;
+        }
+        
+        //
+        // Validate commandline.
+        //
+        if (!this._commands[command].validate(argv.slice(1))) {
+            return;
+        }
 
-        if (parameters.errors.length > 0) {
-            this.out('The command [%COMMAND%' + plugin.getName() + '%RESET%] was expecting more parameters:');
-            for (let i = 0; i < parameters.errors.length; i++) {
-                this.out(' * <%REQUIRED%' + parameters.errors[i].name + '%RESET%> - ' + parameters.errors[i].description);
-            }
-        }
+        //
+        // Run the command.
+        //
+        this._commands[command].execute();
     }
     
     /**
+     * Print text with colors, if enabled.
      * 
+     * @param {string} text The text to be printed.
+     * 
+     * @return {void}
      */
-    out(text)
+    out(text) 
     {
         if (typeof text === 'string') { 
-            if (this.configuration.colors.enabled === true) {
-                for (let key in this.configuration.colors.theme) {
-                    let color = this.configuration.colors.theme[key];
-                    let code = this.configuration.colors.colors[color];
+            //
+            // Decide if colors should be used or not.
+            //
+            let colorsEnabled = this._configuration.colors.enabled;
+            
+            if (colorsEnabled) {
+                //
+                // Get theme _configuration.
+                //
+                let theme = this._configuration.colors.theme;
+                
+                for (let key in theme) {
+                    //
+                    // Map color code to color.
+                    //
+                    let color = this._configuration.colors.theme[key];
+                    let code = this._configuration.colors.colors[color];
 
-                    let regexp = new RegExp('(\%' + key.toUpperCase() + '\%)', 'g');
-
-                    text = text.replace(regexp, code);
+                    //
+                    // Replace the markup with the actual color code.
+                    //
+                    text = text.replace(
+                        new RegExp('(\%' + key + '\%)', 'gi'), 
+                        code
+                    );
                 }   
             } else {
-                let regexp = new RegExp('(\%[A-Za-z0-9]+\%)', 'gi');
-                text = text.replace(regexp, '');
+                //
+                // Just remove the markup because colors is disabled.
+                //
+                text = text.replace(new RegExp('(\%[A-Z0-9]+\%)', 'gi'), '');
+            }            
+        }     
+        
+        console.log(text);        
+    }
+    
+    /**
+     * Creates an array with all available commands.
+     * 
+     * @return {array} An array with all the available commands.
+     */
+    getCommands()
+    {
+        let _commands = [];
+        
+        for (let commandName in this._commands) {
+            _commands.push(this._commands[commandName]);
+        }
+        return _commands;
+    }
+    
+    /**
+     * Get a command by its name.
+     * 
+     * @param {string} name The name of the command.
+     * 
+     * @return {Command} Returns instance of the command or null if not found.
+     */
+    getCommandByName(name)
+    {
+        for (let commandName in this._commands) {
+            let command = this._commands[commandName];
+            if (command.getName() === name) {
+                return command;
             }
-            
-            console.log(text);
-        }    
+        }
+        
+        return null;
     }
     
     /**
+     * Get the version of the current CakeJS console.
      * 
-     */
-    getConfiguration()
-    {
-        return this.configuration;
-    }
-    
-    /**
-     * 
-     */
-    getPlugins()
-    {
-        return this.configuration.plugins.plugins;
-    }    
-    
-    /**
-     * 
+     * @return {object} An object with major, minor and patch parts.
      */
     getVersion()
     {
-        return this.configuration.version.major + '.' + this.configuration.version.minor + '.' + this.configuration.version.patch;
-    }
-    
-    /**
-     * 
-     */
-    setColoring(enabled) 
-    {
-        this.out('Setting coloring to [%EM%' + enabled + '%RESET%].');
-        this.configuration.colors.enabled = enabled;
+        return this._version;
     }
 }
-
-/**
- * 
- */
-let cake = new Console();
-cake.about();
-cake.configure();
-cake.execute();

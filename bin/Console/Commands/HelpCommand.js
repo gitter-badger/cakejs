@@ -15,14 +15,19 @@
  */
 
 import {Command} from '../Command';
+import {CommandOption} from '../CommandOption';
 
 /**
+ * The help command in the console.
  * 
+ * @class
  */
 export class HelpCommand extends Command
-{
+{    
     /**
+     * Constructor.
      * 
+     * @constructor
      */
     constructor()
     {
@@ -30,59 +35,149 @@ export class HelpCommand extends Command
     }
     
     /**
+     * Configure this command.
      * 
+     * @return {void}
      */
-    configure(engine)
+    configure()
     {
-        super.configure(engine);
-        
         this.setName('help');
-        this.setDescription('Display help.');
-        this.setManual('TODO: Detailed help.')
-        this.setParameter({
-           'name': 'detailed',
-           'optional': true,
-           'type': 'value',
-           'description': 'Display detailed help for a specific command.'
-        });
+        this.setShortDescription('Help on how to use the console.')
+        this.setLongDescription(
+            'This command is used to list all commands and to get ' + 
+            'detailed help for a specific command.'
+        );
+
+        this.addOption(new CommandOption(
+                'command', 
+                CommandOption.VALUE, 
+                false, 
+                'Show detailed help for a command.'
+        ));
+    }
+      
+    /**
+     * Execute the command.
+     * 
+     * @return {void}
+     */
+    execute()
+    {
+        let command = this.getParsedOption('command');
+        if (command !== null) {
+            this.printDetailedHelp(command);
+        } else {
+            this.printGenericHelp();
+        }
+    }
+
+    /**
+     * Prints generic help on how to use the console and lists the commands.
+     */
+    printGenericHelp()
+    {
+        this.out('%HEADER%Commands:%RESET%');
+        this.out('');
+        
+        let commands = this.getConsole().getCommands();
+        for (let i = 0; i < commands.length; i++) {
+            let shortDescription = commands[i].getShortDescription();
+            if (!shortDescription) {
+                shortDescription = 'No description available.';
+            }
+            this.out('%COMMAND%' + commands[i].getName() + '%RESET% - %MESSAGE%' + shortDescription + '%RESET%');
+        }
+        
+        this.out('');
+        this.out('For detailed help, type: %COMMAND%' + this.getName() + '%RESET% [command]');
+        this.out('');
+    }    
+    
+    /**
+     * Prints detailed help for a command.
+     * 
+     * @param {string} name The command name.
+     */
+    printDetailedHelp(name)
+    {
+        let command = this.getConsole().getCommandByName(name);
+        if (command === null) {
+            this.out('%ERROR%Unknown command:%RESET% %COMMAND%' + name + '%RESET%');
+            return;
+        }
+        
+        this.out('Detailed help for %COMMAND%' + command.getName() + '%RESET%');
+        this.out('');
+        let longDescription = command.getLongDescription();
+        if (longDescription)
+            this.out(longDescription);
+        else
+            this.out('No description available.');
+        
+        this.out('');
+        this.out('%HEADER%Usage:%RESET%');
+        this.out('');
+        this.printUsage(name);
+        this.out('');
+    }
+    
+
+    /**
+     * Prints the usage for a command.
+     * 
+     * @param {string} name The command.
+     */
+    printUsage(name)
+    {        
+        let command = this.getConsole().getCommandByName(name);
+        if (!command) {
+            return null;
+        }
+        
+        let usage = '%COMMAND%' + command.getName() + '%RESET% ';
+        for (let i = 0; i < command.getOptionCount(); i++) {
+            let option = command.getOption(i);
+            
+            usage = this._buildUsageString(usage, option) + ' ';
+        }
+        
+        this.out(usage);
     }
     
     /**
+     * Build a usage string for the option.
      * 
+     * @param {string} usage The usage string.
+     * @param {CommandOption} option The option.
+     * 
+     * @return {string} The usage string.
      */
-    execute(engine, parameters, values)
+    _buildUsageString(usage, option)
     {
-        super.execute(engine, parameters, values);
+       
+        let start = '';
+        let end = '';
         
-        if (values.detailed === null) {
-            let plugins = engine.getPlugins();
-            for (let plugin in plugins) {
-                engine.out('[%COMMAND%' + plugins[plugin].getName() + '%RESET%] - ' + plugins[plugin].getDescription());
-            }
-            engine.out('');
-            engine.out('Use %COMMAND%help%RESET% [command] for detailed help.');
+        if (option.isRequired()) {
+            start = '<';
+            end = '>';
         } else {
-            let plugins = engine.getPlugins();
-            if (values.detailed in plugins) {
-                engine.out('[%COMMAND%' + plugins[values.detailed].getName() + '%RESET%] - ' + plugins[values.detailed].getDescription());
-                engine.out('==========');
-                engine.out(plugins[values.detailed].getManual());
-                engine.out('');
-                engine.out('PARAMETERS');
-                engine.out('');
-                for (let i = 0; i < plugins[values.detailed].getParameterCount(); i++) {
-                    let parameter = plugins[values.detailed].getParameter(i);
-                    engine.out('%EM%' + parameter.name + '%RESET% (' + ((parameter.optional) ? 'OPTIONAL' : 'REQUIRED') + ')');
-                    engine.out('----------');
-                    engine.out(parameter.description);
-                    engine.out('Is of type ' + parameter.type + ' and expects ' + parameter.length + ' subparameters.' )
-                    engine.out('');
-                }
-            } else {
-                engine.out('Unknown command "%ERROR%' + values.detailed + '%RESET%".');
+            start = '[';
+            end = ']';
+        }
+        
+        usage += start + option.getName();
+        
+        if (option.getChildCount() > 0) {
+            usage += ' ';
+            for (let i = 0; i < option.getChildCount(); i++) {
+                usage = this._buildUsageString(usage, option.getChild(i));
             }
         }
         
-        return true;
+        usage += end;
+        
+        return usage;        
     }
 }
+

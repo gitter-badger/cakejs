@@ -15,237 +15,225 @@
  */
 
 /**
+ * A baseclass for all commands.
  * 
+ * @class
  */
 export class Command
-{
+{   
+    // "Private" properties.
+    _name = null; 
+    _console = null; 
+    _longDescription = null;
+    _shortDescription = null;
+    _options = [];
+    _parsedOptions = {};
+    
     /**
+     * Constructor.
      * 
+     * @constructor
      */
     constructor()
     {
-        this.name = '';
-        this.description = '';
-        this.manual = '';
-        this.parameters = [];
     }
-    
+
     /**
+     * Configure this command.
      * 
+     * @return {void}
      */
-    configure(engine)
+    configure()
     {
-        this.setParameter({
-            'name': 'color',
-            'optional': true,
-            'default': true,
-            'type': 'parameter',
-            'length': 1,
-            'description': 'Turn coloring on or off. Example: :color 0 turns off coloring.'
-        });
     }
     
     /**
+     * Validate the arguments sent to this command.
      * 
+     * @param {array} argv The list of arguments passed to the command.
+     * 
+     * @return {boolean} argv A return value of false will abort execution and
+     *                        terminate the application while true will let 
+     *                        the application continue.
      */
-    execute(engine, parameters, values)
-    {        
-        engine.setColoring(parameters.color[0] == '1' || parameters.color[0] === true ? true : false);
+    validate(argv)
+    {
+        for (let i = 0; i < this._options.length; i++) {            
+            if (!this._options[i].validate(argv, this._parsedOptions)) {
+                if ('_errors' in this._parsedOptions) {
+                    this.out('%ERROR%Syntax error:%RESET% %MESSAGE%' + this._parsedOptions['_errors'] + '%RESET%');
+                } else {
+                    this.out('%ERROR%Unknown error.%RESET%');                    
+                }
+                return false;
+            }
+        }
         
         return true;
     }
     
     /**
+     * Execute the command.
      * 
+     * @return {void}
      */
-    prepare(argv)
+    execute()
     {
-        let parameters = {};
-        let values = [];
-        
-        //
-        // Parse argv and separate the parameters and values.
-        //
-        for (let i = 0; i < argv.length; i++) {
-            let arg = argv[i];
-                        
-            if (arg.substr(0, 1) === ':') {
-                let parameter = this.findParameter(arg.substr(1));
-                if (parameter !== null) {
-                    parameters[parameter.name] = parameter;                    
-                    if ('length' in parameter && parameter.length > 0) {
-                        parameters[parameter.name].value = [];
-                        for (let j = 0; j < parameter.length; j++) {                  
-                            if (i < argv.length-1 && argv[i+1].substr(0, 1) !== ':') {
-                                parameters[parameter.name].value.push(argv[++i]);
-                            } else {
-                                parameters[parameter.name].value.push(null);
-                            }
-                        }
-                    } else {
-                        parameters[parameter.name].value = true;
-                    }
-                }
-            } else {
-                values.push(arg);
-            }
-        }        
-        
-        //
-        // Validate the parsed data.
-        //
-        let result = {
-            'errors': [],
-            'parameters': {},
-            'values': {}
-        };
-        
-        for (let i = 0; i < this.parameters.length; i++) {
-            let parameter = this.parameters[i];
-                        
-            let exists = false;
-            
-            if (parameter.type === 'parameter') {
-                if (parameter.name in parameters) {
-                    result.parameters[parameter.name] = parameters[parameter.name].value;                    
-                    exists = true;
-                } else {
-                    if ('length' in parameter && parameter.length > 0) {
-                        result.parameters[parameter.name] = [];
-
-                        let defaultValue = ('default' in parameter) ? parameter.default : null;
-                        for (let i = 0; i < parameter.length; i++) {
-                            result.parameters[parameter.name].push(defaultValue);
-                        }
-                    } else {
-                        if ('default' in parameter) {
-                            result.parameters[parameter.name] = parameter.default;                            
-                        } else {
-                            result.parameters[parameter.name] = null;
-                        }
-                    }
-                }
-            } else {
-                if (values.length > 0) {  
-                    if ('length' in parameter && parameter.length > 0) {
-                        result.values[parameter.name] = [];
-                        for (let j = 0; j < parameter.length; j++) {       
-                            if (values.length > 0) {
-                                result.values[parameter.name].push(values.shift());         
-                            } else {
-                                if ('default' in parameter) {
-                                    result.values[parameter.name].push(parameter.default);
-                                } else {
-                                    result.values[parameter.name].push(null);
-                                }
-                            }
-                        }
-                    } else {
-                        result.values[parameter.name] = values.shift();
-                    }
-                    exists = true;
-                } else {
-                    if ('default' in parameter) {                    
-                        result.values[parameter.name] = parameter.default;                        
-                    } else {
-                        result.values[parameter.name] = null;
-                    }
-                }
-            }
-            
-            if (!exists) {
-                if (!('optional' in parameter) || parameter.optional !== true) {
-                    result.errors.push(parameter);
-                }
-            }
-        }
-                
-        return result;        
     }
     
     /**
+     * Print text using the console function.
      * 
+     * @param {string} The text to be printed.
+     * 
+     * @return {void}
+     */
+    out(text)
+    {
+        if (this._console !== null) {
+            this._console.out(text);
+        }
+    }
+    
+    /**
+     * Set the name of this command.
+     * 
+     * @param {string} name The name of this command.
      */
     setName(name)
     {
-        this.name = name;
+        if (typeof name !== 'string') {
+            return;
+        }
+        
+        this._name = name;
     }
     
     /**
+     * Get the name of this command.
      * 
+     * @return {string} The name of this command.
      */
     getName()
     {
-        return this.name;
+        return this._name;
     }
     
     /**
+     * Set the long description for this command.
      * 
+     * @param {string} description The long description for this command.
      */
-    setDescription(description)
+    setLongDescription(description)
     {
-        this.description = description;
-    }
-    
-    /**
-     * 
-     */
-    getDescription()
-    {
-        return this.description;
-    }
-    
-    /**
-     * 
-     */
-    setManual(manual)
-    {
-        this.manual = manual;
-    }
-    
-    /**
-     * 
-     */
-    getManual()
-    {
-        return this.manual;
-    }
-    
-    /**
-     * 
-     */
-    setParameter(parameter)
-    {
-        this.parameters.push(parameter);
-    }
-    
-    /**
-     * 
-     */
-    findParameter(name) 
-    {
-        for (let i = 0; i < this.parameters.length; i++) {
-            let parameter = this.parameters[i];
-            
-            if ('name' in parameter && parameter.name === name) {
-                return parameter
-            }
+        if (typeof description !== 'string') {
+            return;
         }
         
-        return null;
+        this._longDescription = description;
     }
     
     /**
+     * Get the long description for this command.
      * 
+     * @return {string} The long description for this command.
      */
-    getParameterCount() {
-        return this.parameters.length;
+    getLongDescription()
+    {
+        return this._longDescription;
+    }
+
+
+    /**
+     * Set the short description for this command.
+     * 
+     * @param {string} description The short description for this command.
+     */
+    setShortDescription(description)
+    {
+        if (typeof description !== 'string') {
+            return;
+        }
+        
+        this._shortDescription = description;
     }
     
     /**
+     * Get the short description for this command.
      * 
+     * @return {string} The short description for this command.
      */
-    getParameter(index) {
-        return this.parameters[index];
+    getShortDescription()
+    {
+        return this._shortDescription;
+    }
+    
+    /**
+     * Set the console used to instantiate this command.
+     * 
+     * @param {Console} console The console used to instantiate this command.
+     */
+    setConsole(console)
+    {
+        this._console = console;
+    }
+    
+    /**
+     * Get the console used to instantiate this command.
+     * 
+     * @return {Console} The console used to instantiate this command.
+     */
+    getConsole()
+    {
+        return this._console;
+    }
+    
+    /**
+     * Add an option for this command.
+     * 
+     * @param {CommandOption} option The option to add.
+     */
+    addOption(option)
+    {
+        this._options.push(option);
+    }
+    
+    /**
+     * Get number of options in this command, excluding the children.
+     * 
+     * @return {number} The number of options in this command.
+     */
+    getOptionCount()
+    {
+        return this._options.length;
+    }
+    
+    /**
+     * Get an option at a specified offset.
+     * 
+     * @param {number} index The offset to the option.
+     * 
+     * @return {CommandOption} The option.
+     */
+    getOption(index)
+    {
+        return this._options[index];
+    }
+        
+    /**
+     * Get a value parsed from the options.
+     * 
+     * @param {string} name The name of the option.
+     * @param {string} defaultValue A default value if option was not found.
+     * 
+     * @return {string} The value of the option or defaultValue if not found.
+     */
+    getParsedOption(name, defaultValue = null)
+    {
+        if (!(name in this._parsedOptions)) {
+            return defaultValue;
+        }
+        
+        return this._parsedOptions[name];
     }
 }

@@ -15,14 +15,19 @@
  */
 
 import {Command} from '../Command';
+import {CommandOption} from '../CommandOption';
 
 /**
+ * The version command in the console.
  * 
+ * @class
  */
 export class VersionCommand extends Command
-{
+{    
     /**
+     * Constructor.
      * 
+     * @constructor
      */
     constructor()
     {
@@ -30,29 +35,42 @@ export class VersionCommand extends Command
     }
     
     /**
+     * Configure this command.
      * 
+     * @return {void}
      */
-    configure(engine)
+    configure()
     {
-        super.configure(engine);
-        
         this.setName('version');
-        this.setDescription('Output version information and exit.');
-        this.setManual('Output a detailed version information for the installed CakeJS console and terminate the application.')
+        this.setShortDescription('Display current version.')
+        this.setLongDescription(
+            'This command will print the current version and ' + 
+            'exit the console.'
+        );
     }
-    
+      
     /**
+     * Execute the command.
      * 
+     * @return {void}
      */
-    execute(engine, parameters, values)
+    execute()
     {
-        super.execute(engine, parameters, values);
+        let version = this.getConsole().getVersion();
+        let versionString = version.major + '.' + version.minor + '.' + version.patch;
         
-        engine.out('Your current CakeJS console is version %EM%' + engine.getVersion() + '%RESET%');
-        engine.out('Major part is %EM%' + engine.getConfiguration().version.major + '%RESET%');
-        engine.out('Minor part is %EM%' + engine.getConfiguration().version.minor + '%RESET%');
-        engine.out('Patch part is %EM%' + engine.getConfiguration().version.patch + '%RESET%');
+        this.out(
+                'Current version is ' +
+                '%HIGHLIGHT%' + version.major + '%RESET%.' +
+                '%HIGHLIGHT%' + version.minor + '%RESET%.' +
+                '%HIGHLIGHT%' + version.patch + '%RESET%');
+                
+        this.out('');        
+        this.out('Major part is %HIGHLIGHT%' + version.major + '%RESET%');
+        this.out('Minor part is %HIGHLIGHT%' + version.minor + '%RESET%');
+        this.out('Patch part is %HIGHLIGHT%' + version.patch + '%RESET%');        
         
-        return true;
+        this.out('');
     }
 }
+

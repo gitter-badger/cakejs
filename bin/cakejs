@@ -1,2 +1,1 @@
-babel-node --stage 0 ./Console/Command.js
-babel-node --stage 0 ./Console/Console.js $@
+babel-node --stage 0 Console/Main.js $@

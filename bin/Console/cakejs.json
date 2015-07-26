@@ -1,0 +1,37 @@
+{
+    "commands": {
+        "path": "Commands",
+        "identifier": "Command.js",
+        "autoLoad": true,
+        "load": [
+            "Help",
+            "Version"
+        ]
+    },
+    "colors": {
+        "enabled": true,
+        "colors": {
+            "black": "\u001b[30m",
+            "red": "\u001b[31m",
+            "green": "\u001b[32m",
+            "yellow": "\u001b[33m",
+            "blue": "\u001b[34m",
+            "magenta": "\u001b[35m",
+            "cyan": "\u001b[36m",
+            "white": "\u001b[37m",
+            "reset": "\u001b[0m"
+        },
+        "theme": {
+            "command": "cyan",
+            "warning": "cyan",
+            "error": "red",
+            "optional": "white",
+            "required": "magenta",
+            "important": "cyan",
+            "highlight": "cyan",
+            "message": "white",
+            "header": "white",
+            "reset": "reset"
+        }
+    }
+}
