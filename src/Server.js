@@ -99,7 +99,7 @@ export class Server extends events.EventEmitter
 				response.end();
 			});
 			this._app.use(bodyParser.urlencoded({ extended: false }));
-			if(Configure.read("Web.forward") !== null){
+			if(typeof Configure.read("Web.forward") !== 'undefined'){
 				this._app.use(_static(null));
 				this._app.use(forward(Configure.read("Web.forward")));
 			}else{
