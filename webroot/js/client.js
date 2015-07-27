@@ -185,23 +185,24 @@ class GetItem extends Item
 	}
 }
 
-class Client 
+export default class Client 
 {
-	constructor()
+	static _items = {};
+	static _events = {};
+	
+	static initialize()
 	{
-		this._items = {};
-		this._events = {};
 		sio.on('WebSocketResponse', (response) => {
-			if(typeof response === 'object' && 'index' in response && response.index in this._items){
+			if(typeof response === 'object' && 'index' in response && response.index in Client._items){
 				if('error' in response){
 					if(response.error === null){
 						console.error("CALL FAILED WITH 500 (Internal Server Error)");
-						this._items[response.index].reject('Call to '+this._items[response.index].request.controller+'->'+this._items[response.index].request.action+' failed');
+						Client._items[response.index].reject('Call to '+Client._items[response.index].request.controller+'->'+Client._items[response.index].request.action+' failed');
 					}else{
-						this._items[response.index].reject(response.error);
+						Client._items[response.index].reject(response.error);
 					}
 				}else{
-					this._items[response.index].resolve(response);
+					Client._items[response.index].resolve(response);
 				}
 			}
 		});
@@ -209,59 +210,64 @@ class Client
 			if(!('event' in response)){
 				return;
 			}
-			if(!(response.event in this._events)){
+			if(!(response.event in Client._events)){
 				return;
 			}
-			for(var i = 0; i < this._events[response.event].length; i++){
-				var callback = this._events[response.event][i];
+			for(var i = 0; i < Client._events[response.event].length; i++){
+				var callback = Client._events[response.event][i];
 				callback.apply(callback, response.arguments);
 			}
 		});
 	}
-	_invoke(item)
+	
+	static _invoke(item)
 	{
 		return new Promise((resolve, reject) => {
-			this._items[item.index] = item;
+			Client._items[item.index] = item;
 			item.run().then(response => {
-				delete this._items[item.index];
+				delete Client._items[item.index];
 				if(response !== null && typeof response === 'object' && 'data' in response){
 					resolve(response.data);
 				}
 				return resolve(response);
 			},error => {
-				delete this._items[item.index];
+				delete Client._items[item.index];
 				reject(error);
 			});
 		});
 	}
-	call()
+	
+	static call()
 	{
-		return this._invoke(new CallItem(arguments, 130*1000));
+		return Client._invoke(new CallItem(arguments, 130*1000));
 	}
-	post()
+	
+	static post()
 	{
-		return this._invoke(new PostItem(arguments, 20*1000));
+		return Client._invoke(new PostItem(arguments, 20*1000));
 	}
-	get()
+	
+	static get()
 	{
-		return this._invoke(new GetItem(arguments, 20*1000));
+		return Client._invoke(new GetItem(arguments, 20*1000));
 	}
-	on(event, callback)
+	
+	static on(event, callback)
 	{
 		if(typeof event !== 'string')
 			throw "Expected first argument to be a string";
 		callback = typeof callback !== 'function' ? null : callback;
 		if(callback === null){
-			if(event in this._events){
-				delete this._events[event];
+			if(event in Client._events){
+				delete Client._events[event];
 			}
 		}else{
-			if(!(event in this._events)){
-				this._events[event] = [];
+			if(!(event in Client._events)){
+				Client._events[event] = [];
 			}
-			this._events[event].push(callback);			
+			Client._events[event].push(callback);			
 		}
 	}
 }
 
-export default new Client();
+Client.initialize();
