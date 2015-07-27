@@ -70,8 +70,16 @@ export class Server extends events.EventEmitter
 	async start()
 	{		
 		//Preloads managers
-		try{await ControllerManager.initialize();}catch(e){}
-		try{await ProcessManager.initialize();}catch(e){}
+		try{await ControllerManager.initialize();}catch(e){
+			if(e.constructor.name !== 'FolderMissingException'){
+				console.log(e);
+			}
+		}
+		try{await ProcessManager.initialize();}catch(e){
+			if(e.constructor.name !== 'FolderMissingException'){
+				console.log(e);
+			}
+		}
 		try{await ConnectionManager.initialize();}catch(e){}
 		
 		//Build routes
