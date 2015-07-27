@@ -22,6 +22,7 @@ import {MissingConfigException} from './Exception/MissingConfigException'
 import sessionParser from './ExpressMiddleware/SessionParser'
 import socketIOConnection from './ExpressMiddleware/SocketIOConnection'
 import _static from './ExpressMiddleware/Static'
+import forward from './ExpressMiddleware/Forward'
 import proxy from './ExpressMiddleware/Proxy'
 
 //Singelton instances
@@ -98,7 +99,12 @@ export class Server extends events.EventEmitter
 				response.end();
 			});
 			this._app.use(bodyParser.urlencoded({ extended: false }));
-			this._app.use(_static(WWW_ROOT));
+			if(Configure.read("Web.forward") !== null){
+				this._app.use(_static(null));
+				this._app.use(forward(Configure.read("Web.forward")));
+			}else{
+				this._app.use(_static(WWW_ROOT));
+			}
 		}
 		this._sio.set('authorization', sessionParser());
 		this._sio.on('connection', socketIOConnection());

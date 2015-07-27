@@ -28,10 +28,15 @@ import {ControllerManager} from '../Controller/ControllerManager'
 
 class Static 
 {
-	constructor(path)
+	_path = null;
+	_expressStatic = null;
+	
+	constructor(path = null)
 	{
-		this._path = path;
-		this._expressStatic = require('express').static(this._path);
+		if(path !== null){
+			this._path = path;
+			this._expressStatic = require('express').static(this._path);
+		}
 	}
 	
 	async use(request, response, next)
@@ -75,7 +80,11 @@ class Static
 			}
 			response.end();
 		}catch(e){
-			this._expressStatic(request, response, next);
+			if(this._expressStatic !== null){
+				this._expressStatic(request, response, next);
+			}else{
+				next();
+			}
 		}
 	}
 }
