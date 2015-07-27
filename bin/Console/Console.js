@@ -164,10 +164,22 @@ export class Console
         this.about();        
         
         //
-        // Get commandline.
+        // Trim commandline.
         //
         let argv = process.argv.slice(2);
-        if (argv.length === 0 || argv[0].trim().length === 0) {
+        let temp = [];
+        for (let i = 0; i < argv.length; i++) {
+            let arg = argv[i].trim();
+            if (arg.length > 0) {
+                temp.push(arg);
+            }
+        }
+        argv = temp;
+        
+        //
+        // Validate length of commandline.
+        //
+        if (argv.length === 0) {
             if ('help' in this._commands) {
                 this.out('Use [%COMMAND%help%RESET%] to list all commands.');
                 this.out('');
@@ -179,26 +191,26 @@ export class Console
         //
         // Run command.
         //
-		if (argv.length > 0) {
-			let command = argv[0].toLowerCase().trim();
-			if (argv.length > 0) {
-				if (!(command in this._commands)) {
-					return;
-				}
-			}
+        if (argv.length > 0) {
+                let command = argv[0].toLowerCase().trim();
+                if (argv.length > 0) {
+                        if (!(command in this._commands)) {
+                                return;
+                        }
+                }
 
-			//
-			// Validate commandline.
-			//
-			if (!this._commands[command].validate(argv.slice(1))) {
-				return;
-			}
+                //
+                // Validate commandline.
+                //
+                if (!this._commands[command].validate(argv.slice(1))) {
+                        return;
+                }
 
-			//
-			// Run the command.
-			//
-			this._commands[command].execute();
-		}
+                //
+                // Run the command.
+                //
+                this._commands[command].execute();
+        }
     }
     
     /**

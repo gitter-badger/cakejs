@@ -15,7 +15,7 @@
  */
 
 import {Command} from '../Command';
-import {CommandOption} from '../CommandOption';
+import {Option} from '../Option';
 
 /**
  * The version command in the console.
@@ -49,38 +49,38 @@ export class TestCommand extends Command
             'This command will compile and run tests.'
         );
 
-        this.addOption(new CommandOption(
+        this.addOption(new Option(
            'bootstrap',
-           CommandOption.OPTION,
+           Option.OPTION,
            false,
            'The bootstrap to use.'
-        )).addChild(new CommandOption(
+        )).addSubOption(new Option(
             'filename',
-            CommandOption.VALUE,
+            Option.VALUE,
             false,
             'The bootstrap filename.'
         ));
 
-        this.addOption(new CommandOption(
+        this.addOption(new Option(
             'file',
-            CommandOption.OPTION,
+            Option.OPTION,
             false,
             'Filter tests by file.'
-        )).addChild(new CommandOption(
+        )).addSubOption(new Option(
             'filterFileName',
-            CommandOption.VALUE,
+            Option.VALUE,
             false,
             'Part of the filename.'
         ));
 
-        this.addOption(new CommandOption(
+        this.addOption(new Option(
             'filter',
-            CommandOption.OPTION,
+            Option.OPTION,
             false,
             'Filter tests.'
-        )).addChild(new CommandOption(
+        )).addSubOption(new Option(
             'filterName',
-            CommandOption.VALUE,
+            Option.VALUE,
             false,
             'The filter.'
         ));

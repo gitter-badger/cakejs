@@ -15,7 +15,7 @@
  */
 
 import {Command} from '../Command';
-import {CommandOption} from '../CommandOption';
+import {Option} from '../Option';
 
 /**
  * The help command in the console.
@@ -48,9 +48,9 @@ export class HelpCommand extends Command
             'detailed help for a specific command.'
         );
 
-        this.addOption(new CommandOption(
+        this.addOption(new Option(
                 'command', 
-                CommandOption.VALUE, 
+                Option.VALUE, 
                 false, 
                 'Show detailed help for a command.'
         ));
@@ -144,13 +144,20 @@ export class HelpCommand extends Command
         }
         
         this.out(usage);
+        
+        for (let i = 0; i < command.getOptionCount(); i++) {
+            let option = command.getOption(i);
+            
+            console.log(option.getName() + ' - ' + option.getDescription());
+        }
+        
     }
     
     /**
      * Build a usage string for the option.
      * 
      * @param {string} usage The usage string.
-     * @param {CommandOption} option The option.
+     * @param {Option} option The option.
      * 
      * @return {string} The usage string.
      */
@@ -170,9 +177,9 @@ export class HelpCommand extends Command
         
         usage += start + option.getName();
         
-        if (option.getChildCount() > 0) {
+        if (option.getSubOptionCount() > 0) {
             usage += ' ';
-            for (let i = 0; i < option.getChildCount(); i++) {
+            for (let i = 0; i < option.getSubOptionCount(); i++) {
                 usage = this._buildUsageString(usage, option.getChild(i));
             }
         }

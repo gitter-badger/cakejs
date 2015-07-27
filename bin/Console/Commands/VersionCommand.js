@@ -15,7 +15,7 @@
  */
 
 import {Command} from '../Command';
-import {CommandOption} from '../CommandOption';
+import {Option} from '../Option';
 
 /**
  * The version command in the console.
@@ -47,7 +47,7 @@ export class VersionCommand extends Command
             'This command will print the current version and ' + 
             'exit the console.'
         );
-
+    
         return true;
     }
       
