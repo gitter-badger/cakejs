@@ -167,7 +167,7 @@ export class Console
         // Get commandline.
         //
         let argv = process.argv.slice(2);
-        if (argv.length === 0) {
+        if (argv.length === 0 || argv[0].trim().length === 0) {
             if ('help' in this._commands) {
                 this.out('Use [%COMMAND%help%RESET%] to list all commands.');
                 this.out('');
@@ -179,22 +179,26 @@ export class Console
         //
         // Run command.
         //
-        let command = argv[0].toLowerCase(); 
-        if (!(command in this._commands)) {
-            return;
-        }
-        
-        //
-        // Validate commandline.
-        //
-        if (!this._commands[command].validate(argv.slice(1))) {
-            return;
-        }
+		if (argv.length > 0) {
+			let command = argv[0].toLowerCase().trim();
+			if (argv.length > 0) {
+				if (!(command in this._commands)) {
+					return;
+				}
+			}
 
-        //
-        // Run the command.
-        //
-        this._commands[command].execute();
+			//
+			// Validate commandline.
+			//
+			if (!this._commands[command].validate(argv.slice(1))) {
+				return;
+			}
+
+			//
+			// Run the command.
+			//
+			this._commands[command].execute();
+		}
     }
     
     /**
