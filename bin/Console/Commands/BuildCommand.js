@@ -15,7 +15,7 @@
  */
 
 import {Command} from '../Command';
-import {CommandOption} from '../CommandOption';
+import {Option} from '../Option';
 
 /**
  * The version command in the console.
@@ -51,14 +51,14 @@ export class BuildCommand extends Command
             'This command will build the given ES6 code.'
         );
 
-        this.addOption(new CommandOption(
+        this.addOption(new Option(
             'in',
-            CommandOption.OPTION,
+            Option.OPTION,
             false,
             'Path to source.'
-        )).addChild(new CommandOption(
+        )).addSubOption(new Option(
             'pathName',
-            CommandOption.VALUE,
+            Option.VALUE,
             false,
             'Path to source.'
         ));
@@ -75,7 +75,7 @@ export class BuildCommand extends Command
     {
         let fs = require('fs');
         let path = require('path');
-        
+                
         let sourcePath = this.getParsedOption('pathName', null);
         if (!sourcePath) {
             sourcePath = '../../tests';

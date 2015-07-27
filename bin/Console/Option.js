@@ -14,7 +14,7 @@
  * @author      addelajnen
  */
 
-export class CommandOption
+export class Option
 {
     /**
      * Option type is OPTION.
@@ -31,7 +31,7 @@ export class CommandOption
     _type = null;
     _required = false;
     _description = null;
-    _children = [];
+    _subOptions = [];
     
     /**
      * Constructor.
@@ -43,10 +43,10 @@ export class CommandOption
      * 
      * @constructor
      */
-    constructor(name, type = CommandOption.OPTION, required = false, description = null)
+    constructor(name, type = Option.OPTION, required = false, description = null)
     {        
         this._name = name;
-        this._type = (type === undefined) ? CommandOption.OPTION : type;
+        this._type = (type === undefined) ? Option.OPTION : type;
         this._required = (required === undefined) ? false : required;
         this._description = description;
     }
@@ -60,24 +60,24 @@ export class CommandOption
      * @return {boolean} True on success, false on failure.
      */
     validate(argv, options)
-    {
+    {        
         if (argv.length === 0) {
             options['_errors'] = 'Missing arguments for %COMMAND%' + this._name + '%RESET%';
             return !this._required;
         }
         
-        if (this._type === CommandOption.OPTION && this._name !== argv[0]) {
+        if (this._type === Option.OPTION && this._name !== argv[0]) {
             return !this._required;
         }
         
-        if (this._type === CommandOption.VALUE) {
+        if (this._type === Option.VALUE) {
             options[this._name] = argv[0];
         }
         
         argv.shift();
         
-        for (let i = 0; i < this._children.length; i++) {
-            if (!this._children[i].validate(argv, options)) {
+        for (let i = 0; i < this._subOptions.length; i++) {
+            if (!this._subOptions[i].validate(argv, options)) {
                 return false;
             }
         }
@@ -156,11 +156,14 @@ export class CommandOption
     /**
      * Add a child option to this option.
      * 
-     * @param {CommandOption} The child option to add.
+     * @param {Option} The child option to add.
      */
-    addChild(option)
+    addSubOption(option)
     {
-        this._children.push(option);
+        // Inherit required property.
+        option._required = this._required;
+        
+        this._subOptions.push(option);
     }
     
     /**
@@ -168,9 +171,9 @@ export class CommandOption
      * 
      * @return {number} Number of children.
      */
-    getChildCount()
+    getSubOptionCount()
     {
-        return this._children.length;
+        return this._subOptions.length;
     }
     
     /**
@@ -178,8 +181,8 @@ export class CommandOption
      * 
      * @param {number} index The offset to the child.
      */
-    getChild(index)
+    getSubOption(index)
     {
-        return this._children[index];
+        return this._subOptions[index];
     }
 }

@@ -4,7 +4,7 @@
         "identifier": "Command.js",
         "autoLoad": true,
         "load": [
-            "Help",
+            "help",
             "Version"
         ]
     },
@@ -33,5 +33,6 @@
             "header": "white",
             "reset": "reset"
         }
-    }
+    },
+    "root": "/opt/cakejs"
 }

@@ -191,7 +191,7 @@ export class Command
     /**
      * Add an option for this command.
      * 
-     * @param {CommandOption} option The option to add.
+     * @param {Option} option The option to add.
      */
     addOption(option)
     {
@@ -215,7 +215,7 @@ export class Command
      * 
      * @param {number} index The offset to the option.
      * 
-     * @return {CommandOption} The option.
+     * @return {Option} The option.
      */
     getOption(index)
     {
