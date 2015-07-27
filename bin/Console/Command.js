@@ -196,6 +196,8 @@ export class Command
     addOption(option)
     {
         this._options.push(option);
+        
+        return this._options[this._options.length-1];
     }
     
     /**

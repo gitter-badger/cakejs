@@ -47,6 +47,8 @@ export class VersionCommand extends Command
             'This command will print the current version and ' + 
             'exit the console.'
         );
+
+        return true;
     }
       
     /**

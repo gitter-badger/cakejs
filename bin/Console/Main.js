@@ -20,6 +20,6 @@ import {Console} from './Console';
 // Configure and start the console.
 //
 let cake = new Console();
-if (cake.configure()) {
+if (cake.configure() === true) {
     cake.execute();
 }
