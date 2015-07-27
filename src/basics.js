@@ -30,7 +30,7 @@ if(!('APP_DIR' in global)){
 }
 if(!('ROOT' in global)){
 	global.ROOT = process.env['PWD'];
-	global.APP = require('path').resolve(module.parent.filename,'..');
+	global.APP = require('path').resolve(module.parent.parent.filename,'..');
 }
 if(!('APP' in global)){
 	global.APP = require('path').resolve(ROOT,APP_DIR);
