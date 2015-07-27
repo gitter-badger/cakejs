@@ -29,7 +29,8 @@ $ npm install cakejs
 ```
 
 ## Examples
-Example 1: https://github.com/Tiinusen/cakejs_example_1
+CakeJS Example: https://github.com/Tiinusen/cakejs_example_1
+CakeJS + CakePHP Example: https://github.com/Tiinusen/cakejs_cakephp_example_1
 
 ## Status
 Currently we are rewriting our prototype project to fit CakePHP 3.x standards
