@@ -22,6 +22,7 @@ import {Configure} from './Configure';
 import {ClassNotFoundException} from './Exception/ClassNotFoundException';
 import {FileMissingException} from './Exception/FileMissingException';
 import {FolderMissingException} from './Exception/FolderMissingException';
+import {Exception} from '../Core/Exception/Exception';
 import {Collection} from '../Collection/Collection';
 
 //Requires
@@ -91,13 +92,14 @@ export class ClassLoader
 			className = path.resolve(CAKE,relativePath.replace('Type','Type_').replace('Driver', 'Driver_'),className);
 		}
 		className = className+".js";
-		if(!fs.existsSync(path.resolve(APP,'..',Configure.read("App.dir"),relativePath,className))){
+		if(!fs.existsSync(className)){
 			throw new FileMissingException(className);
 		}
+		
 		try{
 			var loadedFile = require(className);
 		}catch(e){
-			throw new FileMissingException(className);
+			throw new Exception(String.sprintf('Error in file "%s", Error: "%s"',className,e.message));
 		}
 		var expectedClassName = className.match(/([^\.\/]*)\.[^\.]*$/);
 		if(expectedClassName !== null){
@@ -135,11 +137,13 @@ export class ClassLoader
 		}else{
 			var folderPath = path.resolve(APP,'..',Configure.read("App.dir"),relativePath);
 		}
+		
 		if(!fs.existsSync(folderPath)){
 			throw new FolderMissingException(folderPath);
 		}
 		var classes = {};
 		var files = fs.readdirSync(folderPath);
+		try{
 		for(var i = 0; i < files.length; i++){
 			var file = files[i];
 			if(file.indexOf('.js') !== -1 && file !== 'index.js'){
@@ -147,6 +151,10 @@ export class ClassLoader
 				classes[file.substr(0,file.indexOf('.js'))] = ClassLoader.loadClass(className, relativePath);
 			}
 		}
+		}catch(e){
+			console.log(e);
+		}
+		
 		ClassLoader._folders[key] = classes;
 		return ClassLoader._folders[key];
 	}
