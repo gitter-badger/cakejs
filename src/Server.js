@@ -34,15 +34,26 @@ import {SessionManager} from './Session/SessionManager'
 import {ConnectionManager} from './Datasource/ConnectionManager'
 import {TableRegistry} from './ORM/TableRegistry'
 
+// Net
+import {ShellConnection} from './Shell/ShellConnection';
+
 //Requires
 var events = require('events');
 var fs = require('fs');
+let net = require('net');
 var path = require('path');
 var express = require('express');
 var http = require("http");
 var socketio = require('socket.io');
 var cookieParser = require("cookie-parser");
 var bodyParser = require("body-parser");
+
+if(!fs.existsSync(TMP)){
+	fs.mkdirSync(TMP);
+}
+if(fs.existsSync(path.resolve(TMP,'cakejs.sock'))){
+	fs.unlinkSync(path.resolve(TMP,'cakejs.sock'));
+}
 
 /**
  * @class
@@ -112,6 +123,10 @@ export class Server extends events.EventEmitter
 		await new Promise(resolve => this._http.listen(Configure.read("Web.port"), () => {
 			resolve();
 		}));
+		
+		net.createServer(async (client) => {
+			new ShellConnection(client);
+		}).listen(path.resolve(TMP,'cakejs.sock'));	
 	}
 	/**
 	 * Stops the CakeJS server
