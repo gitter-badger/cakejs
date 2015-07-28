@@ -14,10 +14,12 @@
  * @author      addelajnen
  */
 
+// Network
 import {Client} from '../Network/Net/Client';
 
 let path = require('path');
 let fs = require('fs');
+let net = require('net');
 
 /**
  * The console class.
@@ -171,16 +173,17 @@ export class Console
 		
 		return result;
     }
-    
-	/**
-	 * 
-	 */
-	async fallback()
-	{
-		if (this._argv.length > 0) {
-			await this.runShell(this._argv[0]);
-		}
-	}
+
+    /**
+     * 
+     */
+    async fallback()
+    {
+            if (this._argv.length > 0) {
+                let shell = this.loadShell(this._argv[0]);
+                await this.runShell(shell, this._argv.slice(1));
+            }
+    }
 	
     /**
      * Execute the command.
@@ -190,7 +193,6 @@ export class Console
     execute()
     {     
         this.about();        
-        
         
         //
         // Validate length of commandline.
@@ -356,32 +358,63 @@ export class Console
     {
         return __dirname;
     }
-	
-	/**
-	 * 
-	 */
+    
+    /**
+     * 
+     */
+    loadShell(name)
+    {
+        let className = name + 'Shell';
+        let shellPath = path.resolve(
+            this.getCurrentWorkingDirectory(),
+            this.getConfiguration('commands.path') + path.sep + 'Shell'
+        );
+        let shell = null;
+        let files = fs.readdirSync(shellPath);
+        for (var i = 0; i < files.length; i++) {
+            let file = files[i];
+            if (file.substr(0, name.length) === name) {
+                let filePath = path.resolve(shellPath, file);
+                let fileData = require(filePath);
+                if (className in fileData) {
+                    console.log('Found ' + className + ' in ' + filePath);
+                    shell = new fileData[className]();
+                    break;
+                }
+            }
+        }
+        return shell;
+    }
 
-	async runShell(name)
-	{		
-		try{
-			var client = new Client();
-			client.on('close', () => {
-				setTimeout(() => {console.log('error with connection'); }, 500);
-			});
-		
-			await client.connect();
+    /**
+     * 
+     */
 
-			let data = JSON.parse(JSON.stringify(this._argv));
-			
-			await client.write(data);
-			let response = await client.read();
-			
-			console.log(response);			
-			
-			process.exit(0);
-		}catch(e){
-			console.log(e);
-			process.exit(1);
-		}
-	}
+    async runShell(shell, argv)
+    {	        
+        await shell._connect();
+        await shell.main(argv);
+        process.exit(0);
+        return;
+        try{
+            var client = new Client();
+            client.on('close', () => {
+                    setTimeout(() => {console.log('error with connection'); }, 500);
+            });
+
+            await client.connect();
+
+            let data = JSON.parse(JSON.stringify(this._argv));
+
+            await client.write(data);
+            let response = await client.read();
+
+            console.log(response);			
+
+            process.exit(0);
+        }catch(e){
+            console.log(e);
+            process.exit(1);
+        }
+    }
 }

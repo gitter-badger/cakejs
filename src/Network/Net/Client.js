@@ -23,11 +23,11 @@ export class Client extends events.EventEmitter
 	 */
 	constructor(client = null)
 	{
-		super();
-		if (client !== null) {
-			this._client = client;
-			this.initialize();
-		}
+            super();
+            if (client !== null) {
+                    this._client = client;
+                    this.initialize();
+            }
 	}
 	
 	/**
@@ -35,32 +35,32 @@ export class Client extends events.EventEmitter
 	 */
 	initialize()
 	{
-		this._client.on('end', (e) => {
-			this.disconnect();
-		});
-		
-		this._client.on('error', (e) => {
-			this.disconnect();
-		});
-		
-		this._client.on('data', (data) => {
-			if(this._buffer !== null){
-					this._buffer = Buffer.concat(this._buffer, data)
-			}else{
-					this._buffer = data;
-			}
-			if(this._bufferTimeout !== null){
-					clearTimeout(this._bufferTimeout);
-			}
-			this._bufferTimeout = setTimeout(() => {
-					let data = this._buffer.toString();
-					this._buffer = null;
-					try{
-						data = JSON.parse(data);
-					}catch(e){}
-					this.emit('data', data);		
-			});
-		});
+            this._client.on('end', (e) => {
+                    this.disconnect();
+            });
+
+            this._client.on('error', (e) => {
+                    this.disconnect();
+            });
+
+            this._client.on('data', (data) => {
+                    if(this._buffer !== null){
+                                    this._buffer = Buffer.concat(this._buffer, data)
+                    }else{
+                                    this._buffer = data;
+                    }
+                    if(this._bufferTimeout !== null){
+                                    clearTimeout(this._bufferTimeout);
+                    }
+                    this._bufferTimeout = setTimeout(() => {
+                                    let data = this._buffer.toString();
+                                    this._buffer = null;
+                                    try{
+                                            data = JSON.parse(data);
+                                    }catch(e){}
+                                    this.emit('data', data);		
+                    });
+            });
 	}
 	
 	/**

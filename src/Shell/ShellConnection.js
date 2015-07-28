@@ -28,6 +28,7 @@ export class ShellConnection
 		{
 			let data = await this._client.read();
 			console.log(data);
+                        await this._client.write('Hello there, client!');
 		}
 		catch (e)
 		{

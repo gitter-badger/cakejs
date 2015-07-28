@@ -42,9 +42,9 @@ export class ConstantsCommand extends Command
     configure()
     {
         this.setName('constants');
-        this.setShortDescription('Display current version.')
+        this.setShortDescription('Display all CakeJS constants.')
         this.setLongDescription(
-            'This command will print the current version and ' + 
+            'This command will print all CakeJS constants and ' + 
             'exit the console.'
         );
     

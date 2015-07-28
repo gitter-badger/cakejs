@@ -123,7 +123,6 @@ export class Server extends events.EventEmitter
 			resolve();
 		}));
 		
-		console.log(TMP);
 		net.createServer(async (client) => {
 			new ShellConnection(client);
 		}).listen(path.resolve(TMP,'cakejs.sock'));	
