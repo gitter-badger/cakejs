@@ -101,7 +101,7 @@ export class ClassLoader
 		}catch(e){
 			throw new Exception(String.sprintf('Error in file "%s", Error: "%s"',className,e.message));
 		}
-		var expectedClassName = className.match(/([^\.\/]*)\.[^\.]*$/);
+		var expectedClassName = className.match(/([^\.\/\\]*)\.[^\.\\]*$/);
 		if(expectedClassName !== null){
 			expectedClassName = expectedClassName[1];
 		}
