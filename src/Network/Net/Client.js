@@ -8,15 +8,20 @@ let net = require('net');
 let events = require('events');
 let path = require('path');
 
-export class NetClient extends events.EventEmitter
+export class Client extends events.EventEmitter
 {
+	static BUFFER_TIMEOUT = 100;
+	static READ_TIMEOUT = 20000;
+	
 	_client = null;
 	_connected = false;
+	_buffer = null;
+	_bufferTimeout = null;
 	
 	/**
 	 * 
 	 */
-	constructor(client)
+	constructor(client = null)
 	{
 		super();
 		if (client !== null) {
@@ -39,7 +44,22 @@ export class NetClient extends events.EventEmitter
 		});
 		
 		this._client.on('data', (data) => {
-			console.log(data);
+			if(this._buffer !== null){
+					this._buffer = Buffer.concat(this._buffer, data)
+			}else{
+					this._buffer = data;
+			}
+			if(this._bufferTimeout !== null){
+					clearTimeout(this._bufferTimeout);
+			}
+			this._bufferTimeout = setTimeout(() => {
+					let data = this._buffer.toString();
+					this._buffer = null;
+					try{
+						data = JSON.parse(data);
+					}catch(e){}
+					this.emit('data', data);		
+			});
 		});
 	}
 	
