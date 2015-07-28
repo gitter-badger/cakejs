@@ -48,13 +48,6 @@ var socketio = require('socket.io');
 var cookieParser = require("cookie-parser");
 var bodyParser = require("body-parser");
 
-if(!fs.existsSync(TMP)){
-	fs.mkdirSync(TMP);
-}
-if(fs.existsSync(path.resolve(TMP,'cakejs.sock'))){
-	fs.unlinkSync(path.resolve(TMP,'cakejs.sock'));
-}
-
 /**
  * @class
  */
@@ -72,6 +65,12 @@ export class Server extends events.EventEmitter
 		this._app = express();
 		this._http = http.Server(this._app);
 		this._sio = socketio(this._http);
+		if(!fs.existsSync(TMP)){
+			fs.mkdirSync(TMP);
+		}
+		if(fs.existsSync(path.resolve(TMP,'cakejs.sock'))){
+			fs.unlinkSync(path.resolve(TMP,'cakejs.sock'));
+		}
 	}
 	
 	/**
@@ -124,6 +123,7 @@ export class Server extends events.EventEmitter
 			resolve();
 		}));
 		
+		console.log(TMP);
 		net.createServer(async (client) => {
 			new ShellConnection(client);
 		}).listen(path.resolve(TMP,'cakejs.sock'));	
