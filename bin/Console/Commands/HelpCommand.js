@@ -122,8 +122,23 @@ export class HelpCommand extends Command
         this.printUsage(name);
         this.out('');
     }
-    
-
+	
+	/**
+	 * Print option usage.
+	 * 
+	 * @param {Option} option The option to print.
+	 */
+	printOptionUsage(option, steps)
+	{
+		let usage = '';
+		usage = option.getName() + ' - ' + option.getDescription();
+		for (let i = 0; i < option.getSubOptionCount(); i++) {
+			let subOption = option.getSubOption(i);
+			
+			this.printOptionUsage(subOption);
+		}
+	}
+	
     /**
      * Prints the usage for a command.
      * 
@@ -148,7 +163,7 @@ export class HelpCommand extends Command
         for (let i = 0; i < command.getOptionCount(); i++) {
             let option = command.getOption(i);
             
-            console.log(option.getName() + ' - ' + option.getDescription());
+            this.printOptionUsage(option, 0);
         }
         
     }
@@ -180,7 +195,7 @@ export class HelpCommand extends Command
         if (option.getSubOptionCount() > 0) {
             usage += ' ';
             for (let i = 0; i < option.getSubOptionCount(); i++) {
-                usage = this._buildUsageString(usage, option.getChild(i));
+                usage = this._buildUsageString(usage, option.getSubOption(i));
             }
         }
         
