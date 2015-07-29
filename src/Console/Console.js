@@ -180,8 +180,38 @@ export class Console
     async fallback()
     {
             if (this._argv.length > 0) {
-                let shell = this.loadShell(this._argv[0]);
-                await this.runShell(shell, this._argv.slice(1));
+				let mainPath = path.resolve('../../bin/ForkShell.js');
+				let pidPath = path.resolve(TMP, this._argv[0] + '.pid');
+				
+				
+				let args = [ this ].concat(this._argv.slice(1));
+                //let shell = this.loadShell(this._argv[0]);
+				var daemon = require("daemonize2").setup({
+					main: mainPath,
+					name: this._argv[0],
+					pidfile: pidPath,
+					silent: true,
+					argv: args
+				});		
+				
+				if (args.length > 1) {
+					switch (this._argv[1])
+					{
+						case 'start':
+							daemon.start();
+							break;
+						case 'stop':
+							daemon.stop();
+							break;
+							
+						default: 
+							console.log('Usage: [start|stop]');
+							break;
+					}
+				}
+				
+				//daemon.stop();
+                //await this.runShell(shell, this._argv.slice(1));
             }
     }
 	
@@ -392,6 +422,7 @@ export class Console
 
     async runShell(shell, argv)
     {	        
+		//Starts server process
         await shell._connect();
         await shell.main(argv);
         process.exit(0);

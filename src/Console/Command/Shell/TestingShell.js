@@ -16,7 +16,7 @@ export class TestingShell extends Shell
     
     async main(argv)
     {
-        await this.send(argv);        
+        await this.send(argv);
         await this.read();
     }
     
