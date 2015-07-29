@@ -1,4 +1,3 @@
 #!/bin/sh
-echo $(dirname $0)
 babel-node --stage 0 --optional runtime $(dirname $0)/cakejs.js $@
 #node transpile
