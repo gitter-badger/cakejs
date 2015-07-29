@@ -61,9 +61,9 @@ export class Command
         for (let i = 0; i < this._options.length; i++) {            
             if (!this._options[i].validate(argv, this._parsedOptions)) {
                 if ('_errors' in this._parsedOptions) {
-                    this.out('%ERROR%Syntax error:%RESET% %MESSAGE%' + this._parsedOptions['_errors'] + '%RESET%');
+                    this.out('<ERROR>Syntax error:</ERROR> <MESSAGE>' + this._parsedOptions['_errors'] + '</MESSAGE>');
                 } else {
-                    this.out('%ERROR%Unknown error.%RESET%');                    
+                    this.out('<ERROR>Unknown error.</ERROR>');                    
                 }
                 return false;
             }

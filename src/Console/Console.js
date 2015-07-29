@@ -70,7 +70,7 @@ export class Console
     about()
     {
         this.out('');
-        this.out('Welcome to %HIGHLIGHT%CakeJS Console%RESET% by addelajnen');
+        this.out('Welcome to <HIGHLIGHT>CakeJS Console</HIGHLIGHT> by addelajnen');
         this.out('');
     }
     
@@ -159,10 +159,10 @@ export class Console
                             commandInstance.setName(command);
                             if (!commandInstance.configure()) {
                                 this.out(
-                                    '%ERROR% Command%RESET% ' +
-                                    '%COMMAND%' + commandInstance.getName() + 
-                                    '%RESET% ' + 
-                                    '%ERROR%failed on configure.%RESET%');
+                                    '<ERROR> Command</ERROR> ' +
+                                    '<COMMAND>' + commandInstance.getName() + 
+                                    '</COMMAND> ' + 
+                                    '<ERROR>failed on configure.</ERROR>');
                                 result = false;
 								return false;
                             }
@@ -210,99 +210,105 @@ export class Console
         //
         if (this._argv.length === 0) {
             if ('help' in this._commands) {
-                this.out('Use [%COMMAND%help%RESET%] to list all commands.');
+                this.out('Use <COMMAND>help</COMMAND> to list all commands.');
                 this.out('');
             }
             
             return false;
         }
         
-		
-
-		
         //
         // Run command.
         //
         if (this._argv.length > 0) {
-                let command = this._argv[0].toLowerCase().trim();
-                if (this._argv.length > 0) {
-					if (!(command in this._commands)) {
-						if (this._argv.length > 0) {
-							try{
-								let shell = await this.loadShell(this._argv[0]);
-								if(shell instanceof ClientShell){
-									await this.runClientShell(shell, this._argv.slice(1));
-								}else if(shell instanceof ServerShell){
-									await this.runServerShell(shell, this._argv.slice(1));
-								}else{
-									await shell.main(this._argv.slice(1));
-								}
-							}catch(e){
-								this.about();
-								this.out('%ERROR%Invalid shell "%RESET%%MESSAGE%' + this._argv[0] + '%RESET%%ERROR%".%RESET%');
-								this.out('');
-								this.out('%ERROR%' + e.name + ': ' + e.message + '%RESET%');
-								this.out('');
-								this.out('%HIGHLIGHT%Available shells:%RESET%');
-								await Object.forEach(this._shells, async (value, key) => {
-									let shell = path.basename(value.replace('Shell.js', ''));
-									console.log('\t' + shell);
-								});
-								this.out('');
-								process.exit(0);
-							}
-						}							
-					}else{
-						//
-						// Validate commandline.
-						//
-						if (!this._commands[command].validate(this._argv.slice(1))) {
-								return false;
-						}
+            let command = this._argv[0].toLowerCase().trim();
+            if (this._argv.length > 0) {
+                if (!(command in this._commands)) {
+                    if (this._argv.length > 0) {
+                        //
+                        // Try to load shell
+                        //                        
+                        try{
+                            let shell = await this.loadShell(this._argv[0]);
+                            if(shell instanceof ClientShell){
+                                    await this.runClientShell(shell, this._argv.slice(1));
+                            }else if(shell instanceof ServerShell){
+                                    await this.runServerShell(shell, this._argv.slice(1));
+                            }else{
+                                    await shell.main(this._argv.slice(1));
+                            }
+                        }catch(e){
+                            //this.about();
+                            this.out('<ERROR>Invalid shell "</ERROR><MESSAGE>' + this._argv[0] + '</MESSAGE><ERROR>".</ERROR>');
+                            this.out('');
+                            this.out('<ERROR>' + e.name + ':</ERROR><MESSAGE> ' + e.message + '</MESSAGE>');
+                            this.out('');
+                            this.out('<HIGHLIGHT>Available shells:</HIGHLIGHT>');
+                            await Object.forEach(this._shells, async (value, key) => {
+                                    let shell = path.basename(value.replace('Shell.js', ''));
+                                    console.log('\t' + shell);
+                            });
+                            this.out('');
+                            process.exit(0);
+                        }
+                    }							
+                }else{
+                    //
+                    // Validate commandline.
+                    //
+                    if (!this._commands[command].validate(this._argv.slice(1))) {
+                        return false;
+                    }
 
-						//
-						// Run the command.
-						//
-						this._commands[command].execute();
-					}
+                    //
+                    // Run the command.
+                    //
+                    this._commands[command].execute();
                 }
+            }
         }
-		
-		return true;
+
+        return true;
     }
-	
-	async runClientShell(shell, args)
-	{
-		await shell.main(args);
-	}
-	
-	async runServerShell(shell, args)
-	{
-		var client = new Client();
-		client.on('close', () => {
-			setTimeout(() => {
-				console.log("Timeout, Not return response retreived");
-				process.exit(1);
-			},2000);
-		});
-		try{
-			await client.connect();
-		}catch(e){
-			throw new Exception(String.sprintf('Unable to connect to server instance "%s"\nHave you started a server instance?', e.message));
-		}
-		await client.write({
-			shell: shell.constructor.name,
-			arguments: args
-		});
-		var response = await client.read();
-		if(response.toString().charCodeAt(0) === 20){
-			throw new Exception("Shell throwed error: "+response.substr(1));
-			process.exit(0);
-		}
-		console.log(response);
-		process.exit(0);
-		//console.log(JSON.stringify(response));
-	}
+
+    /**
+     * 
+     */
+    async runClientShell(shell, args)
+    {
+            await shell.main(args);
+    }
+
+    /**
+     * 
+     */
+    async runServerShell(shell, args)
+    {
+            var client = new Client();
+            client.on('close', () => {
+                    setTimeout(() => {
+                            console.log("Timeout, Not return response retreived");
+                            process.exit(1);
+                    },2000);
+            });
+            try{
+                    await client.connect();
+            }catch(e){
+                    throw new Exception(String.sprintf('Unable to connect to server instance "%s"\nHave you started a server instance?', e.message));
+            }
+            await client.write({
+                    shell: shell.constructor.name,
+                    arguments: args
+            });
+            var response = await client.read();
+            if(response.toString().charCodeAt(0) === 20){
+                    throw new Exception("Shell throwed error: "+response.substr(1));
+                    process.exit(0);
+            }
+            console.log(response);
+            process.exit(0);
+            //console.log(JSON.stringify(response));
+    }
     
     /**
      * Print text with colors, if enabled.
@@ -336,15 +342,20 @@ export class Console
                     // Replace the markup with the actual color code.
                     //
                     text = text.replace(
-                        new RegExp('(\%' + key + '\%)', 'gi'), 
+                        new RegExp('(\<' + key + '\>)', 'gi'), 
                         code
                     );
                 }   
+                text = text.replace(
+                    new RegExp('(\<\/[A-Z0-9]+\>)', 'gi'), 
+                    this._configuration.colors.colors['reset']
+                );
+                
             } else {
                 //
                 // Just remove the markup because colors is disabled.
                 //
-                text = text.replace(new RegExp('(\%[A-Z0-9]+\%)', 'gi'), '');
+                text = text.replace(new RegExp('(\<[A-Z0-9]+\>)', 'gi'), '');
             }            
         }     
         
@@ -435,21 +446,21 @@ export class Console
      */
     async loadShell(name)
     {
-		let className = Inflector.classify(name) + 'Shell';
-		var shell = ClassLoader.loadClass(className, 'Shell');
-		shell = new shell(this);
-		if(!(shell instanceof Shell)){
-			throw new Exception(shell.constructor.name+" is not an instance of Shell");
-		}
-		await shell.initialize();
-		return shell;
+        let className = Inflector.classify(name) + 'Shell';
+        var shell = ClassLoader.loadClass(className, 'Shell');
+        shell = new shell(this);
+        if(!(shell instanceof Shell)){
+                throw new Exception(shell.constructor.name+" is not an instance of Shell");
+        }
+        await shell.initialize();
+        return shell;
     }
 	
-	/**
-	 * 
-	 */
-	getShellList(shellPath)
-	{
-		return Array.concat(['ServerShell'],Object.keys(ClassLoader.loadFolder('Shell')));
-	}
+    /**
+     * 
+     */
+    getShellList(shellPath)
+    {
+            return Array.concat(['ServerShell'],Object.keys(ClassLoader.loadFolder('Shell')));
+    }
 }

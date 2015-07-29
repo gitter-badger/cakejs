@@ -78,7 +78,7 @@ export class HelpCommand extends Command
      */
     printGenericHelp()
     {
-        this.out('%HEADER%Commands:%RESET%');
+        this.out('<HEADER>Commands:<RESET>');
         this.out('');
         
         let commands = this.getConsole().getCommands();
@@ -87,11 +87,11 @@ export class HelpCommand extends Command
             if (!shortDescription) {
                 shortDescription = 'No description available.';
             }
-            this.out('%COMMAND%' + commands[i].getName() + '%RESET% - %MESSAGE%' + shortDescription + '%RESET%');
+            this.out('<COMMAND>' + commands[i].getName() + '<RESET> - <MESSAGE>' + shortDescription + '<RESET>');
         }
         
         this.out('');
-        this.out('For detailed help, type: %COMMAND%' + this.getName() + '%RESET% [command]');
+        this.out('For detailed help, type: <COMMAND>' + this.getName() + '<RESET> [command]');
         this.out('');
     }    
     
@@ -104,11 +104,11 @@ export class HelpCommand extends Command
     {
         let command = this.getConsole().getCommandByName(name);
         if (command === null) {
-            this.out('%ERROR%Unknown command:%RESET% %COMMAND%' + name + '%RESET%');
+            this.out('<ERROR>Unknown command:<RESET> <COMMAND>' + name + '<RESET>');
             return;
         }
         
-        this.out('Detailed help for %COMMAND%' + command.getName() + '%RESET%');
+        this.out('Detailed help for <COMMAND>' + command.getName() + '<RESET>');
         this.out('');
         let longDescription = command.getLongDescription();
         if (longDescription)
@@ -117,7 +117,7 @@ export class HelpCommand extends Command
             this.out('No description available.');
         
         this.out('');
-        this.out('%HEADER%Usage:%RESET%');
+        this.out('<HEADER>Usage:<RESET>');
         this.out('');
         this.printUsage(name);
         this.out('');
@@ -151,7 +151,7 @@ export class HelpCommand extends Command
             return null;
         }
         
-        let usage = '%COMMAND%' + command.getName() + '%RESET% ';
+        let usage = '<COMMAND>' + command.getName() + '<RESET> ';
         for (let i = 0; i < command.getOptionCount(); i++) {
             let option = command.getOption(i);
             

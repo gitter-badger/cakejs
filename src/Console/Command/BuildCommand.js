@@ -93,8 +93,8 @@ export class BuildCommand extends Command
 
         if (!fs.existsSync(this._inPath)) {
             this.out(
-                    '%ERROR%Invalid path "%RESET%' + sourcePath + 
-                    '%ERROR%".%RESET%'
+                    '<ERROR>Invalid path "</ERROR>' + sourcePath + 
+                    '<ERROR>".</ERROR>'
             );
             return;
         }
@@ -147,7 +147,7 @@ export class BuildCommand extends Command
                     }))
                     .bundle()
                     .on('error', (err) => {
-                        this.out('%ERROR%' + err + '%RESET%');
+                        this.out('<ERROR>' + err + '</ERROR>');
                     })
                     .pipe(fs.createWriteStream(outPath));
         }

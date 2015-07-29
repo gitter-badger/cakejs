@@ -63,14 +63,14 @@ export class VersionCommand extends Command
         
         this.out(
                 'Current version is ' +
-                '%HIGHLIGHT%' + version.major + '%RESET%.' +
-                '%HIGHLIGHT%' + version.minor + '%RESET%.' +
-                '%HIGHLIGHT%' + version.patch + '%RESET%');
+                '<HIGHLIGHT>' + version.major + '</HIGHLIGHT>.' +
+                '<HIGHLIGHT>' + version.minor + '</HIGHLIGHT>.' +
+                '<HIGHLIGHT>' + version.patch + '</HIGHLIGHT>');
                 
         this.out('');        
-        this.out('Major part is %HIGHLIGHT%' + version.major + '%RESET%');
-        this.out('Minor part is %HIGHLIGHT%' + version.minor + '%RESET%');
-        this.out('Patch part is %HIGHLIGHT%' + version.patch + '%RESET%');        
+        this.out('Major part is <HIGHLIGHT>' + version.major + '</HIGHLIGHT>');
+        this.out('Minor part is <HIGHLIGHT>' + version.minor + '</HIGHLIGHT>');
+        this.out('Patch part is <HIGHLIGHT>' + version.patch + '</HIGHLIGHT>');        
         
         this.out('');
     }

@@ -62,11 +62,11 @@ export class Option
     validate(argv, options)
     {        
         if (argv.length === 0) {
-            options['_errors'] = 'Missing arguments for %COMMAND%' + this._name + '%RESET%';
+            options['_errors'] = 'Missing arguments for <COMMAND>' + this._name + '</COMMAND>';
             return !this._required;
         }
         
-        if (this._type === Option.OPTION && this._name !== argv[0]) {
+        if (this._type === Option.OPTION && this._name !== ':' + argv[0]) {
             return !this._required;
         }
         

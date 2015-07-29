@@ -113,14 +113,14 @@ export class TestCommand extends Command
         );
 
         if (!fs.existsSync(bootstrap)) {
-            this.out('%ERROR%The bootstrap "%RESET%%MESSAGE%' + bootstrap + '%RESET%%ERROR%" doesnt exist.%RESET%');
+            this.out('<ERROR>The bootstrap "</ERROR><MESSAGE>' + bootstrap + '</MESSAGE><ERROR>" doesnt exist.</ERROR>');
             return;
         }
         
         require(bootstrap);
 
         if (!fs.existsSync(TESTS)) {
-            this.out('%ERROR%The path "%RESET%%MESSAGE%' + TESTS + '%RESET%%ERROR%" doesnt exist.%RESET%');
+            this.out('<ERROR>The path "</ERROR><MESSAGE>' + TESTS + '</MESSAGE><ERROR>" doesnt exist.</ERROR>');
             return;
         }
         
