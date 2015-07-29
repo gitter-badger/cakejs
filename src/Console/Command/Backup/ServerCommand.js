@@ -56,6 +56,7 @@ export class ServerCommand extends Command
         );
 
 		this.addOption(new Option('action', Option.VALUE, false, 'Start or stop a local server.'));
+		this.addOption(new Option('transpile', Option.VALUE, false, 'Transpile server before running.'));
     
         return true;
     }
@@ -68,7 +69,10 @@ export class ServerCommand extends Command
     execute()
     {
 		let action = this.getParsedOption('action', null);
-		
+				
+		// Ugly fix because option parser is not working as it should yet.
+		let transpile = (action === 'transpile') ? true : this.getParsedOption('transpile', false);
+
 		if (action === null || action.toLowerCase() === 'start') {
 			this.out('Starting server.');
 			this._start();
@@ -77,49 +81,44 @@ export class ServerCommand extends Command
 		}		
     }
 	
+	/*
+	 * server // dist/config/bootstrap
+	 * server transpile // babel-node --stage 0 --optional runtime config/bootstrap
+	 */
+	
 	/**
 	 * 
 	 */
 	_start()
 	{
-		let srcPath = path.resolve(__dirname, 'NodeDriver');
-		let dstPath = path.resolve(__dirname, '../../..','dist','bin', 'Console', 'Commands', 'NodeDriver');
+		let srcPath = path.resolve(__dirname, '../../../config/bootstrap.js');
+		let dstPath = path.resolve(__dirname, '../../../dist/config/bootstrap.js');
+		/*
+		console.log(srcPath);
+		console.log(dstPath);
 		
+		return;
 		// Transpile server.
 		this._transpiler.transpile(
 			srcPath,
 			dstPath
 		);
-
+*/
+		dstPath = srcPath;
+		
+		let server = require(dstPath);
+		
+		/*
 		//Starts server process
 		this._daemon = require("daemonize2").setup({
-			main: path.resolve(dstPath, 'Server.js'),
+			main: dstPath,
 			name: "cakejs",
 			pidfile: '/tmp/cakejs/cakejs.pid',
 			silent: true
-		});		
+		});
 		
-		// Run.
-		(async () => {
-			try{
-				var client = new Client();
-				client.on('close', () => {
-					setTimeout(() => {
-						console.log("Error with NodeDriver instance");
-						process.exit(1);
-					},500);
-				});
-				await client.connect();
-				await client.write(argument);
-				var response = await client.read();
-				console.log(response);
-				process.exit(0);
-			}catch(e){
-				console.log(e);
-			}
-		})();
-		
-//		this._daemon.start();
+		this._daemon.start();
+		*/
 	}
 	
 	/**

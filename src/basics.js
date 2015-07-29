@@ -18,6 +18,8 @@ global.WEEK = 7 * DAY;
 global.MONTH = 30 * DAY;
 global.YEAR = 365 * DAY;
 
+var path = require('path');
+
 /*
  * Path related
  */
@@ -39,7 +41,10 @@ if(!('CAKE' in global)){
 	global.CAKE = require('path').resolve(__filename,'..');
 }
 if(!('CAKE_CORE_INCLUDE_PATH' in global)){
-	global.CAKE_CORE_INCLUDE_PATH = require('path').resolve(__filename,'..','..','..');
+	global.CAKE_CORE_INCLUDE_PATH = path.resolve(__filename);
+	while(/cakejs$/.test(global.CAKE_CORE_INCLUDE_PATH) === false && global.CAKE_CORE_INCLUDE_PATH.indexOf("/") !== -1){
+		global.CAKE_CORE_INCLUDE_PATH = path.resolve(global.CAKE_CORE_INCLUDE_PATH, '..');
+	}
 }
 if(!('CORE_PATH' in global)){
 	global.CORE_PATH = require('path').resolve(__filename,'..','..','..');

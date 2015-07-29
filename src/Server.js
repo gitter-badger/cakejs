@@ -35,7 +35,7 @@ import {ConnectionManager} from './Datasource/ConnectionManager'
 import {TableRegistry} from './ORM/TableRegistry'
 
 // Net
-import {ShellConnection} from './Shell/ShellConnection';
+import {ShellConnection} from './Console/ShellConnection';
 
 //Requires
 var events = require('events');

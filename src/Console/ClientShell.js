@@ -14,32 +14,12 @@
  * @author      addelajnen
  */
 
-import {Exception} from '../Core/Exception/Exception';
+import {Shell} from './Shell';
 
-export class Shell
+export class ClientShell extends Shell
 {    
-	_console = null;
-	
 	constructor(console)
 	{
-		this._console = console;
-	}
-	
-	initialize()
-	{
-		
-	}
-	
-    /**
-     * 
-     */
-    async main(argv)
-    {
-		throw new Exception("Main has not yet been implemeneted");
-    }
-	
-	out(data)
-	{
-		this._console.out(data);
+		super(console);
 	}
 }

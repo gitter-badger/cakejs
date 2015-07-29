@@ -14,32 +14,18 @@
  * @author      addelajnen
  */
 
-import {Exception} from '../Core/Exception/Exception';
+import {Shell} from './Shell';
 
-export class Shell
+export class ServerShell extends Shell
 {    
-	_console = null;
-	
-	constructor(console)
+	constructor(shellConnection)
 	{
-		this._console = console;
+		super(null);
+		this._shellConnection = shellConnection;
 	}
 	
-	initialize()
+	out(text)
 	{
 		
-	}
-	
-    /**
-     * 
-     */
-    async main(argv)
-    {
-		throw new Exception("Main has not yet been implemeneted");
-    }
-	
-	out(data)
-	{
-		this._console.out(data);
 	}
 }

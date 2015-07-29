@@ -16,12 +16,12 @@
 //CakeJS.Core.Exception.ClassNotFoundException
 
 //Types
-import {FatalException} from './FatalException'
+import {Exception} from './Exception'
 
 /**
  * @class ClassNotFoundException
  */
-export class ClassNotFoundException extends FatalException 
+export class ClassNotFoundException extends Exception 
 {
 	constructor(path, expectedClassName)
 	{

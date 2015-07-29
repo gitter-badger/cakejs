@@ -14,8 +14,22 @@
  * @author      addelajnen
  */
 
+// Utilities
+import {Inflector} from '../Utilities/Inflector';
+
+// Singelton instances
+import {ClassLoader} from '../Core/ClassLoader';
+
+// Exceptions
+import {Exception} from '../Core/Exception/Exception';
+
 // Network
 import {Client} from '../Network/Net/Client';
+
+// Types
+import {ServerShell} from './ServerShell';
+import {ClientShell} from './ClientShell';
+import {Shell} from './Shell';
 
 let path = require('path');
 let fs = require('fs');
@@ -37,6 +51,7 @@ export class Console
         patch: 0
     };    
 	_argv = [];
+	_shells = [];
     
     /**
      * Constructor.
@@ -68,9 +83,7 @@ export class Console
     {
         
         let result = true;
-        
-		require(path.resolve(process.cwd(), 'config/bootstrap.js'));
-		
+        		
         //
         // Begin by loading the configuration file.
         // 
@@ -160,7 +173,16 @@ export class Console
             }
         });
         
+		//
+		// Load available shells.
         //
+		let shellPath = path.resolve(
+            this.getCurrentWorkingDirectory(),
+            this.getConfiguration('commands.path') + path.sep + 'Shell'
+        );
+		
+		this._shells = this.getShellList(shellPath);
+		
         // Trim commandline.
         //
         let argv = process.argv.slice(2);
@@ -173,54 +195,13 @@ export class Console
 		
 		return result;
     }
-
-    /**
-     * 
-     */
-    async fallback()
-    {
-            if (this._argv.length > 0) {
-				let mainPath = path.resolve('../../bin/ForkShell.js');
-				let pidPath = path.resolve(TMP, this._argv[0] + '.pid');
-				
-				
-				let args = [ this ].concat(this._argv.slice(1));
-                //let shell = this.loadShell(this._argv[0]);
-				var daemon = require("daemonize2").setup({
-					main: mainPath,
-					name: this._argv[0],
-					pidfile: pidPath,
-					silent: true,
-					argv: args
-				});		
-				
-				if (args.length > 1) {
-					switch (this._argv[1])
-					{
-						case 'start':
-							daemon.start();
-							break;
-						case 'stop':
-							daemon.stop();
-							break;
-							
-						default: 
-							console.log('Usage: [start|stop]');
-							break;
-					}
-				}
-				
-				//daemon.stop();
-                //await this.runShell(shell, this._argv.slice(1));
-            }
-    }
 	
     /**
      * Execute the command.
      * 
      * @return {void}
      */
-    execute()
+    async execute()
     {     
         this.about();        
         
@@ -236,32 +217,92 @@ export class Console
             return false;
         }
         
+		
+
+		
         //
         // Run command.
         //
         if (this._argv.length > 0) {
                 let command = this._argv[0].toLowerCase().trim();
                 if (this._argv.length > 0) {
-                        if (!(command in this._commands)) {
+					if (!(command in this._commands)) {
+						if (this._argv.length > 0) {
+							try{
+								let shell = await this.loadShell(this._argv[0]);
+								if(shell instanceof ClientShell){
+									await this.runClientShell(shell, this._argv.slice(1));
+								}else if(shell instanceof ServerShell){
+									await this.runServerShell(shell, this._argv.slice(1));
+								}else{
+									await shell.main(this._argv.slice(1));
+								}
+							}catch(e){
+								this.about();
+								this.out('%ERROR%Invalid shell "%RESET%%MESSAGE%' + this._argv[0] + '%RESET%%ERROR%".%RESET%');
+								this.out('');
+								this.out('%ERROR%' + e.name + ': ' + e.message + '%RESET%');
+								this.out('');
+								this.out('%HIGHLIGHT%Available shells:%RESET%');
+								await Object.forEach(this._shells, async (value, key) => {
+									let shell = path.basename(value.replace('Shell.js', ''));
+									console.log('\t' + shell);
+								});
+								this.out('');
+								process.exit(0);
+							}
+						}							
+					}else{
+						//
+						// Validate commandline.
+						//
+						if (!this._commands[command].validate(this._argv.slice(1))) {
 								return false;
-                        }
-                }
+						}
 
-                //
-                // Validate commandline.
-                //
-                if (!this._commands[command].validate(this._argv.slice(1))) {
-                        return false;
+						//
+						// Run the command.
+						//
+						this._commands[command].execute();
+					}
                 }
-
-                //
-                // Run the command.
-                //
-                this._commands[command].execute();
         }
 		
 		return true;
     }
+	
+	async runClientShell(shell, args)
+	{
+		await shell.main(args);
+	}
+	
+	async runServerShell(shell, args)
+	{
+		var client = new Client();
+		client.on('close', () => {
+			setTimeout(() => {
+				console.log("Timeout, Not return response retreived");
+				process.exit(1);
+			},2000);
+		});
+		try{
+			await client.connect();
+		}catch(e){
+			throw new Exception(String.sprintf('Unable to connect to server instance "%s"\nHave you started a server instance?', e.message));
+		}
+		await client.write({
+			shell: shell.constructor.name,
+			arguments: args
+		});
+		var response = await client.read();
+		if(response.toString().charCodeAt(0) === 20){
+			throw new Exception("Shell throwed error: "+response.substr(1));
+			process.exit(0);
+		}
+		console.log(response);
+		process.exit(0);
+		//console.log(JSON.stringify(response));
+	}
     
     /**
      * Print text with colors, if enabled.
@@ -392,60 +433,23 @@ export class Console
     /**
      * 
      */
-    loadShell(name)
+    async loadShell(name)
     {
-        let className = name + 'Shell';
-        let shellPath = path.resolve(
-            this.getCurrentWorkingDirectory(),
-            this.getConfiguration('commands.path') + path.sep + 'Shell'
-        );
-        let shell = null;
-        let files = fs.readdirSync(shellPath);
-        for (var i = 0; i < files.length; i++) {
-            let file = files[i];
-            if (file.substr(0, name.length) === name) {
-                let filePath = path.resolve(shellPath, file);
-                let fileData = require(filePath);
-                if (className in fileData) {
-                    console.log('Found ' + className + ' in ' + filePath);
-                    shell = new fileData[className]();
-                    break;
-                }
-            }
-        }
-        return shell;
+		let className = Inflector.classify(name) + 'Shell';
+		var shell = ClassLoader.loadClass(className, 'Shell');
+		shell = new shell(this);
+		if(!(shell instanceof Shell)){
+			throw new Exception(shell.constructor.name+" is not an instance of Shell");
+		}
+		await shell.initialize();
+		return shell;
     }
-
-    /**
-     * 
-     */
-
-    async runShell(shell, argv)
-    {	        
-		//Starts server process
-        await shell._connect();
-        await shell.main(argv);
-        process.exit(0);
-        return;
-        try{
-            var client = new Client();
-            client.on('close', () => {
-                    setTimeout(() => {console.log('error with connection'); }, 500);
-            });
-
-            await client.connect();
-
-            let data = JSON.parse(JSON.stringify(this._argv));
-
-            await client.write(data);
-            let response = await client.read();
-
-            console.log(response);			
-
-            process.exit(0);
-        }catch(e){
-            console.log(e);
-            process.exit(1);
-        }
-    }
+	
+	/**
+	 * 
+	 */
+	getShellList(shellPath)
+	{
+		return Array.concat(['ServerShell'],Object.keys(ClassLoader.loadFolder('Shell')));
+	}
 }

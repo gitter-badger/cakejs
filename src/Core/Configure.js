@@ -31,6 +31,11 @@ import {Hash} from '../Utilities/Hash';
 
 //Requires
 var fs = require('fs');
+var path = require('path');
+
+if(!('CAKE_CORE_INCLUDE_PATH' in global)){
+	throw new FatalException("Enviromental variables missing");
+}
 
 export class Configure
 {
@@ -38,7 +43,7 @@ export class Configure
 	static _values = {
 		'debug': false
 	};
-	static _package = new Collection(JSON.parse(fs.readFileSync(CAKE_CORE_INCLUDE_PATH+DS+"package.json")));
+	static _package = new Collection(JSON.parse(fs.readFileSync(path.resolve(global.CAKE_CORE_INCLUDE_PATH,"package.json"))));
 	
 	/**
      * Used to store a dynamic variable in Configure.
