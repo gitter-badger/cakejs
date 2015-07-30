@@ -21,10 +21,10 @@ export class ServerShell extends ClientShell
 	/**
 	 * 
 	 */
-    async main(argv)
+    async main()
     {
-		let action = (argv.length > 0) ? argv[0] : 'start';
-		let transpile = (argv.length > 1 && (argv[1] === 'transpile' || argv[0] === 'transpile')) ? true : false;
+		let action = (this.args.length > 0) ? this.args[0] : 'start';
+		let transpile = (this.args.length > 1 && (this.args[1] === 'transpile' || this.args[0] === 'transpile')) ? true : false;
 				
 		if (action === 'stop') {
 			await this._stop();

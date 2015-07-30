@@ -230,6 +230,7 @@ export class Console
                         //                        
                         try{
                             let shell = await this.loadShell(this._argv[0]);
+							shell.args = this._argv.slice(1);
                             if(shell instanceof ClientShell){
                                     await this.runClientShell(shell, this._argv.slice(1));
                             }else if(shell instanceof ServerShell){
@@ -276,7 +277,7 @@ export class Console
      */
     async runClientShell(shell, args)
     {
-            var response = await shell.main(args);
+            var response = await shell.main();
 			if(typeof response === 'undefined'){
 				response = null;
 			}

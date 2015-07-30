@@ -19,6 +19,7 @@ import {Exception} from '../Core/Exception/Exception';
 export class Shell
 {    
 	_console = null;
+	args = null;
 	
 	constructor(console)
 	{

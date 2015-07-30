@@ -41,6 +41,7 @@ export class ShellConnection
 			}
 			var shell = ClassLoader.loadClass(data.shell, 'Shell');
 			shell = new shell(this);
+			shell.args = data.arguments;
 			this._client.on('data', (data, signal) => {
 				switch(signal){
 					case Client.SIGNAL_ECHO:
@@ -51,7 +52,7 @@ export class ShellConnection
 						break;
 				}
 			});
-			var response = await shell.main(data.arguments);
+			var response = await shell.main();
 			if(typeof response === 'undefined'){
 				response = null;
 			}
