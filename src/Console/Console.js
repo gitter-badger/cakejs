@@ -185,7 +185,7 @@ export class Console
 		
         // Trim commandline.
         //
-        let argv = process.argv.slice(2);
+        let argv = process.argv;
         for (let i = 0; i < argv.length; i++) {
             let arg = argv[i].trim();
             if (arg.length > 0) {

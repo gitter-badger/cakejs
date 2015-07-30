@@ -100,15 +100,21 @@ export class TestCommand extends Command
         let mocha = require('mocha');
         
         let bootstrap = this.getParsedOption('bootstrap', null);
-        if (bootstrap === null) {
-            bootstrap = require('path').resolve(process.cwd(), 'tests/bootstrap.js');
-        }
-        
+		console.log('-----');
+		console.log(bootstrap);
+		console.log(TESTS);
+		console.log('-----');
+		
+//        if (bootstrap === null) {
+			console.log('Loading ' + require('path').resolve(TESTS, 'bootstrap.js'));
+            //require('path').resolve(TESTS, 'bootstrap.js');
+ //       }
+		
         let filter = this.getParsedOption('filterFileName', null);
         let filterName = this.getParsedOption('filterName', null);
-        
+        /*
         bootstrap = path.resolve(
-            this.getConsole().getCurrentWorkingDirectory(), 
+			TESTS,
             bootstrap
         );
 
@@ -118,7 +124,7 @@ export class TestCommand extends Command
         }
         
         require(bootstrap);
-
+*/
         if (!fs.existsSync(TESTS)) {
             this.out('<ERROR>The path "</ERROR><MESSAGE>' + TESTS + '</MESSAGE><ERROR>" doesnt exist.</ERROR>');
             return;
@@ -129,7 +135,7 @@ export class TestCommand extends Command
            'slow': 300,
            'timeout': 5000,
            'ui': 'exports',
-           'recursive': true,            
+           'recursive': true,
         };
         
         if (filterName) {
@@ -160,8 +166,9 @@ export class TestCommand extends Command
             if (stats.isDirectory()) {
                 this._loadTests(test, fullPath, filter);
             } else {
-                if (fullPath.substr(-7) === 'Test.js') {
+                if (/Test\.js$/.test(fullPath)) {
                     if (!filter || (new RegExp('/.*(' + filter + ').*/', 'g').test(fullPath))) {
+						console.log('Loadings ' + fullPath);
                         test.addFile(fullPath);
                     }
                 }

@@ -23,6 +23,7 @@
   "homepage": "https://github.com/cakejsframework/cakejs",
   "dependencies": {
     "MD5": "^1.2.1",
+    "babel": "^5.8.19",
     "babel-runtime": "^5.0.12",
     "body-parser": "^1.12.2",
     "cookie": "^0.1.2",

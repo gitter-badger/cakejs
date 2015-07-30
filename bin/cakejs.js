@@ -14,7 +14,13 @@
  * @author      addelajnen
  */
 
-require(require('path').resolve(process.cwd(), 'config/bootstrap.js'));
+process.argv.shift();
+process.argv.shift();
+var bootstrap = process.argv[0];
+process.argv.shift();
+
+require(require('path').resolve(bootstrap));
+
 var Console = require(require('path').resolve(__filename,'..','..','src','Console', 'Console')).Console;
 
 //

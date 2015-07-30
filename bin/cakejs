@@ -1,3 +1,35 @@
 #!/bin/sh
-babel-node --stage 0 --optional runtime $(dirname $0)/cakejs.js $@
+FILEPATH=$(dirname $0)
+
+TRANSPILE=1
+while getopts ":t" opt; do
+	case $opt in
+		t)
+			shift $((OPTIND-1))
+			TRANSPILE=0
+			;;
+	esac
+done
+
+if [ "$1" = "test" ]; then
+	shift $((OPTIND))
+	if [ $TRANSPILE -eq 1 ]; then
+		node $FILEPATH/transpile.js $FILEPATH/test.js tests
+	else
+		node $FILEPATH/../dist/bin/test.js dist/tests
+	fi
+	exit $?
+fi
+if [ $TRANSPILE -eq 1 ]; then
+	node $FILEPATH/transpile.js $FILEPATH/cakejs.js config/bootstrap.js $@
+else
+	node $FILEPATH/../dist/bin/cakejs.js dist/config/bootstrap.js $@
+fi
+exit $?
+
+
+
+#
+
+#babel-node --stage 0 --optional runtime $(dirname $0)/cakejs.js $@
 #node transpile
