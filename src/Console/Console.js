@@ -488,6 +488,10 @@ export class Console
      */
     getShellList(shellPath)
     {
-            return Array.concat(['ServerShell'],Object.keys(ClassLoader.loadFolder('Shell')));
+		try{
+			return Array.concat(['ServerShell'],Object.keys(ClassLoader.loadFolder('Shell')));
+		}catch(e){
+			return [];
+		}
     }
 }
