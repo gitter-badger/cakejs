@@ -25,19 +25,19 @@ fi
 if [ "$1" = "build" ]; then
 	shift $((OPTIND))
 	echo -n "Compiling config..."
-	node $FILEPATH/transpiler.js $FILEPATH/compiler.js config dist
+	node $FILEPATH/compiler.js config dist
 	echo "done"
 	echo -n "Compiling src..."
-	node $FILEPATH/transpiler.js $FILEPATH/compiler.js src dist
+	node $FILEPATH/compiler.js src dist
 	echo "done"
 	echo -n "Compiling tests..."
-	node $FILEPATH/transpiler.js $FILEPATH/compiler.js tests dist
+	node $FILEPATH/compiler.js tests dist
 	echo "done"
 	echo -n "Compiling bin..."
-	cp -r bin dist/bin
+	node $FILEPATH/compiler.js bin dist
 	echo "done"
 	echo -n "Compiling webroot..."
-	cp -r webroot dist/webroot
+	node $FILEPATH/compiler.js webroot dist
 	echo "done"
 	exit $?
 fi

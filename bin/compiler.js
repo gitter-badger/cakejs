@@ -28,6 +28,7 @@ function loadFiles(dir)
 	var dirfiles = fs.readdirSync(dir);
 	for(var i = 0; i < dirfiles.length; i++){
 		var file = dirfiles[i];
+		var fullPath = path.resolve(dir, file);
 		if(fs.statSync(path.resolve(dir, file)).isDirectory()){
 			loadFiles(path.resolve(dir, file));
 		}else{
@@ -77,13 +78,18 @@ function next(noRebuild)
 	if(fs.existsSync(file.dst)){
 		fs.unlinkSync(file.dst);
 	}
-	var result = babel.transformFileSync(file.src, {
-		'optional': 'runtime',
-		'stage': 0
-	});
-	fs.writeFile(file.dst, result.code, function (err) {
-		if (err) throw err;
-	});
+	
+	if (/webroot/.test(file.src) && /\.js$/.test(file.src)) {
+		fs.writeFileSync(file.dst, fs.readFileSync(file.src));
+	}else if (/\.js$/.test(file.src)) {
+		var result = babel.transformFileSync(file.src, {
+			'optional': 'runtime',
+			'stage': 0
+		});
+		fs.writeFileSync(file.dst, result.code);
+	}else{
+		fs.writeFileSync(file.dst, fs.readFileSync(file.src));
+	}
 	next(noRebuild);		
 }
 
@@ -98,4 +104,4 @@ if(dstPath === srcPath){
 }
 
 loadFiles(srcPath);
-next(true);
+next(false);
