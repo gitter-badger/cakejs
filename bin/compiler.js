@@ -11,8 +11,9 @@ var fs = require('fs');
 var files = [];
 var args = process.argv.slice(2);
 
-var srcPath = (typeof args[0] === undefined) ? null : args[0];
-var dstPath = (typeof args[1] === undefined) ? null : args[1];
+var force_rebuild = (typeof args[0] === undefined) ? null : args[0];
+var srcPath = (typeof args[1] === undefined) ? null : args[1];
+var dstPath = (typeof args[2] === undefined) ? null : args[2];
 
 if (srcPath === null || dstPath === null) {
 	console.log('Missing arguments');
@@ -104,4 +105,4 @@ if(dstPath === srcPath){
 }
 
 loadFiles(srcPath);
-next(false);
+next(force_rebuild == "0");

@@ -1,11 +1,17 @@
 FILEPATH=$(dirname $0)
 
 TRANSPILE=1
-while getopts ":c" opt; do
+REBUILD=1
+
+while getopts ":cf" opt; do
 	case $opt in
 		c)
 			shift $((OPTIND-1))
 			TRANSPILE=0
+			;;
+		f)
+			shift $((OPTIND-1))
+			REBUILD=0
 			;;
 	esac
 done
@@ -23,19 +29,19 @@ fi
 if [ "$1" = "build" ]; then
 	shift $((OPTIND))
 	echo -n "Compiling config..."
-	node $FILEPATH/compiler.js config dist
+	node $FILEPATH/compiler.js $REBUILD config dist
 	echo "done"
 	echo -n "Compiling src..."
-	node $FILEPATH/compiler.js src dist
+	node $FILEPATH/compiler.js $REBUILD src dist
 	echo "done"
 	echo -n "Compiling tests..."
-	node $FILEPATH/compiler.js tests dist
+	node $FILEPATH/compiler.js $REBUILD tests dist
 	echo "done"
 	echo -n "Compiling bin..."
-	node $FILEPATH/compiler.js bin dist
+	node $FILEPATH/compiler.js $REBUILD bin dist
 	echo "done"
 	echo -n "Compiling webroot..."
-	node $FILEPATH/compiler.js webroot dist
+	node $FILEPATH/compiler.js $REBUILD webroot dist
 	echo "done"
 	exit $?
 fi
