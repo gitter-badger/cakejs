@@ -20,6 +20,10 @@ if (srcPath === null || dstPath === null) {
 	process.exit(0);
 }
 
+if (fs.existsSync(srcPath) === false) {
+	process.exit(0);
+}
+
 function loadFiles(dir)
 {
 	if (srcPath === null || dstPath === null) {
