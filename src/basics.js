@@ -62,7 +62,7 @@ if(!('LOGS' in global)){
 	global.LOGS = require('path').resolve(ROOT,'logs');
 }
 if(!('TESTS' in global)){
-	global.TESTS = require('path').resolve(module.parent.filename,'..','..','tests');
+	global.TESTS = require('path').resolve(ROOT,'tests');
 }
 if(!('WWW_ROOT' in global)){
 	global.WWW_ROOT = require('path').resolve(ROOT,'webroot');
