@@ -13,3 +13,4 @@ dist
 node_modules
 lib
 index.js
+jspm_packages

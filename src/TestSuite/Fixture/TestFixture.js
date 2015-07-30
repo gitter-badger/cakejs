@@ -16,7 +16,7 @@
 //CakeJS.Test.Fixture.TestFixture
 
 //Exception
-import {Exception} from '../../Core/Exception';
+import {Exception} from '../../Core/Exception/Exception';
 
 // Database
 import {Table} from '../../Database/Schema/Table';

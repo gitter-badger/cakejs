@@ -21,7 +21,7 @@
 //CakeJS.Database.Expression.ValuesExpression
 
 //Exception
-import {Exception} from '../../Core/Exception'
+import {Exception} from '../../Core/Exception/Exception'
 
 //Types
 import {ExpressionInterface} from '../ExpressionInterface'
