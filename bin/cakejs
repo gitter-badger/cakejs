@@ -3,9 +3,9 @@
 FILEPATH=$(dirname $0)
 
 TRANSPILE=1
-while getopts ":t" opt; do
+while getopts ":c" opt; do
 	case $opt in
-		t)
+		c)
 			shift $((OPTIND-1))
 			TRANSPILE=0
 			;;
@@ -22,9 +22,23 @@ if [ "$1" = "test" ]; then
 	exit $?
 fi
 
-if [ "$1" = "compile" ]; then
+if [ "$1" = "build" ]; then
 	shift $((OPTIND))
-	node $FILEPATH/compiler.js $@
+	echo -n "Compiling config..."
+	node $FILEPATH/transpiler.js $FILEPATH/compiler.js config dist
+	echo "done"
+	echo -n "Compiling src..."
+	node $FILEPATH/transpiler.js $FILEPATH/compiler.js src dist
+	echo "done"
+	echo -n "Compiling tests..."
+	node $FILEPATH/transpiler.js $FILEPATH/compiler.js tests dist
+	echo "done"
+	echo -n "Compiling bin..."
+	cp -r bin dist/bin
+	echo "done"
+	echo -n "Compiling webroot..."
+	cp -r webroot dist/webroot
+	echo "done"
 	exit $?
 fi
 
