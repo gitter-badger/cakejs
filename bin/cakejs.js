@@ -16,10 +16,10 @@
 
 process.argv.shift();
 process.argv.shift();
-var bootstrap = process.argv[0];
+global.BOOTSTRAP = process.argv[0];
 process.argv.shift();
 
-require(require('path').resolve(bootstrap));
+require(require('path').resolve(BOOTSTRAP));
 
 var Console = require(require('path').resolve(__filename,'..','..','src','Console', 'Console')).Console;
 

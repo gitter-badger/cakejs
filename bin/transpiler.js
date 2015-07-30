@@ -21,4 +21,5 @@ require("babel/register")({
 });
 
 process.argv.shift();
+global.TRANSPILER = 1;
 require(srcPath);
