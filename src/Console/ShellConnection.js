@@ -41,17 +41,35 @@ export class ShellConnection
 			}
 			var shell = ClassLoader.loadClass(data.shell, 'Shell');
 			shell = new shell(this);
+			this._client.on('data', (data, signal) => {
+				switch(signal){
+					case Client.SIGNAL_ECHO:
+						shell.echo(data);
+						break;
+					case Client.SIGNAL_INPUT:
+						shell.input(data);
+						break;
+				}
+			});
 			var response = await shell.main(data.arguments);
-			await this._client.write(response);
+			if(typeof response === 'undefined'){
+				response = null;
+			}
+			await this._client.write(response, 19);
 			await delay(50);
 			await this._client.disconnect();
 		}
 		catch (e)
 		{
-			await this._client.write(String.fromCharCode(20)+e.message);
+			await this._client.write(e.message, 20);
 			await delay(50);
 			await this._client.disconnect();
 		}
+	}
+	
+	async out(text)
+	{
+		await this._client.write(text, Client.SIGNAL_ECHO);
 	}
 }
 

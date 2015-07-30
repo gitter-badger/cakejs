@@ -15,6 +15,7 @@
  */
 
 import {Shell} from './Shell';
+import {Client} from '../Network/Net/Client';
 
 export class ServerShell extends Shell
 {    
@@ -24,7 +25,17 @@ export class ServerShell extends Shell
 		this._shellConnection = shellConnection;
 	}
 	
-	out(text)
+	async out(text)
+	{
+		await this._shellConnection.out(text);
+	}
+	
+	async echo(data)
+	{
+		
+	}
+	
+	async input(data)
 	{
 		
 	}

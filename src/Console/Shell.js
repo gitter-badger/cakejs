@@ -38,7 +38,7 @@ export class Shell
 		throw new Exception("Main has not yet been implemeneted");
     }
 	
-	out(data)
+	async out(data)
 	{
 		this._console.out(data);
 	}

@@ -276,7 +276,13 @@ export class Console
      */
     async runClientShell(shell, args)
     {
-            await shell.main(args);
+            var response = await shell.main(args);
+			if(typeof response === 'undefined'){
+				response = null;
+			}
+			if(response !== null){
+				console.log(JSON.stringify(response));
+			}
     }
 
     /**
@@ -286,27 +292,40 @@ export class Console
     {
             var client = new Client();
             client.on('close', () => {
-                    setTimeout(() => {
-                            console.log("Timeout, Not return response retreived");
-                            process.exit(1);
-                    },2000);
+			setTimeout(() => {
+				console.log("Timeout, Not return response retreived");
+				process.exit(1);
+			},2000);
             });
             try{
-                    await client.connect();
+				await client.connect();
             }catch(e){
-                    throw new Exception(String.sprintf('Unable to connect to server instance "%s"\nHave you started a server instance?', e.message));
+				throw new Exception(String.sprintf('Unable to connect to server instance "%s"\nHave you started a server instance?', e.message));
             }
+			client.on('data', (data, signal) => {
+				switch(signal){
+					case Client.SIGNAL_SUCCESS:
+						if(data !== null){
+							console.log(JSON.stringify(data));
+						}
+						process.exit(0);
+						break;
+					case Client.SIGNAL_FAILURE:
+						console.log("Shell throwed error,",data);
+						process.exit(1);
+						break;
+					case Client.SIGNAL_ECHO:
+						this.out(data);
+						break;
+					case Client.SIGNAL_INPUT:
+						//console.log(data);
+						break;
+				}
+			});
             await client.write({
-                    shell: shell.constructor.name,
-                    arguments: args
+				shell: shell.constructor.name,
+				arguments: args
             });
-            var response = await client.read();
-            if(response.toString().charCodeAt(0) === 20){
-                    throw new Exception("Shell throwed error: "+response.substr(1));
-                    process.exit(0);
-            }
-            console.log(response);
-            process.exit(0);
             //console.log(JSON.stringify(response));
     }
     
