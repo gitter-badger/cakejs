@@ -49,6 +49,9 @@ export class FixtureManager
 	_aliasConnections()
 	{
 		let connections = ConnectionManager.configured();
+		if(connections.length === 0){
+			return;
+		}
 		ConnectionManager.alias('test', 'default');
 		let map = {};
 		for (let connection of connections) {
