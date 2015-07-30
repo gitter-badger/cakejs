@@ -61,10 +61,7 @@ export class ServerShell extends ClientShell
 	{
 		try {
 			console.log('Starting server...');
-			let bootstrapPath = require('path').resolve(__dirname, '../../config/bootstrap.js');
-			require(bootstrapPath);
 			await CakeJS.createServer().start();
-			
 			console.log('Server is now online at localhost:' + CakeJS.Core.Configure.read('Web.port'));
 		} catch (e) {
 			console.log('Startup error', e);
