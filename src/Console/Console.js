@@ -87,7 +87,7 @@ export class Console
         //
         // Begin by loading the configuration file.
         // 
-        let configPath = path.resolve(process.cwd(), 'bin/cakejs.json');
+        let configPath = path.resolve(CAKE_CORE_INCLUDE_PATH, 'bin/cakejs.json');
         if (!fs.existsSync(configPath)) {
             console.log(
                 'Unable to load "' + path.basename(configPath) + '" in "' + configPath + '"');
