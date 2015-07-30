@@ -1,5 +1,3 @@
-#!/bin/sh
-
 FILEPATH=$(dirname $0)
 
 TRANSPILE=1
