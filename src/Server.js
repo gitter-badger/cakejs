@@ -15,8 +15,9 @@
 
 //CakeJS.Server
 
-//Types
+//Exception
 import {MissingConfigException} from './Exception/MissingConfigException'
+import {Exception} from './Core/Exception/Exception';
 
 //Express middlewares
 import sessionParser from './ExpressMiddleware/SessionParser'
@@ -36,6 +37,7 @@ import {TableRegistry} from './ORM/TableRegistry'
 
 // Net
 import {ShellConnection} from './Console/ShellConnection';
+
 
 //Requires
 var events = require('events');
@@ -119,10 +121,12 @@ export class Server extends events.EventEmitter
 		this._sio.set('authorization', sessionParser());
 		this._sio.on('connection', socketIOConnection());
 		await ProcessManager.start();
+		if(typeof Configure.read("Web.port") === 'undefined'){
+			Configure.write("Web.port", 8080);
+		}
 		await new Promise(resolve => this._http.listen(Configure.read("Web.port"), () => {
 			resolve();
 		}));
-		
 		net.createServer(async (client) => {
 			new ShellConnection(client);
 		}).listen(path.resolve(TMP,'cakejs.sock'));	

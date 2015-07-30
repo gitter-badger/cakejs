@@ -60,11 +60,13 @@ export class ServerShell extends ClientShell
 	async _server()
 	{
 		try {
-			console.log('Starting server...');
+			process.stdout.write("Starting server...");
 			await CakeJS.createServer().start();
+			process.stdout.write("success\n");
 			console.log('Server is now online at localhost:' + CakeJS.Core.Configure.read('Web.port'));
 		} catch (e) {
-			console.log('Startup error', e);
+			process.stdout.write("failed ("+e.message+")\n");
+			process.exit(1);
 		}		
 	}
 	

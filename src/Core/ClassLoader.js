@@ -132,6 +132,9 @@ export class ClassLoader
 		if(key in ClassLoader._folders){
 			return ClassLoader._folders[key];
 		}
+		if(path.resolve(APP,'..',Configure.read("App.dir"),'..') === CAKE_CORE_INCLUDE_PATH){
+			return [];
+		}
 		if(plugin !== null){
 			var folderPath = path.resolve(APP,'..',Configure.read("App.paths.plugins"),plugin,'src',relativePath);
 		}else{
