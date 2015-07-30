@@ -231,13 +231,20 @@ export class Console
                         try{
                             let shell = await this.loadShell(this._argv[0]);
 							shell.args = this._argv.slice(1);
-                            if(shell instanceof ClientShell){
-                                    await this.runClientShell(shell, this._argv.slice(1));
-                            }else if(shell instanceof ServerShell){
-                                    await this.runServerShell(shell, this._argv.slice(1));
-                            }else{
-                                    await shell.main(this._argv.slice(1));
-                            }
+							if(typeof shell.SHELL_TYPE === 'undefined'){
+								throw new Exception("Unknwon shell type");
+							}
+							switch(shell.SHELL_TYPE){
+								case "CLIENT":
+									await this.runClientShell(shell, this._argv.slice(1));
+									break;
+								case "SERVER":
+									await this.runServerShell(shell, this._argv.slice(1));
+									break;
+								default:
+									await shell.main(this._argv.slice(1));
+									break;
+							}
                         }catch(e){
                             //this.about();
                             this.out('<ERROR>Invalid shell "</ERROR><MESSAGE>' + this._argv[0] + '</MESSAGE><ERROR>".</ERROR>');
@@ -469,7 +476,7 @@ export class Console
         let className = Inflector.classify(name) + 'Shell';
         var shell = ClassLoader.loadClass(className, 'Shell');
         shell = new shell(this);
-        if(!(shell instanceof Shell)){
+        if(typeof shell.SHELL_TYPE === 'undefined'){
                 throw new Exception(shell.constructor.name+" is not an instance of Shell");
         }
         await shell.initialize();

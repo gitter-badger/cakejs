@@ -19,6 +19,7 @@ import {Client} from '../Network/Net/Client';
 
 export class ServerShell extends Shell
 {    
+	SHELL_TYPE = "SERVER";
 	constructor(shellConnection)
 	{
 		super(null);

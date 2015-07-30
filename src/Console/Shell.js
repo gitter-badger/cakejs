@@ -20,6 +20,7 @@ export class Shell
 {    
 	_console = null;
 	args = null;
+	SHELL_TYPE = "SHELL";
 	
 	constructor(console)
 	{

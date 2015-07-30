@@ -8,6 +8,10 @@
 // Types
 import {ClientShell} from '../Console/ClientShell'
 
+// Uses
+var daemonize2 = require('daemonize2');
+var path = require('path');
+
 export class ServerShell extends ClientShell
 {    
 	/**
@@ -16,6 +20,19 @@ export class ServerShell extends ClientShell
     constructor()
     {
 		super();
+		var daemon_options = {
+			main: path.resolve(__filename, '..','..','..','bin', 'cakejs.js'),
+			argv: [BOOTSTRAP,'server'],
+			name: "cakejs",
+			pidfile: path.resolve(TMP,'cakejs.pid'),
+			cwd: process.cwd(),
+			silent: true
+		}
+		if(global.TRANSPILER){
+			daemon_options.main = path.resolve(__filename, '..','..','..','bin', 'transpiler.js');
+			daemon_options.argv = [path.resolve(__filename, '..','..','..','bin', 'cakejs.js'), BOOTSTRAP,'server'];
+		}
+		this.daemon = daemonize2.setup(daemon_options);
     }
     
 	/**
@@ -23,32 +40,24 @@ export class ServerShell extends ClientShell
 	 */
     async main()
     {
-		let action = (this.args.length > 0) ? this.args[0] : 'start';
-		let transpile = (this.args.length > 1 && (this.args[1] === 'transpile' || this.args[0] === 'transpile')) ? true : false;
-				
-		if (action === 'stop') {
-			await this._stop();
-		} else {
-			if (transpile) {
-				await this._transpile();
-			}			
-			await this._start();
+		if(typeof this.args[0] === 'undefined'){
+			await this._server();
+		}else{
+			switch(this.args[0]){
+				case "start":
+					await this._start();
+					break;
+				case "stop":
+					await this._stop();
+					break;
+			}
 		}
     }
 	
 	/**
 	 * 
 	 */
-	async _transpile()
-	{
-		console.log('Transpiling');
-		
-	}
-	
-	/**
-	 * 
-	 */
-	async _start()
+	async _server()
 	{
 		try {
 			console.log('Starting server...');
@@ -62,11 +71,34 @@ export class ServerShell extends ClientShell
 		}		
 	}
 	
+	async _start()
+	{
+		process.stdout.write("Starting server...");
+		try{
+			this.daemon.start(() => {
+				process.stdout.write("success\n");
+				process.exit(0);
+			});
+		}catch(e){
+			process.stdout.write("failed ("+e.message+")\n");
+			process.exit(1);
+		}
+	}
+	
 	/**
 	 * 
 	 */
 	async _stop()
 	{
-		console.log('Stopping server');
+		process.stdout.write("Stopping server...");
+		try{
+			this.daemon.stop(() => {
+				process.stdout.write("success\n");
+				process.exit(0);
+			});
+		}catch(e){
+			process.stdout.write("failed ("+e.message+")\n");
+			process.exit(1);
+		}
 	}
 }

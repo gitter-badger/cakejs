@@ -18,6 +18,7 @@ import {Shell} from './Shell';
 
 export class ClientShell extends Shell
 {    
+	SHELL_TYPE = "CLIENT";
 	constructor(console)
 	{
 		super(console);
