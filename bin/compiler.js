@@ -89,6 +89,7 @@ function next(noRebuild)
 	}else if (/\.js$/.test(file.src)) {
 		var result = babel.transformFileSync(file.src, {
 			'optional': 'runtime',
+			/*'loose': ['es6.classes'],*/
 			'stage': 0
 		});
 		fs.writeFileSync(file.dst, result.code);

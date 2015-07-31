@@ -14,9 +14,9 @@
  */
 
 //Uses
-var IntegrationTestCase = CakeJS.TestSuite.IntegrationTestCase;
+import { IntegrationTestCase } from 'Cake/TestSuite/IntegrationTestCase';
 
-var test = new class ControllerTest extends IntegrationTestCase
+export class ControllerTest extends IntegrationTestCase
 {
 	/**
 	 * Tests if missing controller throws error
@@ -130,4 +130,3 @@ var test = new class ControllerTest extends IntegrationTestCase
 		this.assertResponseOk();
 	}
 }
-module.exports = test.moduleExports();

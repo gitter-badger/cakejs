@@ -14,14 +14,14 @@
  */
 
 //Uses
-var TestCase = CakeJS.TestSuite.TestCase;
+import { TestCase } from 'Cake/TestSuite/TestCase';
 
 /**
  * TestCase for asserts. 
  * 
  * @class
  */
-var test = new class TestCaseTest extends TestCase
+export class TestCaseTest extends TestCase
 {
 	/**
 	 * Test assertContains.
@@ -218,4 +218,3 @@ var test = new class TestCaseTest extends TestCase
 		this.assertGreaterThanOrEqual(13, 37);
 	}	
 }
-module.exports = test.moduleExports();

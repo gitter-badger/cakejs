@@ -13,15 +13,13 @@
  * @license     http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-var path = require('path');
-var fs = require('fs');
-var filename = path.basename(__filename);
+import path from 'path';
+import fs from 'fs';
 
-//Uses
-var ClassLoader = CakeJS.Core.ClassLoader;
-var TestCase = CakeJS.TestSuite.TestCase;
+import { ClassLoader } from 'Cake/Core/ClassLoader';
+import { TestCase } from 'Cake/TestSuite/TestCase';
 
-var test = new class AppTest extends TestCase
+export class AppTest extends TestCase
 {
 	/**
 	 * Tests ClassLoader 
@@ -34,4 +32,3 @@ var test = new class AppTest extends TestCase
 		ClassLoader.loadFolder('Controller');
 	}
 }
-module.exports = test.moduleExports();

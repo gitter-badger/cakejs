@@ -13,6 +13,8 @@
  * @license     http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-export class ArticlesTable extends CakeJS.ORM.Table {
+import { Table } from 'Cake/ORM/Table';
+
+export class ArticlesTable extends Table {
 
 }

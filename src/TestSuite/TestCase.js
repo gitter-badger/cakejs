@@ -23,6 +23,7 @@ import {AssertionException} from './Exception/AssertionException';
 
 // Types
 import {FixtureManager} from './Fixture/FixtureManager';
+import Server from 'Cake/Server';
 
 //Utilities
 import {Hash} from '../Utilities/Hash';
@@ -64,11 +65,15 @@ export class TestCase
      *
      * @return {void}
      */
-	tearDown()
+	async tearDown()
 	{
 		if(this._configure !== null){
 			Configure.clear();
 			Configure.write(this._configure);
+		}
+		if(this.fixtureManager !== null){
+			await this.fixtureManager.shutdown();
+			this.fixtureManager = null;
 		}
 	}
 	
@@ -520,49 +525,5 @@ export class TestCase
 		this.assertEquals(haystack.indexOf(needle), -1);
 		
 		return true;
-	}
-	
-	/**
-	 * Builds a object that will be passed to module.exports in test file
-	 * which is later used by mocha
-	 * 
-	 * @return {object} Object with all tests
-	 */
-	moduleExports()
-	{
-		var __this = this;
-		var tests = {};
-		for(let methodName of Object.getOwnPropertyNames(Object.getPrototypeOf(this))){
-			if(/^test/.test(methodName)){
-				var newMethodName = this.constructor.name+"."+methodName.substr(4).replace(new RegExp("\_", 'g'), ".");
-				tests = Hash.insert(tests,newMethodName,function(){
-					return new Promise(async (resolve, reject) => {
-						await CakeJS.createServerSingelton();
-						try{
-							try{
-								await __this.setUp();
-								var response = await __this[methodName].call(__this);							
-								await __this.tearDown();
-								resolve(response);
-							}catch(e){
-								await __this.tearDown();
-								throw e;
-							}
-						}catch(e){
-							reject(e);
-						}
-					});
-				});
-			}
-		}
-		tests['before'] = () => {
-
-		};		
-		tests['after'] = async () => {
-			if(this.fixtureManager !== null){
-				await this.fixtureManager.shutdown();
-			}
-		};
-		return tests;
 	}
 }

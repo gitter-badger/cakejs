@@ -16,28 +16,27 @@
 //CakeJS.Server
 
 //Exception
-import {MissingConfigException} from './Exception/MissingConfigException'
-import {Exception} from './Core/Exception/Exception';
+import {MissingConfigException} from 'Cake/Exception/MissingConfigException';
+import {Exception} from 'Cake/Core/Exception/Exception';
 
 //Express middlewares
-import sessionParser from './ExpressMiddleware/SessionParser'
-import socketIOConnection from './ExpressMiddleware/SocketIOConnection'
-import _static from './ExpressMiddleware/Static'
-import forward from './ExpressMiddleware/Forward'
-import proxy from './ExpressMiddleware/Proxy'
+import sessionParser from 'Cake/ExpressMiddleware/SessionParser';
+import socketIOConnection from 'Cake/ExpressMiddleware/SocketIOConnection';
+import _static from 'Cake/ExpressMiddleware/Static';
+import forward from 'Cake/ExpressMiddleware/Forward';
+import proxy from 'Cake/ExpressMiddleware/Proxy';
 
 //Singelton instances
-import {ControllerManager} from './Controller/ControllerManager'
-import {ProcessManager} from './Process/ProcessManager'
-import {Router} from './Routing/Router'
-import {Configure} from './Core/Configure'
-import {SessionManager} from './Session/SessionManager'
-import {ConnectionManager} from './Datasource/ConnectionManager'
-import {TableRegistry} from './ORM/TableRegistry'
+import {ControllerManager} from 'Cake/Controller/ControllerManager';
+import {ProcessManager} from 'Cake/Process/ProcessManager';
+import {Router} from 'Cake/Routing/Router';
+import {Configure} from 'Cake/Core/Configure';
+import {SessionManager} from 'Cake/Session/SessionManager';
+import {ConnectionManager} from 'Cake/Datasource/ConnectionManager';
+import {TableRegistry} from 'Cake/ORM/TableRegistry';
 
 // Net
-import {ShellConnection} from './Console/ShellConnection';
-
+import {ShellConnection} from 'Cake/Console/ShellConnection';
 
 //Requires
 var events = require('events');
@@ -49,7 +48,6 @@ var http = require("http");
 var socketio = require('socket.io');
 var cookieParser = require("cookie-parser");
 var bodyParser = require("body-parser");
-
 /**
  * @class
  */
@@ -81,7 +79,7 @@ export class Server extends events.EventEmitter
 	 * @returns {Promise}
 	 */
 	async start()
-	{		
+	{
 		//Preloads managers
 		try{await ControllerManager.initialize();}catch(e){
 			if(e.constructor.name !== 'FolderMissingException'){
@@ -140,23 +138,19 @@ export class Server extends events.EventEmitter
 	{
 		await new Promise(resolve => this._http.close(resolve));
 	}
-}
-export function createServer()
-{
-	return new Server();
-}
-var __test_server = null;
-export function createServerSingelton()
-{
-	return new Promise(async (resolve, reject) => {
-		try{
-			if(__test_server === null){
-				__test_server = new Server();
-				await __test_server.start();
-			}
-			resolve(__test_server);
-		}catch(e){
-			reject(e);
+	
+	static createServer()
+	{
+		return new Server();
+	}
+	
+	static __singelton_server = null;
+	static async createServerSingelton()
+	{
+		if(Server.__singelton_server === null){
+			Server.__singelton_server = new Server();
+			await Server.__singelton_server.start();
 		}
-	});
+		return Server.__singelton_server;
+	}
 }

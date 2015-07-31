@@ -14,11 +14,8 @@
  * @author      addelajnen
  */
 
-//Uses
-var TestCase = CakeJS.TestSuite.TestCase;
-
-// Utilities
-var Iterable = CakeJS.Collection.Iterable;
+import { TestCase } from 'Cake/TestSuite/TestCase';
+import { Iterable } from 'Cake/Collection/Iterable';
 
 /**
  * Test class that extends Iterable.
@@ -79,7 +76,7 @@ class Customers extends Iterable
  * 
  * @class
  */
-var test = new class IterableTest extends TestCase {
+export class IterableTest extends TestCase {
 	/**
 	 * 
 	 */
@@ -137,4 +134,3 @@ var test = new class IterableTest extends TestCase {
 		}
 	}
 }
-module.exports = test.moduleExports();

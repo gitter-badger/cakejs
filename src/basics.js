@@ -37,15 +37,6 @@ if(!('ROOT' in global)){
 if(!('APP' in global)){
 	global.APP = path.resolve(ROOT,APP_DIR);
 }
-if(!('CAKE' in global)){
-	global.CAKE = path.resolve(__filename,'..');
-}
-if(!('CAKE_CORE_INCLUDE_PATH' in global)){
-	global.CAKE_CORE_INCLUDE_PATH = path.resolve(__filename);
-	while(/cakejs$/.test(global.CAKE_CORE_INCLUDE_PATH) === false && global.CAKE_CORE_INCLUDE_PATH.indexOf("/") !== -1){
-		global.CAKE_CORE_INCLUDE_PATH = path.resolve(global.CAKE_CORE_INCLUDE_PATH, '..');
-	}
-}
 if(!('CORE_PATH' in global)){
 	global.CORE_PATH = path.resolve(__filename,'..','..','..');
 }
@@ -70,9 +61,12 @@ if(!('WWW_ROOT' in global)){
 if(!('CONFIG' in global)){
 	global.CONFIG = path.resolve(ROOT,'config');
 }
-require('./hook').attach({
-	"Cake/": CAKE,
-	"App/": APP,
+require('../bin/env.js');
+global.CAKE_VERSION = require('Cake/Core/Configure').Configure.version();
+
+require('Cake/Core/Configure').Configure.write('App',{
+	'dir': APP_DIR,
+	'paths': {
+		'plugins': require('path').resolve(ROOT, 'plugins')
+	}
 });
-global.CakeJS = require('./index');
-global.CAKE_VERSION = require('Cake/Core/Configure').version();

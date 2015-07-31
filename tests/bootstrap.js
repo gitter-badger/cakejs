@@ -1,5 +1,9 @@
 var path = require('path');
 
+import { Configure } from 'Cake/Core/Configure';
+import { ConnectionManager } from 'Cake/Datasource/ConnectionManager';
+import { SessionManager } from 'Cake/Core/Configure';
+
 global.ROOT = __dirname;
 global.APP_DIR = 'TestApp';
 
@@ -20,13 +24,13 @@ while(/cakejs$/.test(cake_core_path) === false && cake_core_path.indexOf("/") !=
 	cake_core_path = path.resolve(cake_core_path, '..');
 }
 
-require(cake_core_path);
+require(path.resolve(__dirname,'..','config','bootstrap'));
 
-CakeJS.Core.Configure.write('debug', true);
-CakeJS.Core.Configure.write('App.paths', {
+Configure.write('debug', true);
+Configure.write('App.paths', {
 	'plugins': path.resolve(TEST_APP, 'Plugin')
 });
-CakeJS.Core.Configure.write('Datasources', {
+Configure.write('Datasources', {
 	"default": {
 		"driver": "Mysql",
 		"host": "localhost",
@@ -42,8 +46,8 @@ CakeJS.Core.Configure.write('Datasources', {
 		"database": "test"
 	}
 });
-CakeJS.Core.Configure.write('Web.port', 31337);
-//CakeJS.Core.Configure.write('Session.defaults', 'database');
-//CakeJS.Core.Configure.write('Session.cookie', 'CAKEPHP');
-CakeJS.Datasource.ConnectionManager.config(CakeJS.Core.Configure.consume('Datasources'));
-//CakeJS.Session.SessionManager.config(CakeJS.Core.Configure.consume('Session'));
+Configure.write('Web.port', 31337);
+//Configure.write('Session.defaults', 'database');
+//Configure.write('Session.cookie', 'CAKEPHP');
+ConnectionManager.config(Configure.consume('Datasources'));
+//SessionManager.config(Configure.consume('Session'));

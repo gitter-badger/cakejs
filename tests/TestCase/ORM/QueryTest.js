@@ -16,9 +16,10 @@
  */
 
 //Uses
-var TestCase = CakeJS.TestSuite.TestCase;
+import { TestCase } from 'Cake/TestSuite/TestCase';
+import { TableRegistry } from 'Cake/ORM/TableRegistry';
 
-var test = new class QueryTest extends TestCase
+export class QueryTest extends TestCase
 {
 	fixtures = [ 'app.query_tests' ];
 	autoFixtures = true;
@@ -29,7 +30,7 @@ var test = new class QueryTest extends TestCase
 	 */
 	async testSelect_All()
 	{
-		this.QueryTables = await CakeJS.ORM.TableRegistry.get("QueryTests");
+		this.QueryTables = await TableRegistry.get("QueryTests");
 		var sqlQuery = this.QueryTables
 			.find('all')
 			.sql();
@@ -42,7 +43,7 @@ var test = new class QueryTest extends TestCase
 	 */
 	async testSelect_Specific()
 	{
-		this.QueryTables = await CakeJS.ORM.TableRegistry.get("QueryTests");
+		this.QueryTables = await TableRegistry.get("QueryTests");
 		var sqlQuery = this.QueryTables
 			.find()
 			.select(['columnA', 'columnB'])
@@ -56,7 +57,7 @@ var test = new class QueryTest extends TestCase
 	 */
 	async testInsert()
 	{
-		this.QueryTables = await CakeJS.ORM.TableRegistry.get("QueryTests");
+		this.QueryTables = await TableRegistry.get("QueryTests");
 		var sqlQuery = this.QueryTables
 			.query()
 			.insert(['columnA', 'columnB'])
@@ -74,7 +75,7 @@ var test = new class QueryTest extends TestCase
 	 */
 	async testUpdate()
 	{
-		this.QueryTables = await CakeJS.ORM.TableRegistry.get("QueryTests");
+		this.QueryTables = await TableRegistry.get("QueryTests");
 		var sqlQuery = this.QueryTables
 			.query()
 			.update()
@@ -90,7 +91,7 @@ var test = new class QueryTest extends TestCase
 	 */
 	async testDelete()
 	{
-		this.QueryTables = await CakeJS.ORM.TableRegistry.get("QueryTests");
+		this.QueryTables = await TableRegistry.get("QueryTests");
 		var sqlQuery = this.QueryTables
 			.query()
 			.delete()
@@ -99,4 +100,3 @@ var test = new class QueryTest extends TestCase
 		this.assertEquals(sqlQuery, "DELETE FROM query_tests WHERE (columnB = :0)");
 	}
 }
-module.exports = test.moduleExports();

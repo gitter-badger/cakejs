@@ -19,7 +19,9 @@ process.argv.shift();
 global.BOOTSTRAP = process.argv[0];
 process.argv.shift();
 
-require(require('path').resolve(BOOTSTRAP));
+var path = require('path');
+require('./env')();
+require(path.resolve(BOOTSTRAP));
 
 var Console = require(require('path').resolve(__filename,'..','..','src','Console', 'Console')).Console;
 
@@ -39,14 +41,3 @@ var Console = require(require('path').resolve(__filename,'..','..','src','Consol
 		process.exit(1);
 	}
 })();
-
-/*if(!('DS' in global)){
-	global.DS = '/';
-}
-
-if(!('CAKE_CORE_INCLUDE_PATH' in global)){
-	global.CAKE_CORE_INCLUDE_PATH = path.resolve(__filename);
-	while(/cakejs$/.test(global.CAKE_CORE_INCLUDE_PATH) === false && global.CAKE_CORE_INCLUDE_PATH.indexOf("/") !== -1){
-		global.CAKE_CORE_INCLUDE_PATH = path.resolve(global.CAKE_CORE_INCLUDE_PATH, '..');
-	}
-}*/

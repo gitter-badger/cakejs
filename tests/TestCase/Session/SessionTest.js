@@ -14,11 +14,12 @@
  */
 
 //Uses
-var IntegrationTestCase = CakeJS.TestSuite.IntegrationTestCase;
-var fs = require('fs');
-var path = require('path');
+import fs from 'fs';
+import path from 'path';
 
-var test = new class SessionTest extends IntegrationTestCase
+import { IntegrationTestCase } from 'Cake/TestSuite/IntegrationTestCase';
+
+export class SessionTest extends IntegrationTestCase
 {
 	/**
 	 * Tests if session key get set by controller
@@ -47,4 +48,3 @@ var test = new class SessionTest extends IntegrationTestCase
 		this.assertResponseOk();
 	}
 }
-module.exports = test.moduleExports();

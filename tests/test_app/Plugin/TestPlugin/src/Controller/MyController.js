@@ -14,8 +14,8 @@
  */
 
 //Uses
-var ClientException = CakeJS.Controller.Exception.ClientException;
-var Controller = CakeJS.Controller.Controller;
+import { ClientException } from 'Cake/Controller/Exception/ClientException';
+import { Controller } from 'Cake/Controller/Controller';
 
 export default class MyController extends Controller {
 	index(){

@@ -13,5 +13,7 @@
  * @license     http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-export class Customer extends CakeJS.ORM.Entity {	
+import { Entity } from 'Cake/ORM/Entity';
+
+export class Customer extends Entity {	
 }

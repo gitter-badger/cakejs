@@ -14,10 +14,9 @@
  */
 
 //Uses
-var IntegrationTestCase = CakeJS.TestSuite.IntegrationTestCase;
+import { IntegrationTestCase } from 'Cake/TestSuite/IntegrationTestCase';
 
-var test = new class IntegrationTestCaseTest extends IntegrationTestCase
+export class IntegrationTestCaseTest extends IntegrationTestCase
 {
 
 }
-module.exports = test.moduleExports();

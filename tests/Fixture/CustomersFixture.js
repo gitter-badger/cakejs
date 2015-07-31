@@ -5,7 +5,7 @@
  */
 
 //Uses
-var TestFixture = CakeJS.TestSuite.Fixture.TestFixture;
+import { TestFixture } from 'Cake/TestSuite/Fixture/TestFixture';
 
 export class CustomersFixture extends TestFixture
 {

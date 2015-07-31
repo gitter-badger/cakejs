@@ -1,6 +1,3 @@
-index:
-	@node utils/indexer.js src
-
 define release
 	VERSION=`node -pe "require('./package.json').version"` && \
 	NEXT_VERSION=`node -pe "require('semver').inc(\"$$VERSION\", '$(1)')"` && \

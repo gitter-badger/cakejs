@@ -16,21 +16,20 @@
  */
 
 //Uses
-var TestCase = CakeJS.TestSuite.TestCase;
+import { TestCase } from 'Cake/TestSuite/TestCase';
+import { TableRegistry } from 'Cake/ORM/TableRegistry';
+import { Type } from 'Cake/Database/Type';
+import { UuidType } from 'Cake/Database/Type/UuidType';
 
-//
-var TableRegistry = CakeJS.ORM.TableRegistry;
-
-var test = new class UuidTypeTest extends TestCase
+export class UuidTypeTest extends TestCase
 {
 	/**
 	 * Tests uuid newId
 	 */
 	testNewId()
 	{
-		var uuidType = CakeJS.Database.Type.build('uuid');
-		this.assertType(uuidType, CakeJS.Database.Type_.UuidType);
+		var uuidType = Type.build('uuid');
+		this.assertType(uuidType, UuidType);
 		this.assertTrue(/^[a-f0-9]{8}\-[a-f0-9]{4}\-[a-f0-9]{4}\-[a-f0-9]{4}\-[a-f0-9]{12}$/.test(uuidType.newId()));
 	}
 }
-module.exports = test.moduleExports();

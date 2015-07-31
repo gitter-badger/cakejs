@@ -89,7 +89,7 @@ export class ClassLoader
 		}else if(fs.existsSync(path.resolve(APP,'..',Configure.read("App.dir"),relativePath,className)+".js")){
 			className = path.resolve(APP,'..',Configure.read("App.dir"),relativePath,className);
 		}else{
-			className = path.resolve(CAKE,relativePath.replace('Type','Type_').replace('Driver', 'Driver_'),className);
+			className = path.resolve(CAKE,relativePath,className);
 		}
 		className = className+".js";
 		if(!fs.existsSync(className)){
@@ -132,13 +132,15 @@ export class ClassLoader
 		if(key in ClassLoader._folders){
 			return ClassLoader._folders[key];
 		}
-		if(path.resolve(APP,'..',Configure.read("App.dir"),'..') === CAKE_CORE_INCLUDE_PATH){
-			return [];
-		}
 		if(plugin !== null){
 			var folderPath = path.resolve(APP,'..',Configure.read("App.paths.plugins"),plugin,'src',relativePath);
 		}else{
 			var folderPath = path.resolve(APP,'..',Configure.read("App.dir"),relativePath);
+		}
+		for(var item of [path.resolve(CAKE_CORE_INCLUDE_PATH,'src'),path.resolve(CAKE_CORE_INCLUDE_PATH,'dist/src')]){
+			if(folderPath.substr(0,item.length) === item){
+				return [];
+			}
 		}
 		
 		if(!fs.existsSync(folderPath)){
@@ -162,10 +164,3 @@ export class ClassLoader
 		return ClassLoader._folders[key];
 	}
 }
-
-Configure.write('App',{
-	'dir': APP_DIR,
-	'paths': {
-		'plugins': require('path').resolve(ROOT, 'plugins')
-	}
-});

@@ -14,16 +14,17 @@
  */
 
 //Uses
-var TestCase = CakeJS.TestSuite.TestCase;
+import { TestCase } from 'Cake/TestSuite/TestCase';
+import { ProcessManager } from 'Cake/Process/ProcessManager';
 
-var test = new class ProcessTest extends TestCase
+export class ProcessTest extends TestCase
 {
 	/**
 	 * Tests the Process named "TestProcess" if it was initialized
 	 */
 	async init()
 	{
-		var process = CakeJS.Process.ProcessManager.get('Test');
+		var process = ProcessManager.get('Test');
 		this.assertEquals(process.keyA, 'valueA');
 	}
 	
@@ -32,8 +33,7 @@ var test = new class ProcessTest extends TestCase
 	 */
 	async start()
 	{
-		var process = CakeJS.Process.ProcessManager.get('Test');
+		var process = ProcessManager.get('Test');
 		this.assertEquals(process.keyB, 'valueB');
 	}
 }
-module.exports = test.moduleExports();

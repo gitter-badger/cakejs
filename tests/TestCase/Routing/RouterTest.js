@@ -13,12 +13,12 @@
  * @license     http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-//Uses
-var IntegrationTestCase = CakeJS.TestSuite.IntegrationTestCase;
-var fs = require('fs');
-var path = require('path');
+import fs from 'fs';
+import path from 'path';
 
-var test = new class RouterTest extends IntegrationTestCase
+import { IntegrationTestCase } from 'Cake/TestSuite/IntegrationTestCase';
+
+export class RouterTest extends IntegrationTestCase
 {
 	async testConnection(){
 		await this.get('/');
@@ -26,4 +26,3 @@ var test = new class RouterTest extends IntegrationTestCase
 		this.assertResponseEquals(fs.readFileSync(path.resolve(WWW_ROOT, "index.html")).toString(), 'Unexpected content'); 
 	}
 }
-module.exports = test.moduleExports();

@@ -13,37 +13,15 @@
  * @license     http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-//Uses
-import { TestFixture } from 'Cake/TestSuite/Fixture/TestFixture';
-import { Text } from 'Cake/Utility/Text';
+//CakeJS.Database.Type.BinaryType
 
-export class ArticlesFixture extends TestFixture
-{	
-	fields = {
-		id: 'integer',
-		title: {type: 'string', null: false},
-		body: 'text',
-		_constraints: {
-			primary: { type: 'primary', columns: ['id'] }
-		}
-	};
+//Types
+import {Type} from '../Type';
 
-	records = [
-		{
-			title: 'title A',
-			body: 'body A'
-		},
-		{
-			title: 'title B',
-			body: 'body B'
-		},
-		{
-			title: 'title C',
-			body: 'body C'
-		},
-		{
-			title: 'Testar',
-			body: 'test'
-		}
-	];
+export class BinaryType extends Type
+{
+	toDatabase(value, driver)
+	{
+		return value;
+	}
 }

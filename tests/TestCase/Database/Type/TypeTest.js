@@ -16,20 +16,19 @@
  */
 
 //Uses
-var TestCase = CakeJS.TestSuite.TestCase;
+import { TestCase } from 'Cake/TestSuite/TestCase';
+import { TableRegistry } from 'Cake/ORM/TableRegistry';
+import { Type } from 'Cake/Database/Type';
+import { IntegerType } from 'Cake/Database/Type/IntegerType';
 
-//
-var TableRegistry = CakeJS.ORM.TableRegistry;
-
-var test = new class TypeTest extends TestCase
+export class TypeTest extends TestCase
 {
 	/**
 	 * Tests Type build and assert the type returned by the static method build
 	 */
 	testBuild()
 	{
-		var type = CakeJS.Database.Type.build('biginteger');
-		this.assertType(type, CakeJS.Database.Type_.IntegerType);
+		var type = Type.build('biginteger');
+		this.assertType(type, IntegerType);
 	}
 }
-module.exports = test.moduleExports();

@@ -14,7 +14,8 @@
  */
 
 //Uses
-var Process = CakeJS.Process.Process;
+
+import { Process } from 'Cake/Process/Process';
 
 export default class TestProcess extends Process 
 {

@@ -16,12 +16,11 @@
  */
 
 //Uses
-var TestCase = CakeJS.TestSuite.TestCase;
+import { TestCase } from 'Cake/TestSuite/TestCase';
+import { TableRegistry } from 'Cake/ORM/TableRegistry';
+import { Entity } from 'Cake/ORM/Entity';
 
-//
-var TableRegistry = CakeJS.ORM.TableRegistry;
-
-var test = new class EntityTest extends TestCase
+export class EntityTest extends TestCase
 {
 	fixtures = [ 'app.customers' ];
 	
@@ -30,7 +29,7 @@ var test = new class EntityTest extends TestCase
 	 */
 	test_Properties_SetAndGet()
 	{
-		var entity = new CakeJS.ORM.Entity();
+		var entity = new Entity();
 		
 		entity.phone = 3;
 		entity.accessible('phone', false);
@@ -145,4 +144,3 @@ var test = new class EntityTest extends TestCase
 	
 	
 }
-module.exports = test.moduleExports();

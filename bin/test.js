@@ -1,7 +1,7 @@
 var mocha = require('mocha');
 var fs = require('fs');
 var path = require('path');
-
+require('./env')();
 var args = process.argv;
 
 var mochaConfiguration = {
@@ -35,7 +35,15 @@ if(!fs.existsSync(testFolder)){
 	process.exit(1);
 }
 
+if(!fs.existsSync(path.resolve(testFolder,'TestCase'))){
+	console.log("TestCase folder does not exist");
+	process.exit(1);
+}
+
 var bootstrap = path.resolve(testFolder, 'bootstrap.js');
+if(!fs.existsSync(bootstrap)){
+	bootstrap = path.resolve(testFolder,'..','config', 'bootstrap.js');
+}
 
 if(!fs.existsSync(bootstrap)){
 	console.log("Bootstrap does not exist");
@@ -47,7 +55,6 @@ filter = (typeof args[0] !== 'undefined') ? args[0] : null;
 require(bootstrap);
 
 var mochaConfiguration = {
-   'bail': true,
    'slow': 300,
    'timeout': 5000,
    'ui': 'exports',
@@ -56,23 +63,7 @@ var mochaConfiguration = {
 };
 
 var test = new mocha(mochaConfiguration);
-loadTests(test, testFolder, filter);
-
-function loadTests(test, dir, filter)
-{                
-	fs.readdirSync(dir).forEach( function(file) {
-		var fullPath = path.resolve(dir, file);
-		var stats = fs.lstatSync(fullPath);
-
-		if (stats.isDirectory()) {
-			loadTests(test, fullPath, filter);
-		} else {
-			if (/Test\.js$/.test(fullPath)) {
-				test.addFile(fullPath);
-			}
-		}
-	});        
-}
+test.addFile(path.resolve(__dirname, 'mocha.js'));
 
 test.run(function (failures) {
    process.exit(failures); 

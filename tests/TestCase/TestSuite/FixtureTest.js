@@ -14,12 +14,12 @@
  */
 
 //Uses
-var TestCase = CakeJS.TestSuite.TestCase;
-var TableRegistry = CakeJS.ORM.TableRegistry;
+import { TestCase } from 'Cake/TestSuite/TestCase';
+import { TableRegistry } from 'Cake/ORM/TableRegistry';
 
-import {ArticlesTable} from '../../test_app/TestApp/Model/Table/ArticlesTable';
+import { ArticlesTable } from 'App/Model/Table/ArticlesTable';
 
-var test = new class FixtureTest extends TestCase
+export class FixtureTest extends TestCase
 {
 	fixtures = [ 'app.articles' ];
 	autoFixtures = true;
@@ -52,4 +52,3 @@ var test = new class FixtureTest extends TestCase
 		}
 	}
 }
-module.exports = test.moduleExports();

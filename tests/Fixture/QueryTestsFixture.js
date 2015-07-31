@@ -14,8 +14,8 @@
  */
 
 //Uses
-var TestFixture = CakeJS.TestSuite.Fixture.TestFixture;
-var Text = CakeJS.Utility.Text;
+import { TestFixture } from 'Cake/TestSuite/Fixture/TestFixture';
+import { Text } from 'Cake/Utility/Text';
 
 export class QueryTestsFixture extends TestFixture
 {	

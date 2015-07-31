@@ -6,11 +6,11 @@
 
 
 // Types
-import {ClientShell} from '../Console/ClientShell'
-
-// Uses
-var daemonize2 = require('daemonize2');
-var path = require('path');
+import daemonize2 from 'daemonize2';
+import path from 'path';
+import { ClientShell } from 'Cake/Console/ClientShell';
+import { Server } from 'Cake/Server';
+import { Configure } from 'Cake/Core/Configure';
 
 export class ServerShell extends ClientShell
 {    
@@ -61,9 +61,9 @@ export class ServerShell extends ClientShell
 	{
 		try {
 			process.stdout.write("Starting server...");
-			await CakeJS.createServer().start();
+			await Server.createServerSingelton();
 			process.stdout.write("success\n");
-			console.log('Server is now online at localhost:' + CakeJS.Core.Configure.read('Web.port'));
+			console.log('Server is now online at localhost:' + Configure.read('Web.port'));
 		} catch (e) {
 			process.stdout.write("failed ("+e.message+")\n");
 			process.exit(1);
