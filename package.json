@@ -4,7 +4,8 @@
   "description": "CakeJS Framework",
   "main": "dist/config/bootstrap.js",
   "scripts": {
-    "test": "bin/cakejs test"
+    "test": "./bin/cakejs test",
+	"postinstall": "chmod +x ./bin/cakejs; node ./bin/postinstall.js"
   },
   "repository": {
     "type": "git",
