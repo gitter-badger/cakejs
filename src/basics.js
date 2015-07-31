@@ -33,6 +33,7 @@ if(!('APP_DIR' in global)){
 if(!('ROOT' in global)){
 	global.ROOT = process.cwd();
 	global.APP = path.resolve(module.parent.parent.filename,'..','..',APP_DIR);
+	global.TESTS = path.resolve(module.parent.parent.filename,'..','..','tests');
 }
 if(!('APP' in global)){
 	global.APP = path.resolve(ROOT,APP_DIR);
