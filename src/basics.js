@@ -32,13 +32,13 @@ if(!('APP_DIR' in global)){
 }
 if(!('ROOT' in global)){
 	global.ROOT = process.env['PWD'];
-	global.APP = require('path').resolve(module.parent.parent.filename,'..');
+	global.APP = path.resolve(module.parent.parent.filename,'..');
 }
 if(!('APP' in global)){
-	global.APP = require('path').resolve(ROOT,APP_DIR);
+	global.APP = path.resolve(ROOT,APP_DIR);
 }
 if(!('CAKE' in global)){
-	global.CAKE = require('path').resolve(__filename,'..');
+	global.CAKE = path.resolve(__filename,'..');
 }
 if(!('CAKE_CORE_INCLUDE_PATH' in global)){
 	global.CAKE_CORE_INCLUDE_PATH = path.resolve(__filename);
@@ -47,28 +47,32 @@ if(!('CAKE_CORE_INCLUDE_PATH' in global)){
 	}
 }
 if(!('CORE_PATH' in global)){
-	global.CORE_PATH = require('path').resolve(__filename,'..','..','..');
+	global.CORE_PATH = path.resolve(__filename,'..','..','..');
 }
 if(!('PLUGINS' in global)){
-	global.PLUGINS = require('path').resolve(ROOT,'plugins');
+	global.PLUGINS = path.resolve(ROOT,'plugins');
 }
 if(!('TMP' in global)){
-	global.TMP = require('path').resolve(ROOT,'tmp');
+	global.TMP = path.resolve(ROOT,'tmp');
 }
 if(!('CACHE' in global)){
-	global.CACHE = require('path').resolve(TMP,'cache');
+	global.CACHE = path.resolve(TMP,'cache');
 }
 if(!('LOGS' in global)){
-	global.LOGS = require('path').resolve(ROOT,'logs');
+	global.LOGS = path.resolve(ROOT,'logs');
 }
 if(!('TESTS' in global)){
-	global.TESTS = require('path').resolve(ROOT,'tests');
+	global.TESTS = path.resolve(ROOT,'tests');
 }
 if(!('WWW_ROOT' in global)){
-	global.WWW_ROOT = require('path').resolve(ROOT,'webroot');
+	global.WWW_ROOT = path.resolve(ROOT,'webroot');
 }
 if(!('CONFIG' in global)){
-	global.CONFIG = require('path').resolve(ROOT,'config');
+	global.CONFIG = path.resolve(ROOT,'config');
 }
+require('./hook').attach({
+	"Cake/": CAKE,
+	"App/": APP,
+});
 global.CakeJS = require('./index');
-global.CAKE_VERSION = CakeJS.Core.Configure.version();
+global.CAKE_VERSION = require('Cake/Core/Configure').version();
