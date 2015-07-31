@@ -22,6 +22,8 @@ process.argv.shift();
 var path = require('path');
 require('./env')();
 require(path.resolve(BOOTSTRAP));
+require('./env')();
+console.log(APP);
 
 var Console = require(require('path').resolve(__filename,'..','..','src','Console', 'Console')).Console;
 
