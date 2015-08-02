@@ -19,7 +19,7 @@ require("babel/register")({
   stage: 0,
   optional: 'runtime',
   ignore: false,
-  only: /src|bin|config/
+  only: /src|bin|config|tests/
 });
 
 process.argv.shift();
