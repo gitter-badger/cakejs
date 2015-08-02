@@ -6,6 +6,7 @@
 
 var babel = require('babel');
 var browserify = require('browserify');
+var babelify = require('babelify');
 var path = require('path');
 var fs = require('fs');
 
@@ -74,7 +75,6 @@ function next(noRebuild)
 				rebuild = true;
 			}
 		}
-		
 		if(!rebuild){
 			next(noRebuild);
 			return;		
@@ -86,7 +86,22 @@ function next(noRebuild)
 	}
 	
 	if (/webroot/.test(file.src) && /\.js$/.test(file.src)) {
-		fs.writeFileSync(file.dst, fs.readFileSync(file.src));
+		var buffer = null;
+		browserify(file.src, { standalone: file.dst.match(/([^\/]*)\.js$/)[1] })
+		.transform(babelify, {stage: 0})
+		.bundle()
+		.on("error", function (err) { console.log("Error : " + err.message); })
+		.on('data', function(data){
+			if(buffer === null){
+				buffer = data;
+			}else{
+				buffer = Buffer.concat([buffer, data]);
+			}
+		})
+		.on('end', function(){
+			fs.writeFileSync(file.dst, buffer.toString());
+			next(noRebuild);
+		});
 	}else if (/\.js$/.test(file.src)) {
 		var result = babel.transformFileSync(file.src, {
 			'optional': 'runtime',
@@ -94,10 +109,11 @@ function next(noRebuild)
 			'stage': 0
 		});
 		fs.writeFileSync(file.dst, result.code);
+		next(noRebuild);
 	}else{
 		fs.writeFileSync(file.dst, fs.readFileSync(file.src));
+		next(noRebuild);
 	}
-	next(noRebuild);		
 }
 
 srcPath = path.resolve(process.cwd(), srcPath);

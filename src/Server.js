@@ -102,7 +102,7 @@ export class Server extends events.EventEmitter
 		this._app.use(sessionParser(SessionManager.config()));
 		this.emit('use', this._app);
 		if(Configure.read("Web.port") !== null){
-			var javascriptLibraryContent = fs.readFileSync(path.resolve(__filename,'..','..','webroot','js','client.js'));
+			var javascriptLibraryContent = fs.readFileSync(path.resolve(CAKE_CORE_INCLUDE_PATH,'dist','webroot','js','client.js'));
 			this._app.get('/js/cakejs.js', (request, response) => {
 				response.writeHead(200, {'content-type': 'text/javascript'});
 				response.write(javascriptLibraryContent);
