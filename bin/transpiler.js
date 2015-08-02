@@ -17,7 +17,9 @@ if(!fs.existsSync(srcPath)){
 require("babel/register")({
   extensions: [".es6", ".es", ".jsx", ".js"],
   stage: 0,
-  optional: 'runtime'
+  optional: 'runtime',
+  ignore: false,
+  only: /src|bin|config/
 });
 
 process.argv.shift();
