@@ -1,3 +1,9 @@
+build:
+	@bin/cakejs build > /dev/null
+
+test-build:
+	@bin/cakejs -c test > /dev/null
+
 define release
 	VERSION=`node -pe "require('./package.json').version"` && \
 	NEXT_VERSION=`node -pe "require('semver').inc(\"$$VERSION\", '$(1)')"` && \
@@ -10,13 +16,13 @@ define release
 	git tag "$$NEXT_VERSION" -m "release $$NEXT_VERSION"
 endef
 
-release-patch: build test-silent
+release-patch: build test-build
 	@$(call release,patch)
 
-release-minor: build test-silent
+release-minor: build test-build
 	@$(call release,minor)
 
-release-major: build test-silent
+release-major: build test-build
 	@$(call release,major)
 
 publish:
