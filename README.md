@@ -19,12 +19,6 @@ projects scalable easy.
 
 [![Teleservice](http://teleservice.net/1.0.1.0/2/images//6474_00697b45d0756ed4c8969583acbe5622.png)](http://teleservice.net/)
 
-## Major changes
-
-At the moment the master is very unstable, under many changes and improvements.
-
-Old version on NMP, and will change as soon as next release is ready
-
 ## Installation
 
 ```bash
@@ -35,7 +29,3 @@ $ npm install cakejs
 CakeJS Example: https://github.com/Tiinusen/cakejs_example_1
 
 CakeJS + CakePHP Example: https://github.com/Tiinusen/cakejs_cakephp_example_1
-
-## Status
-Currently we are rewriting our prototype project to fit CakePHP 3.x standards
-so this project is at the moment not stable
