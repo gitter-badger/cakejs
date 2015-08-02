@@ -15,16 +15,21 @@
 
 //CakeJS.ExpressMiddleware.Static
 
+import babelify from 'babelify';
+import browserify from 'browserify';
+import path from 'path';
+import fs from 'fs';
+
 //Types
-import {MissingActionException} from '../Controller/Exception/MissingActionException'
-import {ClientException} from '../Controller/Exception/ClientException'
-import {FatalException} from '../Core/Exception/FatalException'
-import {Exception} from '../Core/Exception/Exception'
-import {Request} from '../Network/Request'
+import {MissingActionException} from 'Cake/Controller/Exception/MissingActionException'
+import {ClientException} from 'Cake/Controller/Exception/ClientException'
+import {FatalException} from 'Cake/Core/Exception/FatalException'
+import {Exception} from 'Cake/Core/Exception/Exception'
+import {Request} from 'Cake/Network/Request'
 
 //Singelton instances
-import {Router} from '../Routing/Router'
-import {ControllerManager} from '../Controller/ControllerManager'
+import {Router} from 'Cake/Routing/Router'
+import {ControllerManager} from 'Cake/Controller/ControllerManager'
 
 class Static 
 {
@@ -81,7 +86,43 @@ class Static
 			response.end();
 		}catch(e){
 			if(this._expressStatic !== null){
-				this._expressStatic(request, response, next);
+				if(/\.es$/.test(request.url)){
+					var buffer = null;
+					var file = request.url;
+					while(file.substr(0,1) === '/'){
+						file = file.substr(1);
+					}
+					file = path.resolve(this._path, file);
+					var exists = await new Promise((resolve) => {
+						fs.exists(file, (exist) => {
+							resolve(exist);
+						});
+					});
+					if(!exists){
+						return response.sendStatus(404);
+					}
+					browserify(file, { standalone: file.match(/([^\/]*)\.es$/)[1] })
+					.transform(babelify, {stage: 0})
+					.bundle()
+					.on("error", (err) => { 
+						console.log("Error : " + err.message); 
+						return response.sendStatus(500);
+					})
+					.on('data', (data) => {
+						if(buffer === null){
+							buffer = data;
+						}else{
+							buffer = Buffer.concat([buffer, data]);
+						}
+					})
+					.on('end', () => {
+						response.writeHead(200, {'Content-Type': 'application/javascript'});
+						response.write(buffer.toString());
+						response.end();
+					});
+				}else{
+					this._expressStatic(request, response, next);
+				}
 			}else{
 				next();
 			}

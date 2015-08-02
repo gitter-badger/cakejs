@@ -42,7 +42,8 @@ var getCallerFile = function(){
 var requireHook = function (filepath) {
 	if (filepath === 'hook' || filepath === './hook') {
 		filepath = __filename;
-	}else if (filepath.substr(0, 5) === 'babel') {
+	}else if (filepath === 'babel' || filepath.substr(0, 'babel/'.length) === 'babel/' 
+			|| filepath === 'babel-runtime' || filepath.substr(0, 'babel-runtime/'.length) === 'babel-runtime/') {
 		filepath = path.resolve(CAKE_CORE_INCLUDE_PATH, 'node_modules', filepath);
 	} else {
 		for(var word in hook._rules){
