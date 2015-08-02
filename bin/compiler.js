@@ -5,6 +5,7 @@
  */
 
 var babel = require('babel');
+var browserify = require('browserify');
 var path = require('path');
 var fs = require('fs');
 
