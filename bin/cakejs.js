@@ -14,16 +14,30 @@
  * @author      addelajnen
  */
 
+var fs = require('fs');
+
 process.argv.shift();
 process.argv.shift();
+if(typeof process.argv[0] === 'undefined'){
+	console.log("Missing argument");
+	process.exit(1);
+}
 global.BOOTSTRAP = process.argv[0];
 process.argv.shift();
 
 var path = require('path');
 require('./env')();
+if(!fs.existsSync(BOOTSTRAP)){
+	global.BOOTSTRAP = path.resolve(__dirname, '..', 'config/bootstrap.js');
+	global.ROOT = process.cwd();
+	if(!defined("TRANSPILER")){
+		global.APP = path.resolve(ROOT, 'dist', 'src');
+		global.TESTS = path.resolve(ROOT, 'dist', 'tests');
+		global.WWW_ROOT = path.resolve(ROOT, 'dist', 'webroot');
+	}
+}
 require(path.resolve(BOOTSTRAP));
 require('./env')();
-console.log(APP);
 
 var Console = require(require('path').resolve(__filename,'..','..','src','Console', 'Console')).Console;
 

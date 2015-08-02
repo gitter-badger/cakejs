@@ -12,8 +12,6 @@ var mochaConfiguration = {
    'recursive': true
 };
 
-
-var transpile = false;
 var filter = null;
 args.shift();
 args.shift();
@@ -40,20 +38,26 @@ if(!fs.existsSync(path.resolve(testFolder,'TestCase'))){
 	process.exit(1);
 }
 
-var bootstrap = path.resolve(testFolder, 'bootstrap.js');
-if(!fs.existsSync(bootstrap)){
-	bootstrap = path.resolve(testFolder,'..','config', 'bootstrap.js');
-}
-
-if(!fs.existsSync(bootstrap)){
-	console.log("Bootstrap does not exist");
-	process.exit(1);
+global.BOOTSTRAP = path.resolve(testFolder, 'bootstrap.js');
+if(!fs.existsSync(global.BOOTSTRAP)){
+	global.BOOTSTRAP = path.resolve(testFolder,'..','config', 'bootstrap.js');
 }
 
 filter = (typeof args[0] !== 'undefined') ? args[0] : null;
-
-require(bootstrap);
-
+if(!fs.existsSync(global.BOOTSTRAP)){
+	global.BOOTSTRAP = path.resolve(__dirname, '..', 'config/bootstrap.js');
+	global.ROOT = process.cwd();
+	if(!defined("TRANSPILER")){
+		global.APP = path.resolve(ROOT, 'dist', 'src');
+		global.TESTS = path.resolve(ROOT, 'dist', 'tests');
+		global.WWW_ROOT = path.resolve(ROOT, 'dist', 'webroot');
+	}
+}
+if(!fs.existsSync(global.BOOTSTRAP)){
+	console.log("Bootstrap does not exist");
+	process.exit(1);
+}
+require(path.resolve(global.BOOTSTRAP));
 var mochaConfiguration = {
    'slow': 300,
    'timeout': 5000,
