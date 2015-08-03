@@ -1,3 +1,4 @@
+!*
 nbproject
 logs
 *.log
@@ -8,7 +9,6 @@ lib-cov
 coverage
 .grunt
 .lock-wscript
-build
 dist
 node_modules
 lib
