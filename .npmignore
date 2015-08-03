@@ -1,3 +1,5 @@
 /tmp
 Makefile
 .gitignore
+.travis.sql
+.travis.yml

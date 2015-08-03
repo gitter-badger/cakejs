@@ -6,4 +6,4 @@ node_js:
   - "iojs"
   - "iojs-v1.0.4"
 before_script:
-  - "cat config/travis.sql | mysql -uroot"
+  - "cat .travis.sql | mysql -uroot"
