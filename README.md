@@ -4,6 +4,7 @@
 [![npm](https://img.shields.io/npm/l/cakejs.svg?style=flat-square)](LICENSE)
 [![npm](https://img.shields.io/npm/v/cakejs.svg?style=flat-square)]()
 [![npm](https://img.shields.io/npm/dm/cakejs.svg?style=flat-square)]()
+[![npm](https://travis-ci.org/cakejsframework/cakejs.svg?branch=master)](https://travis-ci.org/cakejsframework/cakejs)
 
 CakeJS is a NodeJS framework intended to be used either standalone, remote webserver 
 or with CakePHP, This framework imitates CakePHP 3.x in many ways such as hierarchy,
