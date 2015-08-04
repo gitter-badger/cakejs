@@ -7,15 +7,14 @@
 [![npm](https://travis-ci.org/cakejsframework/cakejs.svg?branch=master)](https://travis-ci.org/cakejsframework/cakejs)
 [![npm](https://david-dm.org/cakejsframework/cakejs.svg)]()
 
-CakeJS is a NodeJS framework intended to be used either standalone, remote webserver 
+CakeJS is a NodeJS framework intended to be used either standalone, with a remote webserver such as Nginx
 or with CakePHP, This framework imitates CakePHP 3.x in many ways such as hierarchy,
-MVC structure without view generation, naming convention, routing.
+Model-Controller structure, naming convention, routing. but at the moment no templating.
 
-The purpose is to make it easy for CakePHP developers to recognize the workflow.
+The purpose is to make it easy for CakePHP developers to use NodeJS.
 
 This is a work in progress and since it's in a early phase, features gets implemented on demand,
-but our current goal is to support Model-Controller structure with low performance impact and make
-projects scalable easy.
+but our current goal is to port as much features as possible from CakePHP to CakeJS so it will be easy to use either with or without CakePHP.
 
 ## Sponsors
 
