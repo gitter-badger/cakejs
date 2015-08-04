@@ -27,7 +27,14 @@ projects scalable easy.
 $ npm install cakejs
 ```
 
-## Examples
-CakeJS Example: https://github.com/Tiinusen/cakejs_example_1
+## Some Handy Links
 
-CakeJS + CakePHP Example: https://github.com/Tiinusen/cakejs_cakephp_example_1
+[CakeJS](https://www.cakejs.net) - The rapid development JS framework.
+
+[CookBook](http://book.cakejs.net) - THE CakeJS user documentation; start learning here!
+
+## Examples
+
+[CakeJS Example](https://github.com/Tiinusen/cakejs_example_1) - Hello World Example
+
+[CakeJS + CakePHP Example](https://github.com/Tiinusen/cakejs_cakephp_example_1) - Unfinished CakePHP + CakeJS Hello World Example
