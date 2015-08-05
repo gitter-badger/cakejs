@@ -30,7 +30,7 @@ $ npm install cakejs
 
 [CakeJS](https://cakejs.net) - The rapid development JS framework.
 
-[CookBook](http://book.cakejs.net) - THE CakeJS user documentation; start learning here!
+[CookBook](https://book.cakejs.net) - THE CakeJS user documentation; start learning here!
 
 ## Examples
 
