@@ -21,15 +21,22 @@ import { ArticlesTable } from 'App/Model/Table/ArticlesTable';
 
 export class FixtureTest extends TestCase
 {
-	fixtures = [ 'app.articles' ];
+	fixtures = [ 'app.articles', 'app.customers' ];
 	autoFixtures = true;
+	
+	async setUp()
+	{
+		await super.setUp();
+		this.Articles = await TableRegistry.get('Articles');
+		this.Customers = await TableRegistry.get('Customers');
+	}
 	
 	/**
 	 * 
 	 */
 	async test_Fixtures_List()
-	{
-		let articles = (await TableRegistry.get('Articles')).query().find('all');
+	{		
+		let articles = this.Articles.query().find('all');
 		articles = await articles.all();
 	}
 	
@@ -38,15 +45,14 @@ export class FixtureTest extends TestCase
 	 */
 	async test_Fixtures_Save()
 	{
-		let articles = await TableRegistry.get('Articles');
-		let article = articles.newEntity();
-		article = await articles.patchEntity(article, {
+		let article = this.Articles.newEntity();
+		article = await this.Articles.patchEntity(article, {
 				id: 999,
 				title: 'Hej',
 				body: 'Testar testar'
 		});
 		
-		let result = await articles.save(article);
+		let result = await this.Articles.save(article);
 		if (!result) {
 			this.assertTrue(false);
 		}
