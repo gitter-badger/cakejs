@@ -112,7 +112,7 @@ class SessionData
 	 * @param {string} keyPath Dot notation path
 	 * @return {boolean} True if exists
 	 */
-	async check(key)
+	async check(keyPath)
 	{
 		if(typeof keyPath !== 'string' || keyPath.trim() === ''){
 			throw new InvalidParameterException(keyPath, 'string');
