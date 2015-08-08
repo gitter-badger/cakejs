@@ -280,9 +280,10 @@ export class Query extends Database.Query
 	
 	/*_all(){}*/
 	
-	toArray()
+	async toArray()
 	{
-		return this.all().toArray();
+		var resultSet = await this.all()
+		return resultSet.toArray();
 	}
 	
 	mapReduce()
