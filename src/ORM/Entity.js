@@ -16,12 +16,14 @@
 //CakeJS.ORM.Entity
 
 // Exceptions
-import {InvalidArgumentException} from '../Exception/InvalidArgumentException';
+import {InvalidArgumentException} from 'Cake/Exception/InvalidArgumentException';
 
-//Utilities
-import {Inflector} from '../Utilities/Inflector';
+// Interfaces
+import {EntityInterface} from 'Cake/Datasource/EntityInterface';
 
-import {EntityInterface} from '../Datasource/EntityInterface';
+// Utilities
+import {Inflector} from 'Cake/Utilities/Inflector';
+import isEmpty from 'Cake/Utilities/isEmpty';
 
 /**
  * Entity class.
