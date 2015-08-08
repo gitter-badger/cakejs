@@ -342,4 +342,14 @@ export class Entity extends EntityInterface
 	{
 		
 	}
+	
+	toArray()
+	{
+		return Object.clone(this._properties);
+	}
+	
+	jsonSerialize()
+	{
+		return this.toArray();
+	}
 }
