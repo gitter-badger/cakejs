@@ -68,6 +68,12 @@ export class ResultSet extends CollectionInterface
 		return result;
 	}
 	
+	forEach(callback)
+	{
+		var results = this.toArray();
+		return results.forEach.call(results, callback);
+	}
+	
 	toObject()
 	{
 		return this.toArray();		
