@@ -115,7 +115,7 @@ export class EntityTest extends TestCase
 	{
 		this.Customers = await TableRegistry.get('Customers');
 		let entity = this.Customers.newEntity();
-		entity = this.Customers.patchEntity(entity, { id: '12345', name: 'Cake', phone: '010-12345' });
+		entity = await this.Customers.patchEntity(entity, { id: '12345', name: 'Cake', phone: '010-12345' });
 		this.assertTrue(await (this.Customers.save(entity) !== false));		
 	}
 	
@@ -129,8 +129,10 @@ export class EntityTest extends TestCase
 		
 		let entity = this.Customers.newEntity();
 		
-		entity = this.Customers.patchEntity(entity, { name: 'Cake', phone: '010-12345' });
-		this.assertTrue(await (this.Customers.save(entity) !== false));
+		entity = await this.Customers.patchEntity(entity, { name: 'Cake', phone: '010-12345' });
+		entity = await this.Customers.save(entity);
+		this.assertTrue(entity !== false, 'entity was not saved');
+		this.assertTrue(typeof entity.id !== 'undefined', 'id was not set on entity after save');
 	}
 	
 	/**

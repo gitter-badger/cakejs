@@ -392,10 +392,11 @@ export class Table
 			success = true;
 		}
 		
-		if (success && isNew) {
+		if (!success && isNew) {
 			entity.unsetProperty(this.primaryKey());
 			entity.isNew(true);
 		}
+		
 		if (success) {
 			return entity;
 		}
@@ -437,15 +438,14 @@ export class Table
 
 		let statement = await this.query().insert(Object.keys(data))
 				.values(data)
-				.execute()
-		
+				.execute();
 		if (statement.rowCount() !== 0) {
 			success = entity;
 			entity.set(filteredKeys, { 'guard': false });
 			let schema = this.schema();
 			let driver = this.connection().driver();
 			await Object.forEach(primary, async (value, key) => {
-				if (key in data) {
+				if (!(key in data)) {
 					let id = statement.lastInsertId(this.table(), key);
 					let type = schema.columnType(key);
 					entity.set(key, Type.build(type).toNode(id, driver));
