@@ -118,7 +118,7 @@ class SessionData
 			throw new InvalidParameterException(keyPath, 'string');
 		}
 		var object = await this.__session.engine.read(this.__session.keyValue);
-		return Hash.has(object, key);
+		return Hash.has(object, keyPath);
 	}
 	
 	/**
