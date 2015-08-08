@@ -16,10 +16,13 @@
 //CakeJS.Database.Type
 
 // Singelton instances
-import {ClassLoader} from '../Core/ClassLoader';
+import {ClassLoader} from 'Cake/Core/ClassLoader';
 
 // Exceptions
-import {NotImplementedException} from '../Exception/NotImplementedException';
+import {NotImplementedException} from 'Cake/Exception/NotImplementedException';
+
+// Utilities
+import isEmpty from 'Cake/Utilities/isEmpty';
 
 export class Type
 {
