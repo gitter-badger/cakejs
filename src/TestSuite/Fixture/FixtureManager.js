@@ -103,29 +103,29 @@ export class FixtureManager
 			return;
 		}
 		
-			let createTables = async (db, fixtures) => {
-				let schemaCollection = db.schemaCollection();
-				let tables = schemaCollection.listTables();
-				for (let f in fixtures) {
-					let fixture = fixtures[f];
-					if (fixture.created.indexOf(db.configName()) === -1) {
-						await this._setupTable(fixture, db, tables, test.dropTables);
-					} else {
-						fixture.truncate(db);
-					}
-				}				
-			}
-			
-			await this._runOperation(fixtures, createTables);
-			
-			let insert = async (db, fixtures) => {
-				for (let f in fixtures) {
-					let fixture = fixtures[f];
-					await fixture.insert(db);
+		let createTables = async (db, fixtures) => {
+			let schemaCollection = db.schemaCollection();
+			let tables = schemaCollection.listTables();
+			for (let f in fixtures) {
+				let fixture = fixtures[f];
+				if (fixture.created.indexOf(db.configName()) === -1) {
+					await this._setupTable(fixture, db, tables, test.dropTables);
+				} else {
+					fixture.truncate(db);
 				}
+			}				
+		}
+
+		await this._runOperation(fixtures, createTables);
+
+		let insert = async (db, fixtures) => {
+			for (let f in fixtures) {
+				let fixture = fixtures[f];
+				await fixture.insert(db);
 			}
-			
-			await this._runOperation(fixtures, insert);
+		}
+
+		await this._runOperation(fixtures, insert);
 	}
 	
 	async _runOperation(fixtures, operation)
@@ -150,11 +150,12 @@ export class FixtureManager
 			let f = fixtures[i];
 			if (f in this._loaded) {
 				let fixture = this._loaded[f];
-				dbs[fixture.connection] = {};
+				if(!(fixture.connection in dbs)){
+					dbs[fixture.connection] = {};
+				}
 				dbs[fixture.connection][f] = fixture;
 			}
 		}
-		
 		return dbs;
 	}
 	
