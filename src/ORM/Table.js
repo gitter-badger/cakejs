@@ -369,6 +369,7 @@ export class Table
 		//options['associated'] = this._associations.normalizeKeys(options['associated']);
 		
 		let data = entity.extract(this.schema().columns(), true);
+		console.log("Data",data);
 		let isNew = entity.isNew();
 		
 		let success = false;
