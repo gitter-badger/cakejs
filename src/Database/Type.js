@@ -19,7 +19,8 @@
 import {ClassLoader} from 'Cake/Core/ClassLoader';
 
 // Exceptions
-import {NotImplementedException} from 'Cake/Exception/NotImplementedException';
+import { NotImplementedException } from 'Cake/Exception/NotImplementedException';
+import { InvalidArgumentException } from 'Cake/Exception/InvalidArgumentException';
 
 // Utilities
 import isEmpty from 'Cake/Utilities/isEmpty';
