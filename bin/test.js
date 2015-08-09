@@ -63,7 +63,6 @@ var mochaConfiguration = {
    'timeout': 5000,
    'ui': 'exports',
    'recursive': true,
-   'grep': filter
 };
 
 var test = new mocha(mochaConfiguration);
