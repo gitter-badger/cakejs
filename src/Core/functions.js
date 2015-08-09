@@ -199,6 +199,20 @@ Object.intersect = function(arr1)
   return retArr;
 }
 
+/**
+ * Creates a new object based on the keys and values
+ */
+Object.combine = function(keys, values)
+{
+	var object = {};
+	keys = Array.cast(keys);
+	values = Array.cast(values);
+	for(let i = 0; i < keys.length; i++){
+		object[keys[i]] = values[i];
+	}
+	return object;
+}
+
 Object.intersectValue = Object.intersect;
 
 Object.equals = function(object1, object2) {
@@ -271,7 +285,7 @@ Array.equals = function (array1, array2) {
         }           
     }       
     return true;
-}   
+}
 
 /*
  * Date Format 1.2.3
@@ -427,4 +441,58 @@ global.mt_rand = function (min, max) {
     max = parseInt(max, 10);
   }
   return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+
+String.prototype.trim = function(charlist)
+{
+	var str = new String(this);
+	//  discuss at: http://phpjs.org/functions/trim/
+	// original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+	// improved by: mdsjack (http://www.mdsjack.bo.it)
+	// improved by: Alexander Ermolaev (http://snippets.dzone.com/user/AlexanderErmolaev)
+	// improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+	// improved by: Steven Levithan (http://blog.stevenlevithan.com)
+	// improved by: Jack
+	//    input by: Erkekjetter
+	//    input by: DxGx
+	// bugfixed by: Onno Marsman
+	//   example 1: trim('    Kevin van Zonneveld    ');
+	//   returns 1: 'Kevin van Zonneveld'
+	//   example 2: trim('Hello World', 'Hdle');
+	//   returns 2: 'o Wor'
+	//   example 3: trim(16, 1);
+	//   returns 3: 6
+
+	var whitespace, l = 0,
+	  i = 0;
+	str += '';
+
+	if (!charlist) {
+	  // default list
+	  whitespace =
+		' \n\r\t\f\x0b\xa0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000';
+	} else {
+	  // preg_quote custom list
+	  charlist += '';
+	  whitespace = charlist.replace(/([\[\]\(\)\.\?\/\*\{\}\+\$\^\:])/g, '$1');
+	}
+
+	l = str.length;
+	for (i = 0; i < l; i++) {
+	  if (whitespace.indexOf(str.charAt(i)) === -1) {
+		str = str.substring(i);
+		break;
+	  }
+	}
+
+	l = str.length;
+	for (i = l - 1; i >= 0; i--) {
+	  if (whitespace.indexOf(str.charAt(i)) === -1) {
+		str = str.substring(0, i + 1);
+		break;
+	  }
+	}
+
+	return whitespace.indexOf(str.charAt(0)) === -1 ? str : '';
 }

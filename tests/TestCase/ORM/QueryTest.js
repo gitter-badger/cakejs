@@ -34,7 +34,7 @@ export class QueryTest extends TestCase
 		var sqlQuery = this.QueryTables
 			.find('all')
 			.sql();
-		this.assertEquals(sqlQuery, "SELECT * FROM query_tests");
+		this.assertEquals(sqlQuery, "SELECT query_tests.id AS `query_tests__id`, query_tests.column_a AS `query_tests__column_a`, query_tests.column_b AS `query_tests__column_b` FROM query_tests");
 	}
 	
 	/**

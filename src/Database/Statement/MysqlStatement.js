@@ -21,6 +21,7 @@ import {PDOStatement} from './PDOStatement';
 export class MysqlStatement extends PDOStatement
 {
 	_results = [];
+	_cursor = 0;
 	_statementInfo = null;
 	async execute(params = null)
 	{
@@ -53,9 +54,36 @@ export class MysqlStatement extends PDOStatement
 		throw new Exception('No insert id was found');
 	}
 	
+	fetch(type = 'num')
+	{
+		if(!(this._cursor in this._results)){
+			return false;
+		}
+		var item = this._results[this._cursor];
+		this._cursor++;
+		if(type === 'num'){
+			return Object.values(item);
+		}
+		return item;
+	}
+	
+	fetchAll(type = 'num')
+	{
+		var items = [];
+		do{
+			var item = this.fetch(type);
+			if(item !== false){
+				items.push(item);
+			}
+		}while(item !== false);
+		return items;
+	}
+	
 	get results()
 	{
 		return this._results;
 	}
+	
+	
 	
 }

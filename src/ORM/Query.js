@@ -146,7 +146,9 @@ export class Query extends Database.Query
 	{
 		//await this.triggerBeforeFind();
 		var statement = await this.execute();
-		return new ResultSet(this, statement);
+		var resultSet = new ResultSet(this, statement);
+		await resultSet.initialize();
+		return resultSet;
 	}
 	
 	_transformQuery()
@@ -173,8 +175,7 @@ export class Query extends Database.Query
 		
 		if(!count(select) || this._autoFields === true){
 			this._hasFields = false;
-			this.select(['*']); //Since I have not solved the schema columns mapping yet
-			//this.select(this.repository().schema().columns());
+			this.select(this.repository().schema().columns());
 			select = this.clause('select');
 		}
 		

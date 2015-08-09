@@ -50,18 +50,21 @@ export class Type
 	
 	static build(name)
 	{
+
 		if(name in Type._builtTypes){
 			return Type._builtTypes[name];
 		}
-		
+
 		if(name in Type._basicTypes){
 			return Type._builtTypes[name] = new this(name);
 		}
-		
+
 		if(!(name in Type._types)){
 			throw new InvalidArgumentException(sprintf('Unknown type "%s"', name));
 		}
+
 		var ClassPrototype = ClassLoader.loadClass(Type._types[name]);
+
 		return Type._builtTypes[name] = new ClassPrototype(name);
 	}
 	
