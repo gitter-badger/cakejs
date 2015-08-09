@@ -21,9 +21,9 @@ done
 if [ "$1" = "test" ]; then
 	shift $((OPTIND))
 	if [ $TRANSPILE -eq 1 ]; then
-		node $FILEPATH/transpiler.js $FILEPATH/test.js tests $2
+		node $FILEPATH/transpiler.js $FILEPATH/test.js tests $1
 	else
-		node $FILEPATH/../dist/bin/test.js dist/tests $1
+		node $FILEPATH/../dist/bin/test.js dist/tests $2
 	fi
 	exit $?
 fi
