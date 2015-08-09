@@ -152,6 +152,8 @@ export class Entity extends EntityInterface
 				value = this[setter](value);
 			}
 			
+			console.log(value);
+			
 			this._properties[key] = value;
 		}
 		
