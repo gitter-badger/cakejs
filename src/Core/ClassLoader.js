@@ -17,6 +17,7 @@
 
 //Singelton instances
 import {Configure} from './Configure';
+import hook from 'hook';
 
 //Types
 import {ClassNotFoundException} from './Exception/ClassNotFoundException';
@@ -74,24 +75,28 @@ export class ClassLoader
 	 */
 	static loadClass(className, relativePath = null)
 	{
-		if(relativePath === null || className.indexOf("/") !== -1){
-			relativePath = className.split("/");
-			className = relativePath.pop();
-			relativePath = relativePath.join("/");
-		}
-		var key = relativePath+"|"+className;
+		var key = (relativePath===null?'':relativePath)+"|"+className;
 		if(key in ClassLoader._classes){
 			return ClassLoader._classes[key];
 		}
-		if(className.indexOf('.') !== -1){
-			var [plugin, className] = className.split('.');
-			className = path.resolve(ROOT, Configure.read("App.paths.plugins"),plugin,'src',relativePath,className);
-		}else if(fs.existsSync(path.resolve(APP,'..',Configure.read("App.dir"),relativePath,className)+".js")){
-			className = path.resolve(APP,'..',Configure.read("App.dir"),relativePath,className);
-		}else{
-			className = path.resolve(CAKE,relativePath,className);
+		if(relativePath !== null){
+			relativePath = relativePath.replace(/\/\//g, '/').replace(/\/$/g, '');
+			if(className.indexOf("/") !== -1){
+				relativePath = className.split("/");
+				className = relativePath.pop();
+				relativePath = relativePath.join("/");
+			}
+			if(className.indexOf('.') !== -1){
+				var [plugin, className] = className.split('.');
+				className = path.resolve(ROOT, Configure.read("App.paths.plugins"),plugin,'src',relativePath,className);
+			}else if(fs.existsSync(path.resolve(APP,'..',Configure.read("App.dir"),relativePath,className)+".js")){
+				className = path.resolve(APP,'..',Configure.read("App.dir"),relativePath,className);
+			}else{
+				className = path.resolve(CAKE,relativePath,className);
+			}
+			className += '.js';
 		}
-		className = className+".js";
+		className = hook.resolve(className);
 		if(!fs.existsSync(className)){
 			throw new FileMissingException(className);
 		}

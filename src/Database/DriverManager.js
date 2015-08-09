@@ -18,7 +18,7 @@
 //Types
 import {MissingConfigException} from '../Exception/MissingConfigException'
 import {NotImplementedException} from '../Exception/NotImplementedException'
-import {Mysql} from './Driver_/Mysql'
+import {Mysql} from './Driver/Mysql'
 
 
 export class DriverManager

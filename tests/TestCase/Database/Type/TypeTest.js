@@ -20,6 +20,10 @@ import { TestCase } from 'Cake/TestSuite/TestCase';
 import { TableRegistry } from 'Cake/ORM/TableRegistry';
 import { Type } from 'Cake/Database/Type';
 import { IntegerType } from 'Cake/Database/Type/IntegerType';
+import { TestType } from 'App/Database/Type/TestType';
+
+Type.map('test', 'App/Database/Type/TestType');
+
 
 export class TypeTest extends TestCase
 {
@@ -30,5 +34,14 @@ export class TypeTest extends TestCase
 	{
 		var type = Type.build('biginteger');
 		this.assertType(type, IntegerType);
+	}
+	
+	/**
+	 * Tests Type build and assert the type returned by the static method build
+	 */
+	testCustomBuild()
+	{
+		var type = Type.build('test');
+		this.assertType(type, TestType);
 	}
 }

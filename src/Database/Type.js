@@ -27,16 +27,16 @@ import isEmpty from 'Cake/Utilities/isEmpty';
 export class Type
 {
 	static _types = {
-		'biginteger': 'IntegerType',
-		'binary': 'BinaryType',
-		'date': 'DateType',
-		'float': 'FloatType',
-		'decimal': 'FloatType',
-		'integer': 'IntegerType',
-		'time': 'TimeType',
-		'datetime': 'DateTimeType',
-		'timestamp': 'DateTimeType',
-		'uuid': 'UuidType'
+		'biginteger': 'Cake/Database/Type/IntegerType',
+		'binary': 'Cake/Database/Type/BinaryType',
+		'date': 'Cake/Database/Type/DateType',
+		'float': 'Cake/Database/Type/FloatType',
+		'decimal': 'Cake/Database/Type/FloatType',
+		'integer': 'Cake/Database/Type/IntegerType',
+		'time': 'Cake/Database/Type/TimeType',
+		'datetime': 'Cake/Database/Type/DateTimeType',
+		'timestamp': 'Cake/Database/Type/DateTimeType',
+		'uuid': 'Cake/Database/Type/UuidType'
 	};
 
 	static _basicTypes = {
@@ -60,8 +60,23 @@ export class Type
 		if(!(name in Type._types)){
 			throw new InvalidArgumentException(sprintf('Unknown type "%s"', name));
 		}
-		var ClassPrototype = ClassLoader.loadClass(Type._types[name], 'Database/Type');
+		var ClassPrototype = ClassLoader.loadClass(Type._types[name]);
 		return Type._builtTypes[name] = new ClassPrototype(name);
+	}
+	
+	static map(type = null, className = null)
+	{
+		if(type === null){
+			return Type._types;
+		}
+		if(typeof type !== 'string'){
+			Type._types = type;
+			return;
+		}
+		if(className === null){
+			return (type in Type._types) ? Type._types[type] : null;
+		}
+		Type._types[type] = className;
 	}
 
 	_name = null;

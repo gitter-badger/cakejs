@@ -16,7 +16,7 @@
 //CakeJS.Core.Configure
 
 //Types
-import {JsonConfig} from './Configure_/Engine/JsonConfig';
+import {JsonConfig} from './Configure/Engine/JsonConfig';
 import {Collection} from '../Collection/Collection';
 
 //Exceptions
