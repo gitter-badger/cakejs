@@ -75,5 +75,15 @@ export class TypeTest extends TestCase
 			},
 			"company": "appendTo"
 		}, customType.json);
+		customType.json = {
+			"a": "a",
+			"b": "b"
+		}
+		await this.CustomTypes.save(customType);
+		var customType = await this.CustomTypes.find().where({id: 'ffe82dc6-e199-d2fb-f03d-8435239b4436'}).first();
+		this.assertEquals({
+			"a": "a",
+			"b": "b"
+		}, customType.json);
 	}
 }

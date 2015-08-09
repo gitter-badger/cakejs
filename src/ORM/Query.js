@@ -55,9 +55,9 @@ export class Query extends Database.Query
 		var alias = table.alias();
 		var schema = table.schema();
 		var fields = [];
-		/*for(var f of schema.columns()){
+		for(var f of schema.columns()){
 			fields[f] = fields[alias+'.'+f] = schema.columnType(f);
-		}*/
+		}
 		this.defaultTypes(fields);
 		
 		return this;

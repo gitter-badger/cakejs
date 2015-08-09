@@ -23,7 +23,11 @@ export class JsonType extends Type
 		if(value === null){
 			return null;
 		}
-		return JSON.parse(value);
+		try{
+			return JSON.parse(value);
+		}catch(e){
+			return null;
+		}
 	}
 	
 	marshal(value)
