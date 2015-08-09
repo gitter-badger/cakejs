@@ -54,6 +54,15 @@ export class Entity extends EntityInterface
 				this.set(key, properties[key]);				
 			}			
 		}
+		
+		// Creating virtual properties
+		var methods = Object.getOwnPropertyNames(Object.getPrototypeOf(this));
+		for(let method of methods){
+			if(/^\_get/.test(method) || /^\_set/.test(method)){
+				method = method.substr(4);
+				this.createProperties(Inflector.underscore(method));
+			}
+		}
 	}
 	
 	/**
@@ -80,10 +89,11 @@ export class Entity extends EntityInterface
 		if(typeof key !== 'string'){
 			throw new Exception("Key must be a string");
 		}
+
 		if (this.hasOwnProperty(key) === false) {
 			Object.defineProperty(this, key, {
 				set: (x) => { this.set(key, x); },
-				get: () => { return this._properties[key]; }
+				get: () => { return this.get(key); }
 			});				
 		}
 	}
@@ -135,7 +145,13 @@ export class Entity extends EntityInterface
 			if ('setter' in options && options['setter'] !== true) {
 				this._properties[key] = value;
 				continue;
-			}						
+			}
+			
+			let setter = '_set' + Inflector.camelize(key);
+			if(this._methodExists(setter)){
+				value = this[setter](value);
+			}
+			
 			this._properties[key] = value;
 		}
 		
@@ -161,11 +177,21 @@ export class Entity extends EntityInterface
 			value = this._properties[property];
 		}
 
-		/**
-		 * @todo: Fix setters.
-		 */
+		let method = '_get' + Inflector.camelize(property);
+		if(this._methodExists(method)){
+			let result = this[method](value);
+			return result;
+		}
 		
 		return value;
+	}
+	
+	_methodExists(method)
+	{
+		/**
+		 * @todo Port this feature properly
+		 */
+		return typeof this[method] === 'function';
 	}
 	
 	/**

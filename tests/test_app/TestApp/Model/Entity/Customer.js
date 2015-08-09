@@ -16,4 +16,16 @@
 import { Entity } from 'Cake/ORM/Entity';
 
 export class Customer extends Entity {	
+	_getDisplayField()
+	{
+		return String.sprintf('%s (%s)',this._properties['name'],this._properties['phone']);
+	}
+	
+	_setMiddleName(middleName)
+	{
+		let split = this._properties['name'].split(' ');
+		let firstName = split[0];
+		let lastName = split[split.length - 1];
+		this._properties['name'] = String.sprintf('%s %s %s', firstName, middleName, lastName);
+	}
 }

@@ -24,6 +24,12 @@ export class EntityTest extends TestCase
 {
 	fixtures = [ 'app.customers' ];
 	
+	async setUp()
+	{
+		await super.setUp();
+		this.Customers = await TableRegistry.get('Customers');
+	}
+	
 	/**
 	 * 
 	 */
@@ -48,7 +54,7 @@ export class EntityTest extends TestCase
 		let key = 'TestProperty';
 		let value = 94;
 		
-		let customers = (await TableRegistry.get('Customers')).newEntity();
+		let customers = await this.Customers.newEntity();
 		
 		customers.set(key, value);
 		this.assertTrue(customers.has(key));
@@ -56,6 +62,30 @@ export class EntityTest extends TestCase
 		
 		customers.unsetProperty(key);
 		this.assertFalse(customers.has(key));
+	}
+	
+	async test_Properties_Getter()
+	{
+		let customer = await this.Customers.find()
+			.where({
+				name: 'John Doe'
+			})
+			.first();
+		this.assertEquals(customer.display_field, 'John Doe (010-12345)');
+	}
+	
+	async test_Properties_Setter()
+	{
+		let customer = await this.Customers.find()
+			.where({
+				name: 'John Doe'
+			})
+			.first();
+		customer.middle_name = "Robert";
+		this.assertEquals(customer.display_field, 'John Robert Doe (010-12345)');
+		customer.middle_name = "Erik";
+		customer.phone = '015-51515'
+		this.assertEquals(customer.display_field, 'John Erik Doe (015-51515)');
 	}
 	
 	/**
@@ -68,8 +98,6 @@ export class EntityTest extends TestCase
 			name: 'Cake',
 			phone: '010-12345'
 		};
-		
-		this.Customers = await TableRegistry.get('Customers');
 		
 		var entity = this.Customers.newEntity(expected);
 		
@@ -88,8 +116,6 @@ export class EntityTest extends TestCase
 			phone: '01012345'
 		};
 		
-		this.Customers = await TableRegistry.get('Customers');
-		
 		var entity = this.Customers.newEntity();
 		entity = await this.Customers.patchEntity(entity, expected);
 		this.assertTextEquals(expected.name, entity.name);
@@ -102,7 +128,6 @@ export class EntityTest extends TestCase
 	 */
 	async test_Table_Count()
 	{
-		this.Customers = await TableRegistry.get('Customers');
 		let results = await this.Customers.find('all').all();
 		let count = results.count();
 	}
@@ -113,7 +138,6 @@ export class EntityTest extends TestCase
 	
 	async test_Table_NewId()
 	{
-		this.Customers = await TableRegistry.get('Customers');
 		let entity = this.Customers.newEntity();
 		entity = await this.Customers.patchEntity(entity, { id: '12345', name: 'Cake', phone: '010-12345' });
 		this.assertTrue(await (this.Customers.save(entity) !== false));		
@@ -124,7 +148,6 @@ export class EntityTest extends TestCase
 	 */
 	async test_Table_SaveAndLoadEntities()
 	{
-		this.Customers = await TableRegistry.get('Customers');
 		let entities = await this.Customers.find('all').first();
 		
 		let entity = this.Customers.newEntity();
@@ -140,9 +163,7 @@ export class EntityTest extends TestCase
 	 */
 	async testToArray()
 	{
-		this.Customers = await TableRegistry.get('Customers');
-		let entities = await this.Customers.find('all').all();		
-	}
-	
+		let entities = await this.Customers.find('all').all();
+	}	
 	
 }
