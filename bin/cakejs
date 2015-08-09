@@ -1,5 +1,8 @@
 #!/bin/sh
 
+OPTIND=1
+
+
 FILEPATH=$(dirname $0)
 
 TRANSPILE=1
@@ -8,11 +11,11 @@ REBUILD=1
 while getopts ":cf" opt; do
 	case $opt in
 		c)
-			shift $((OPTIND-1))
+			shift "$((OPTIND-1))"
 			TRANSPILE=0
 			;;
 		f)
-			shift $((OPTIND-1))
+			shift "$((OPTIND-1))"
 			REBUILD=0
 			;;
 	esac
@@ -21,9 +24,9 @@ done
 if [ "$1" = "test" ]; then
 	shift $((OPTIND))
 	if [ $TRANSPILE -eq 1 ]; then
-		node $FILEPATH/transpiler.js $FILEPATH/test.js tests $1
+		node $FILEPATH/transpiler.js $FILEPATH/test.js tests $@
 	else
-		node $FILEPATH/../dist/bin/test.js dist/tests $2
+		node $FILEPATH/../dist/bin/test.js dist/tests $@
 	fi
 	exit $?
 fi
