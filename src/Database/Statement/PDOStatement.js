@@ -32,10 +32,10 @@ export class PDOStatement extends StatementDecorator
 			type = 'string';
 		}
 		
-		
-		if(/^[0-9]{1,}$/.test(type)){
+		if(!/^[0-9]{1,}$/.test(type)){
 			var [value, type] = this.cast(value, type);
 		}
+		
 		this._columns[column] = value;
 	}
 	

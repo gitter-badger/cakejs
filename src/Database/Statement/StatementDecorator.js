@@ -16,11 +16,12 @@
 //CakeJS.Database.Statement.StatementDecorator
 
 //Types
-import {StatementInterface} from '../StatementInterface';
+import { StatementInterface } from 'Cake/Database/StatementInterface';
+import { Type } from 'Cake/Database/Type';
 
 //Utilities
-import isEmpty from '../../Utilities/isEmpty';
-import isNumeric from '../../Utilities/isEmpty';
+import isEmpty from 'Cake/Utilities/isEmpty';
+import isNumeric from 'Cake/Utilities/isEmpty';
 
 export class StatementDecorator extends StatementInterface {
 	constructor(statement = null, driver = null)
@@ -44,5 +45,17 @@ export class StatementDecorator extends StatementInterface {
 			}
 			this.bindValue(index, value, type);						
 		}
+	}
+	
+	cast(value, type)
+	{
+		if(typeof type === 'string'){
+			type = Type.build(type);
+		}
+		if(type instanceof Type){
+			value = type.toDatabase(value, this._driver);
+			type = type.toStatement(value, this._driver);
+		}
+		return [value, type];
 	}
 }
