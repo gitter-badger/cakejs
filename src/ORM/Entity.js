@@ -151,7 +151,7 @@ export class Entity extends EntityInterface
 			if(this._methodExists(setter)){
 				value = this[setter](value);
 			}
-			console.log(value);
+			
 			this._properties[key] = value;
 		}
 		
