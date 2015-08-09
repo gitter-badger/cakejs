@@ -86,6 +86,14 @@ export class EntityTest extends TestCase
 		customer.middle_name = "Erik";
 		customer.phone = '015-51515'
 		this.assertEquals(customer.display_field, 'John Erik Doe (015-51515)');
+		await this.Customers.save(customer);
+		customer = await this.Customers.find()
+			.where({
+				name: 'John Erik Doe'
+			})
+			.first();
+		this.assertEquals('John Erik Doe', customer.name);
+		this.assertEquals('015-51515', customer.phone);
 	}
 	
 	/**

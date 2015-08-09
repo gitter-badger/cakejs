@@ -26,6 +26,16 @@ export class Customer extends Entity {
 		let split = this._properties['name'].split(' ');
 		let firstName = split[0];
 		let lastName = split[split.length - 1];
-		this._properties['name'] = String.sprintf('%s %s %s', firstName, middleName, lastName);
+		this.set('name', String.sprintf('%s %s %s', firstName, middleName, lastName));
+	}
+	
+	_setPhone(value)
+	{
+		return value;
+	}
+	
+	_getPhone()
+	{
+		return this._properties['phone'];
 	}
 }
