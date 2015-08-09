@@ -34,7 +34,7 @@ export class PDOStatement extends StatementDecorator
 		
 		
 		if(/^[0-9]{1,}$/.test(type)){
-			//var [value, type] = this.cast(value, type);
+			var [value, type] = this.cast(value, type);
 		}
 		this._columns[column] = value;
 	}
