@@ -16,27 +16,9 @@
 //CakeJS.Database.Type.DateType
 
 //Types
-import {Type} from '../Type';
+import { DateTimeType } from 'Cake/Database/Type/DateTimeType';
 
-export class DateType extends Type
+export class DateType extends DateTimeType
 {
-	toDatabase(value, driver)
-	{
-		if(value === null || typeof value === 'string'){
-			return value;
-		}
-		if(typeof value === 'number'){
-			value = new Date(value);
-		}
-		return value.format('mysqlDate');
-	}
-	
-	toNode(value, driver)
-	{
-		if(typeof value !== 'object'){
-			value = new Date(value);
-		}
-		
-		return value;
-	}	
+	_format = 'yyyy-mm-dd';
 }

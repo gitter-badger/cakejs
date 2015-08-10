@@ -16,27 +16,80 @@
 //CakeJS.Database.Type.DateTimeType
 
 //Types
-import {Type} from '../Type';
+import {Type} from 'Cake/Database/Type';
 
 export class DateTimeType extends Type
 {
+	_format = 'yyyy-mm-dd HH:MM:ss';
+	
 	toDatabase(value, driver)
 	{
-		if(value === null || typeof value === 'string'){
-			return value;
+		if(value === null || (typeof value === 'string' && /^[0\-\: ]{1,}$/.test(value))){
+			return null;
 		}
-		if(typeof value === 'number'){
-			value = new Date(value);
+		
+		if(typeof value === 'string' && /^[0-9]{2}\:[0-9]{2}\:[0-9]{2}$/.test(value)){
+			value = new Date().format('yyyy-mm-dd')+" "+value;
 		}
-		return value.format('mysqlDateTime');
+		
+		if(typeof value === 'number' || typeof value === 'string'){
+			try{
+				value = new Date(value);
+			}catch(e){
+				return null;
+			}
+		}
+		
+		if(typeof value !== 'object' || !(value instanceof Date)){
+			return null;
+		}
+		
+		return value.format(this._format);
 	}
 	
 	toNode(value, driver)
 	{
-		if(typeof value !== 'object'){
-			value = new Date(value);
+		if(value === null || (typeof value === 'string' && /^[0\-\: ]{1,}$/.test(value))){
+			return null;
 		}
 		
-		return value;
-	}	
+		if(typeof value === 'object' && value instanceof Date){
+			value = value.format(this._format);
+		}
+		
+		if(typeof value === 'string' && /^[0-9]{2}\:[0-9]{2}\:[0-9]{2}$/.test(value)){
+			value = new Date().format('yyyy-mm-dd')+" "+value;
+		}
+		
+		return new Date(value);
+	}
+	
+	marshal(value)
+	{
+		if(value === null || value === false || value === true || (typeof value === 'string' && value.trim() === '') || (typeof value === 'string' && /^[0\-\: ]{1,}$/.test(value))){
+			return null;
+		}
+	
+		if(typeof value === 'string' && /^[0-9]{2}\:[0-9]{2}\:[0-9]{2}$/.test(value)){
+			value = new Date().format('yyyy-mm-dd')+" "+value;
+		}
+		
+		if(typeof value !== 'object'){
+			try{
+				value = new Date(value);
+			}catch(e){
+				return null;
+			}
+		}
+
+		if(typeof value === 'object' && value instanceof Date){
+			value = value.format(this._format);
+		}
+		
+		if(typeof value === 'string' && /^[0-9]{2}\:[0-9]{2}\:[0-9]{2}$/.test(value)){
+			value = new Date().format('yyyy-mm-dd')+" "+value;
+		}
+		
+		return new Date(value);
+	}
 }

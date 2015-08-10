@@ -37,7 +37,8 @@ export class Type
 		'time': 'Cake/Database/Type/TimeType',
 		'datetime': 'Cake/Database/Type/DateTimeType',
 		'timestamp': 'Cake/Database/Type/DateTimeType',
-		'uuid': 'Cake/Database/Type/UuidType'
+		'uuid': 'Cake/Database/Type/UuidType',
+		'json': 'Cake/Database/Type/JsonType'
 	};
 
 	static _basicTypes = {
