@@ -28,12 +28,13 @@ Type.map('json', 'Cake/Database/Type/JsonType');
 
 export class TypeTest extends TestCase
 {
-	fixtures = ['app.custom_types'];
+	fixtures = ['app.custom_types', 'app.types'];
 	
 	async setUp()
 	{
 		await super.setUp();
 		this.CustomTypes = await TableRegistry.get('CustomTypes');
+		this.Types = await TableRegistry.get('Types');
 	}
 	
 	/**
@@ -85,5 +86,24 @@ export class TypeTest extends TestCase
 			"a": "a",
 			"b": "b"
 		}, customType.json);
+	}
+	
+	async testDateTypes()
+	{
+		var entity = await this.Types.find().first();
+		this.assertEquals('2014-04-18', entity.date.format('yyyy-mm-dd'));
+		this.assertEquals('2014-04-18 15:00:00', entity.datetime.format('yyyy-mm-dd HH:MM:ss'));
+		this.assertEquals('15:00:00', entity.time.format('HH:MM:ss'));
+		
+		entity.date = '2014-05-18';
+		entity.datetime = '2014-05-18 16:00:00';
+		entity.time = '16:00:00';
+		
+		await this.Types.save(entity);
+		var entity = await this.Types.find().first();
+		
+		this.assertEquals('2014-05-18', entity.date.format('yyyy-mm-dd'));
+		this.assertEquals('2014-05-18 16:00:00', entity.datetime.format('yyyy-mm-dd HH:MM:ss'));
+		this.assertEquals('16:00:00', entity.time.format('HH:MM:ss'));
 	}
 }
