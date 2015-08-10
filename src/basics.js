@@ -24,6 +24,8 @@ var path = require('path');
  * Path related
  */
 
+//Added test comment two
+
 if(!('DS' in global)){
 	global.DS = '/';
 }
