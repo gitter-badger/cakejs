@@ -28,7 +28,7 @@ import {MysqlStatement} from '../Statement/MysqlStatement';
 import {MysqlSchema} from '../Schema/MysqlSchema';
 
 //Requires
-var mysql = require('mysql2');
+var mysql = require('mysql');
 
 export class Mysql extends Driver
 {
@@ -136,7 +136,7 @@ export class Mysql extends Driver
 						}
 						sql = newSql;
 						placeholderData = newPlaceholderData;
-						this._connection.execute(sql, placeholderData, (error, rows, fields) => {
+						this._connection.query(sql, placeholderData, (error, rows, fields) => {
 							if(error){
 								return inner_reject(error);
 							}
