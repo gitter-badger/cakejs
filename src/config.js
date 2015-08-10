@@ -13,7 +13,7 @@ System.config({
     "npm:*": "jspm_packages/npm/*"
   }
 });
-// Test
+
 System.config({
   "map": {
     "babel": "npm:babel-core@5.8.19",
@@ -32,4 +32,3 @@ System.config({
     }
   }
 });
-
