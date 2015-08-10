@@ -390,7 +390,7 @@ export class TestCase
 					try{
 						try{
 							await response;
-							this.fail(String.sprintf('Did throw error (%s). "%s"',e.message,message));
+							this.fail(String.sprintf('Did throw error (%s). %s',e.message,message));
 						}catch(e){
 							//Failure
 							resolve(true);
@@ -403,7 +403,7 @@ export class TestCase
 		}catch(e){
 			return true;
 		}
-		this.fail(String.sprintf('Did not throw error. "%s"',message));
+		this.fail(String.sprintf('Did not throw error. %s',message));
 	}
 	
 	/**
@@ -426,7 +426,7 @@ export class TestCase
 							resolve(true);
 						}catch(e){
 							//Failure
-							this.fail(String.sprintf('Did throw error (%s). "%s"',e.message,message));
+							this.fail(String.sprintf('Did throw error (%s). %s',e.message,message));
 						}
 					}catch(e){
 						reject(e);
@@ -435,7 +435,7 @@ export class TestCase
 			}
 		}catch(e){
 			//Failure
-			this.fail(String.sprintf('Did throw error (%s). "%s"',e.message,message));
+			this.fail(String.sprintf('Did throw error (%s). %s',e.message,message));
 		}
 		return true;
 	}
