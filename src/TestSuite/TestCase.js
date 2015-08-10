@@ -384,12 +384,26 @@ export class TestCase
 	assertThrowError(func, message = '')
 	{
 		try{
-			func();
+			var response = func();
+			if(response !== null && typeof response === 'object' && response instanceof Promise){
+				return new Promise(async (resolve, reject) => {
+					try{
+						try{
+							await response;
+							this.fail(String.sprintf('Did throw error (%s). "%s"',e.message,message));
+						}catch(e){
+							//Failure
+							resolve(true);
+						}
+					}catch(e){
+						resolve(true);
+					}
+				});
+			}
 		}catch(e){
-			//Success
 			return true;
 		}
-		this.fail('Did not throw error. '+message);
+		this.fail(String.sprintf('Did not throw error. "%s"',message));
 	}
 	
 	/**
@@ -403,10 +417,25 @@ export class TestCase
 	assertNotThrowError(func, message = '')
 	{
 		try{
-			func();
+			var response = func();
+			if(response !== null && typeof response === 'object' && response instanceof Promise){
+				return new Promise(async (resolve, reject) => {
+					try{
+						try{
+							await response;
+							resolve(true);
+						}catch(e){
+							//Failure
+							this.fail(String.sprintf('Did throw error (%s). "%s"',e.message,message));
+						}
+					}catch(e){
+						reject(e);
+					}
+				});
+			}
 		}catch(e){
 			//Failure
-			this.fail('Did throw error. '+message);
+			this.fail(String.sprintf('Did throw error (%s). "%s"',e.message,message));
 		}
 		return true;
 	}
