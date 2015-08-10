@@ -90,7 +90,7 @@ export class TypeTest extends TestCase
 	
 	async testDateTypes()
 	{
-		var entity = await this.Types.find().first();
+		var entity = await this.Types.find().where({id: 'e4e5c2f9-1d8c-e8cd-410b-4b906b1bae8e'}).first();
 		this.assertEquals('2014-04-18', entity.date.format('yyyy-mm-dd'));
 		this.assertEquals('2014-04-18 15:00:00', entity.datetime.format('yyyy-mm-dd HH:MM:ss'));
 		this.assertEquals('15:00:00', entity.time.format('HH:MM:ss'));
@@ -100,7 +100,7 @@ export class TypeTest extends TestCase
 		entity.time = '16:00:00';
 		
 		await this.Types.save(entity);
-		var entity = await this.Types.find().first();
+		var entity = await this.Types.find().where({id: 'e4e5c2f9-1d8c-e8cd-410b-4b906b1bae8e'}).first();
 		
 		this.assertEquals('2014-05-18', entity.date.format('yyyy-mm-dd'));
 		this.assertEquals('2014-05-18 16:00:00', entity.datetime.format('yyyy-mm-dd HH:MM:ss'));
@@ -111,10 +111,16 @@ export class TypeTest extends TestCase
 		entity.time = null;
 		
 		await this.Types.save(entity);
-		var entity = await this.Types.find().first();
+		var entity = await this.Types.find().where({id: 'e4e5c2f9-1d8c-e8cd-410b-4b906b1bae8e'}).first();
 		
 		this.assertEquals(null, entity.date);
 		this.assertEquals(null, entity.datetime);
 		this.assertEquals(null, entity.time);
+		await new Promise((resolve) => {
+			setTimeout(resolve, 2000);
+		});
+		/*await this.assertNotThrowError(async () => {
+			var entity = await this.Types.find().where({id: 'e4e5c2f9-1d8c-e8cd-410b-4b906b1bae8f'}).first();
+		}, "Unable to handle date correctly");*/
 	}
 }
