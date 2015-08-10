@@ -126,11 +126,16 @@ export class Mysql extends Driver
 				if(!this._connected){
 					await this.connect();
 				}
-				
-				//console.log("SQL BEGIN");
 				var result = await new Promise((inner_resolve, inner_reject) => {
 					try{
-						this._connection.config.namedPlaceholders = true;
+						let newSql = sql;
+						let newPlaceholderData = [];
+						for(let key of Object.keys(placeholderData).reverse()){
+							newSql = newSql.replace(new RegExp(':'+key, 'g'), '?');
+							newPlaceholderData.unshift(placeholderData[key]);
+						}
+						sql = newSql;
+						placeholderData = newPlaceholderData;
 						this._connection.execute(sql, placeholderData, (error, rows, fields) => {
 							if(error){
 								return inner_reject(error);
@@ -141,7 +146,6 @@ export class Mysql extends Driver
 						return inner_reject(error);
 					}
 				});
-				//console.log("SQL END");
 				resolve(result);
 			}catch(error){
 				reject(new Exception(String.sprintf("Mysql Error: (%s) with query (%s)", error, sql)));
