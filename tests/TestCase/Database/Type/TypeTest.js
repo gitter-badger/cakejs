@@ -105,5 +105,16 @@ export class TypeTest extends TestCase
 		this.assertEquals('2014-05-18', entity.date.format('yyyy-mm-dd'));
 		this.assertEquals('2014-05-18 16:00:00', entity.datetime.format('yyyy-mm-dd HH:MM:ss'));
 		this.assertEquals('16:00:00', entity.time.format('HH:MM:ss'));
+		
+		entity.date = null;
+		entity.datetime = null;
+		entity.time = null;
+		
+		await this.Types.save(entity);
+		var entity = await this.Types.find().first();
+		
+		this.assertEquals(null, entity.date);
+		this.assertEquals(null, entity.datetime);
+		this.assertEquals(null, entity.time);
 	}
 }
