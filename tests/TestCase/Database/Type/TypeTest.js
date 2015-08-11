@@ -119,5 +119,11 @@ export class TypeTest extends TestCase
 		await this.assertNotThrowError(async () => {
 			var entity = await this.Types.find().where({id: 'e4e5c2f9-1d8c-e8cd-410b-4b906b1bae8f'}).first();
 		}, "Unable to handle date correctly");
+		this.assertEquals(null, entity.date);
+		this.assertEquals(null, entity.datetime);
+		this.assertEquals(null, entity.time);
+		await this.assertNotThrowError(async () => {
+			var entity = await this.Types.find().where({id: 'e4e5c2f9-1d8c-e8cd-410b-4b906b1baeff'}).first();
+		}, "Unable to handle date correctly");
 	}
 }

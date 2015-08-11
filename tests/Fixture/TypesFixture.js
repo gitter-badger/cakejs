@@ -38,9 +38,15 @@ export class TypesFixture extends TestFixture
 		},
 		{
 			id: 'e4e5c2f9-1d8c-e8cd-410b-4b906b1bae8f',
-			date: new Date().format("yyyy-mm-dd"), // @todo Shall be adjusted to date, after mysql switch
-			time: new Date().format("HH:MM:ss"),
-			datetime: new Date().format("yyyy-mm-dd HH:MM:ss")
+			date: '0000-00-00',
+			time: '00:00:00',
+			datetime: '0000-00-00 00:00:00'
+		},
+		{
+			id: 'e4e5c2f9-1d8c-e8cd-410b-4b906b1baeff',
+			date: new Date(),
+			time: new Date(),
+			datetime: new Date()
 		}
 	];
 }
