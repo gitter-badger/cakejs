@@ -238,10 +238,34 @@ export class TestFixture
 			types[i] = this._schema.column(fields[i])['type'];
 		}
 		
-		for (let i = 0; i < this.records.length; i++) {
-			let record = this.records[i];			
-			values.push(record);
+		let columnsWithType = Object.combine(fields, types);
+		
+		for (let record of this.records) {
+			// Casts some default javascript types to avoid errors in fixtures
+			let newRecord = {};
+			Object.forEachSync(record, (value, key) => {
+				switch(columnsWithType[key]){
+					case "date":
+						if(typeof value === 'object' && value instanceof Date){
+							value = value.format('yyyy-mm-dd');
+						}
+						break;
+					case "time":
+						if(typeof value === 'object' && value instanceof Date){
+							value = value.format('HH:MM:ss');
+						}
+						break;
+					default:
+						if(typeof value === 'object' && value instanceof Date){
+							value = value.format('yyyy-mm-dd HH:MM:ss');
+						}
+						break;
+				}
+				newRecord[key] = value;
+			});
+			values.push(newRecord);
 		}
+		
 		
 		let result = { 'fields': fields, 'values': values, 'types': types };
 		
