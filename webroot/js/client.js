@@ -10,14 +10,6 @@
  * @license     http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-var itemIndexCounter = 1;
-var sio = io.connect();
-sio.on('error', function(error){
-	if(error === "BAD"){
-		window.location.reload(true);
-	}
-});
-
 class Request 
 {
 	constructor(args)
@@ -65,9 +57,10 @@ class Request
 
 class Item 
 {
+	static _itemIndexCounter = 1;
 	constructor(args, timeout)
 	{
-		this.index = itemIndexCounter++;
+		this.index = Item._itemIndexCounter++;
 		this.request = new Request(args);
 		this.timeout = typeof timeout === 'undefined' ? 60*1000 : timeout;
 		this.resolve = null;
@@ -82,18 +75,43 @@ class Item
 			var timeout = setTimeout(() => {
 				timeout = null;
 			}, this.timeout);
-			this._run().then((response) => {
-				if(timeout !== null){
-					clearTimeout(timeout);
-					timeout = null;
+			new Promise((iresolve, ireject) => {
+				if(Client.initialized){
+					iresolve();
+				}else{
+					let initTimeout = setTimeout(() => {
+						initTimeout = null;
+						ireject();
+					}, 5000);
+					Client.onInitializeCallbackArray.push(() => {
+						if(initTimeout !== null){
+							clearTimeout(initTimeout);
+						}
+						iresolve();
+					});
 				}
-				resolve(response);
-			},(error) => {
-				if(timeout !== null){
-					clearTimeout(timeout);
-					timeout = null;
+			}).then((res, err) => {
+				if(err){
+					if(timeout !== null){
+						clearTimeout(timeout);
+						timeout = null;
+					}
+					reject(error);
+				}else{
+					this._run().then((response) => {
+						if(timeout !== null){
+							clearTimeout(timeout);
+							timeout = null;
+						}
+						resolve(response);
+					},(error) => {
+						if(timeout !== null){
+							clearTimeout(timeout);
+							timeout = null;
+						}
+						reject(error);
+					});
 				}
-				reject(error);
 			});
 		});
 	}
@@ -107,7 +125,7 @@ class CallItem extends Item
 			this.resolve = resolve;
 			this.reject = reject;
 			try{
-				sio.emit('WebSocketRequest', {
+				Client.socketIO.emit('WebSocketRequest', {
 					index: this.index,
 					request: this.request
 				});
@@ -189,10 +207,13 @@ export default class Client
 {
 	static _items = {};
 	static _events = {};
+	static initialized = false;
+	static onInitializeCallbackArray = [];
+	static socketIO = null;
 	
 	static initialize()
 	{
-		sio.on('WebSocketResponse', (response) => {
+		Client.socketIO.on('WebSocketResponse', (response) => {
 			if(typeof response === 'object' && 'index' in response && response.index in Client._items){
 				if('error' in response){
 					if(response.error === null){
@@ -206,7 +227,7 @@ export default class Client
 				}
 			}
 		});
-		sio.on('WebSocketEmit', (response) => {
+		Client.socketIO.on('WebSocketEmit', (response) => {
 			if(!('event' in response)){
 				return;
 			}
@@ -217,6 +238,10 @@ export default class Client
 				var callback = Client._events[response.event][i];
 				callback.apply(callback, response.arguments);
 			}
+		});
+		this.initialized = true;
+		Client.onInitializeCallbackArray.forEach((callback) => {
+			callback();
 		});
 	}
 	
@@ -270,4 +295,34 @@ export default class Client
 	}
 }
 
-Client.initialize();
+/*
+ * Loading SocketIO if missing from
+ * https://cdn.socket.io/socket.io-1.2.0.js
+ */
+
+function onSocketIOAvailable()
+{
+	Client.socketIO = io.connect();
+	Client.socketIO.on('error', function(error){
+		if(error === "BAD"){
+			window.location.reload(true);
+		}
+	});
+	Client.initialize();
+}
+
+if (typeof io === 'undefined'){
+	var head = document.getElementsByTagName('head')[0];
+	var script = document.createElement('script');
+	script.type = 'text/javascript';
+	script.src = 'https://cdn.socket.io/socket.io-1.2.0.js';
+	script.onload = onSocketIOAvailable;
+	script.onreadystatechange = function () {
+		if (this.readyState === 'complete'){
+			onSocketIOAvailable();
+		}
+	};
+	head.appendChild(script);
+}else{
+	onSocketIOAvailable();
+}
