@@ -2,10 +2,10 @@
 
 [![npm](https://img.shields.io/badge/IRC-FreeNode-blue.svg?style=square)](http://webchat.freenode.net/?channels=cakejs)
 [![npm](https://img.shields.io/npm/l/cakejs.svg?style=square)](LICENSE)
-[![npm](https://img.shields.io/npm/v/cakejs.svg?style=square)]()
-[![npm](https://img.shields.io/npm/dm/cakejs.svg?style=square)]()
+[![npm](https://img.shields.io/npm/v/cakejs.svg?style=square)](https://www.npmjs.com/package/cakejs)
+[![npm](https://img.shields.io/npm/dm/cakejs.svg?style=square)](https://www.npmjs.com/package/cakejs)
 [![npm](https://travis-ci.org/cakejs/cakejs.svg?branch=master)](https://travis-ci.org/cakejs/cakejs)
-[![npm](https://david-dm.org/cakejs/cakejs.svg)]()
+[![npm](https://david-dm.org/cakejs/cakejs.svg)](https://github.com/cakejs/cakejs/blob/master/package.json#L25)
 
 CakeJS is a NodeJS framework intended to be used either standalone, with a remote webserver such as Nginx
 or with CakePHP, This framework imitates CakePHP 3.x in many ways such as hierarchy,
