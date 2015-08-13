@@ -144,26 +144,51 @@ class PostItem extends Item
 			this.resolve = resolve;
 			this.reject = reject;
 			try{
-				$.ajax({
-					url: '/'+this.request.controller+"/"+(this.request.action===null?'':this.request.action)+"/"+this.request.arguments.join("/"),
-					method: 'POST',
-					data: typeof this.request.data === 'undefined'?null:this.request.data
-				}).done((data) => {
-					this.resolve(data);
-				}).fail((e) => {
-					if(e.status === 200){
-						this.resolve();
-					}else if(e.status === 520){
-						try{
-							this.reject(JSON.parse(e.responseText));
-						}catch(e){
-							this.reject('Post to '+this.request.controller+'->'+this.request.action+' failed');
-						}
-					}else{
-						this.reject('Post to '+this.request.controller+'->'+this.request.action+' failed');
+				var xhr = new XMLHttpRequest();
+				xhr.open('POST', encodeURI('/'+this.request.controller+"/"+(this.request.action===null?'':this.request.action)+"/"+this.request.arguments.join("/")));
+				xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+				xhr.onload = () => {
+					switch(xhr.status)
+					{
+						case 200:
+							if(xhr.responseText === ""){
+								this.resolve();
+							}else{
+								try{
+									this.resolve(JSON.parse(xhr.responseText));
+								}catch(e){
+									this.resolve(xhr.responseText);
+								}
+							}
+							break;
+						case 520:
+							try{
+								this.reject(JSON.parse(xhr.responseText));
+							}catch(e){
+								this.reject('Get to '+this.request.controller+'->'+this.request.action+' failed');
+							}
+							break;
+						default:
+							this.reject('Get to '+this.request.controller+'->'+this.request.action+' failed');
+							break;
 					}
-				});
+				};
+				if(typeof this.request.data !== 'undefined' && this.request.data !== null){
+					var encodedString = '';
+					for (var prop in this.request.data) {
+						if (this.request.data.hasOwnProperty(prop)) {
+							if (encodedString.length > 0) {
+								encodedString += '&';
+							}
+							encodedString += encodeURI(prop + '=' + this.request.data[prop]);
+						}
+					}
+					xhr.send(encodedString);
+				}else{
+					xhr.send();
+				}
 			}catch(e){
+				console.log(e);
 				this.reject('Post to '+this.request.controller+'->'+this.request.action+' failed');
 			}
 		});
@@ -178,24 +203,35 @@ class GetItem extends Item
 			this.resolve = resolve;
 			this.reject = reject;
 			try{
-				$.ajax({
-					url: '/'+this.request.controller+"/"+(this.request.action===null?'':this.request.action)+"/"+this.request.arguments.join("/"),
-					method: 'GET'
-				}).done((data) => {
-					this.resolve(data);
-				}).fail((e) => {
-					if(e.status === 200){
-						this.resolve();
-					}else if(e.status === 520){
-						try{
-							this.reject(JSON.parse(e.responseText));
-						}catch(e){
+				var xhr = new XMLHttpRequest();
+				xhr.open('GET', encodeURI('/'+this.request.controller+"/"+(this.request.action===null?'':this.request.action)+"/"+this.request.arguments.join("/")));
+				xhr.onload = () => {
+					switch(xhr.status)
+					{
+						case 200:
+							if(xhr.responseText === ""){
+								this.resolve();
+							}else{
+								try{
+									this.resolve(JSON.parse(xhr.responseText));
+								}catch(e){
+									this.resolve(xhr.responseText);
+								}
+							}
+							break;
+						case 520:
+							try{
+								this.reject(JSON.parse(xhr.responseText));
+							}catch(e){
+								this.reject('Get to '+this.request.controller+'->'+this.request.action+' failed');
+							}
+							break;
+						default:
 							this.reject('Get to '+this.request.controller+'->'+this.request.action+' failed');
-						}
-					}else{
-						this.reject('Get to '+this.request.controller+'->'+this.request.action+' failed');
+							break;
 					}
-				});
+				};
+				xhr.send();
 			}catch(e){
 				this.reject('Get to '+this.request.controller+'->'+this.request.action+' failed');
 			}
