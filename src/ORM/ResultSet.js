@@ -107,6 +107,15 @@ export class ResultSet extends CollectionInterface
 		return this.toArray();		
 	}
 	
+	jsonSerialize()
+	{
+		var json = [];
+		this.forEach((entity) => {
+			json.push(entity.jsonSerialize());
+		});
+		return json;
+	}
+	
 	inspect()
 	{
 		return this._statement.results;

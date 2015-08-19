@@ -68,6 +68,13 @@ export class Connection
 				}
 				await controller.initialize();
 				var result = await controller[route.action].apply(controller, route.params);
+				if(result !== null && typeof result === 'object' && result.constructor.name !== 'Object'){
+					if(!('jsonSerialize' in result) || typeof result.jsonSerialize !== 'function'){
+						throw new Exception(String.sprintf('returned "%s" which does not have a jsonSerialize method', result.constructor.name));
+					}else{
+						result = result.jsonSerialize();
+					}
+				}
 				if(typeof result !== 'undefined'){
 					response.data = result;
 				}
@@ -84,12 +91,16 @@ export class Connection
 					response.error = e.data;
 					return this.socket.emit("WebSocketResponse", response);
 				}else if(e instanceof FatalException){
-					console.log(e.message);
+					console.log(String.sprintf('%sController->%s() throwed error: %s', request.controller, request.action, e.message));
+					console.log(e.stack);
 					return this.socket.emit("WebSocketResponse", response);
 				}else if(e instanceof Exception){
+					console.log(String.sprintf('%sController->%s() throwed error: %s', request.controller, request.action, e.message));
+					console.log(e.stack);
 					return this.socket.emit("WebSocketResponse", response);
 				}else if(e instanceof Error){
-					console.log(e.message);
+					console.log(String.sprintf('%sController->%s() throwed error: %s', request.controller, request.action, e.message));
+					console.log(e.stack);
 					return this.socket.emit("WebSocketResponse", response);
 				}else{
 					console.log(e);

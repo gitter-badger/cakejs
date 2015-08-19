@@ -56,6 +56,13 @@ class Static
 			try{
 				await controller.initialize();
 				var result = await controller[route.action].apply(controller, route.params);
+				if(result !== null && typeof result === 'object' && result.constructor.name !== 'Object'){
+					if(!('jsonSerialize' in result) || typeof result.jsonSerialize !== 'function'){
+						throw new Exception(String.sprintf('returned "%s" which does not have a jsonSerialize method', result.constructor.name));
+					}else{
+						result = result.jsonSerialize();
+					}
+				}
 				response.writeHead(200, {'Content-Type': 'application/json'});
 				if(typeof result !== 'undefined'){
 					response.write(JSON.stringify(result));
@@ -71,12 +78,16 @@ class Static
 					response.writeHead(520, {'Content-Type': 'application/json'});
 					response.write(JSON.stringify(e.data));
 				}else if(e instanceof FatalException){
-					console.log(e.message);
+					console.log(String.sprintf('%sController->%s() throwed error: %s', route.controller, route.action, e.message));
+					console.log(e.stack);
 					return response.sendStatus(500);
 				}else if(e instanceof Exception){
+					console.log(String.sprintf('%sController->%s() throwed error: %s', route.controller, route.action, e.message));
+					console.log(e.stack);
 					return response.sendStatus(500);
 				}else if(e instanceof Error){
-					console.log(e.message);
+					console.log(String.sprintf('%sController->%s() throwed error: %s', route.controller, route.action, e.message));
+					console.log(e.stack);
 					return response.sendStatus(500);
 				}else{
 					console.log(e);
