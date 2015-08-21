@@ -19,6 +19,7 @@
 import {MissingActionException} from '../Controller/Exception/MissingActionException'
 import {ClientException} from '../Controller/Exception/ClientException'
 import {FatalException} from '../Core/Exception/FatalException'
+import {BadRouteException} from 'Cake/Routing/Exception/BadRouteException';
 import {Exception} from '../Core/Exception/Exception'
 import {Request} from '../Network/Request'
 
@@ -69,10 +70,23 @@ export class Connection
 				await controller.initialize();
 				var result = await controller[route.action].apply(controller, route.params);
 				if(result !== null && typeof result === 'object' && result.constructor.name !== 'Object'){
-					if(!('jsonSerialize' in result) || typeof result.jsonSerialize !== 'function'){
-						throw new Exception(String.sprintf('returned "%s" which does not have a jsonSerialize method', result.constructor.name));
+					if(result instanceof Array){
+						for(var x in result){
+							let item = result[i];
+							if(item !== null && typeof item === 'object' && item.constructor.name !== 'Object'){
+								if(!('jsonSerialize' in item) || typeof item.jsonSerialize !== 'function'){
+									throw new Exception(String.sprintf('returned "%s" which does not have a jsonSerialize method', item.constructor.name));
+								}else{
+									result[i] = item.jsonSerialize();
+								}
+							}
+						}
 					}else{
-						result = result.jsonSerialize();
+						if(!('jsonSerialize' in result) || typeof result.jsonSerialize !== 'function'){
+							throw new Exception(String.sprintf('returned "%s" which does not have a jsonSerialize method', result.constructor.name));
+						}else{
+							result = result.jsonSerialize();
+						}
 					}
 				}
 				if(typeof result !== 'undefined'){
@@ -89,6 +103,8 @@ export class Connection
 				}
 				if(e instanceof ClientException){
 					response.error = e.data;
+					return this.socket.emit("WebSocketResponse", response);
+				}else if(e instanceof BadRouteException){
 					return this.socket.emit("WebSocketResponse", response);
 				}else if(e instanceof FatalException){
 					console.log(String.sprintf('%sController->%s() throwed error: %s', request.controller, request.action, e.message));

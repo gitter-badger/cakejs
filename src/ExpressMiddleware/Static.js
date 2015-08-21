@@ -24,6 +24,7 @@ import fs from 'fs';
 import {MissingActionException} from 'Cake/Controller/Exception/MissingActionException'
 import {ClientException} from 'Cake/Controller/Exception/ClientException'
 import {FatalException} from 'Cake/Core/Exception/FatalException'
+import {BadRouteException} from 'Cake/Routing/Exception/BadRouteException';
 import {Exception} from 'Cake/Core/Exception/Exception'
 import {Request} from 'Cake/Network/Request'
 
@@ -57,10 +58,23 @@ class Static
 				await controller.initialize();
 				var result = await controller[route.action].apply(controller, route.params);
 				if(result !== null && typeof result === 'object' && result.constructor.name !== 'Object'){
-					if(!('jsonSerialize' in result) || typeof result.jsonSerialize !== 'function'){
-						throw new Exception(String.sprintf('returned "%s" which does not have a jsonSerialize method', result.constructor.name));
+					if(result instanceof Array){
+						for(var x in result){
+							let item = result[i];
+							if(item !== null && typeof item === 'object' && item.constructor.name !== 'Object'){
+								if(!('jsonSerialize' in item) || typeof item.jsonSerialize !== 'function'){
+									throw new Exception(String.sprintf('returned "%s" which does not have a jsonSerialize method', item.constructor.name));
+								}else{
+									result[i] = item.jsonSerialize();
+								}
+							}
+						}
 					}else{
-						result = result.jsonSerialize();
+						if(!('jsonSerialize' in result) || typeof result.jsonSerialize !== 'function'){
+							throw new Exception(String.sprintf('returned "%s" which does not have a jsonSerialize method', result.constructor.name));
+						}else{
+							result = result.jsonSerialize();
+						}
 					}
 				}
 				response.writeHead(200, {'Content-Type': 'application/json'});
@@ -77,6 +91,8 @@ class Static
 				if(e instanceof ClientException){
 					response.writeHead(520, {'Content-Type': 'application/json'});
 					response.write(JSON.stringify(e.data));
+				}else if(e instanceof BadRouteException){
+					return response.sendStatus(404);
 				}else if(e instanceof FatalException){
 					console.log(String.sprintf('%sController->%s() throwed error: %s', route.controller, route.action, e.message));
 					console.log(e.stack);
