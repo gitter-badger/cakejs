@@ -59,7 +59,7 @@ class Static
 				var result = await controller[route.action].apply(controller, route.params);
 				if(result !== null && typeof result === 'object' && result.constructor.name !== 'Object'){
 					if(result instanceof Array){
-						for(var x in result){
+						for(var i in result){
 							let item = result[i];
 							if(item !== null && typeof item === 'object' && item.constructor.name !== 'Object'){
 								if(!('jsonSerialize' in item) || typeof item.jsonSerialize !== 'function'){
