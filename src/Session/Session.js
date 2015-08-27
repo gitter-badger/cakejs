@@ -30,6 +30,7 @@ class SessionData
 	constructor(session)
 	{
 		this.__session = session;
+		this.connections = this.__session.connections;
 	}
 	
 	/**
@@ -139,16 +140,6 @@ class SessionData
 	async renew()
 	{
 		await this.__session.touch();
-	}
-	
-	/**
-	 * Iterates all webSocket connections with callback
-	 * 
-	 * @return {void}
-	 */
-	static forEach(callback)
-	{
-		this.__session.connections.forEach(callback);
 	}
 }
 
