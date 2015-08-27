@@ -24,8 +24,11 @@ import {Exception} from 'Cake/Core/Exception/Exception'
 import {Request} from 'Cake/Network/Request'
 
 //Singelton instances
-import {Router} from '../Routing/Router'
-import {ControllerManager} from '../Controller/ControllerManager'
+import {Router} from 'Cake/Routing/Router'
+import {ControllerManager} from 'Cake/Controller/ControllerManager'
+
+//Utilities
+import { JsonSerializer } from 'Cake/Utility/JsonSerializer';
 
 //Requires
 var events = require('events');
@@ -69,26 +72,7 @@ export class Connection
 				}
 				await controller.initialize();
 				var result = await controller[route.action].apply(controller, route.params);
-				if(result !== null && typeof result === 'object' && result.constructor.name !== 'Object'){
-					if(result instanceof Array){
-						for(var i in result){
-							let item = result[i];
-							if(item !== null && typeof item === 'object' && item.constructor.name !== 'Object'){
-								if(!('jsonSerialize' in item) || typeof item.jsonSerialize !== 'function'){
-									throw new Exception(String.sprintf('returned "%s" which does not have a jsonSerialize method', item.constructor.name));
-								}else{
-									result[i] = item.jsonSerialize();
-								}
-							}
-						}
-					}else{
-						if(!('jsonSerialize' in result) || typeof result.jsonSerialize !== 'function'){
-							throw new Exception(String.sprintf('returned "%s" which does not have a jsonSerialize method', result.constructor.name));
-						}else{
-							result = result.jsonSerialize();
-						}
-					}
-				}
+				result = JsonSerializer.serialize(result);
 				if(typeof result !== 'undefined'){
 					response.data = result;
 				}
@@ -130,30 +114,7 @@ export class Connection
 	emit(event){
 		var args = [];
 		for(var key in arguments){
-			let result = arguments[key];
-			
-			if(result !== null && typeof result === 'object' && result.constructor.name !== 'Object'){
-				if(result instanceof Array){
-					for(var i in result){
-						let item = result[i];
-						if(item !== null && typeof item === 'object' && item.constructor.name !== 'Object'){
-							if(!('jsonSerialize' in item) || typeof item.jsonSerialize !== 'function'){
-								throw new Exception(String.sprintf('returned "%s" which does not have a jsonSerialize method', item.constructor.name));
-							}else{
-								result[i] = item.jsonSerialize();
-							}
-						}
-					}
-				}else{
-					if(!('jsonSerialize' in result) || typeof result.jsonSerialize !== 'function'){
-						throw new Exception(String.sprintf('returned "%s" which does not have a jsonSerialize method', result.constructor.name));
-					}else{
-						result = result.jsonSerialize();
-					}
-				}
-			}
-			
-			args.push(result);
+			args.push(JsonSerializer.serialize(arguments[key]));
 		}
 		args.shift();
 		this.socket.emit("WebSocketEmit", {

@@ -32,6 +32,9 @@ import {Request} from 'Cake/Network/Request'
 import {Router} from 'Cake/Routing/Router'
 import {ControllerManager} from 'Cake/Controller/ControllerManager'
 
+//Utilities
+import { JsonSerializer } from 'Cake/Utility/JsonSerializer';
+
 class Static 
 {
 	_path = null;
@@ -57,26 +60,7 @@ class Static
 			try{
 				await controller.initialize();
 				var result = await controller[route.action].apply(controller, route.params);
-				if(result !== null && typeof result === 'object' && result.constructor.name !== 'Object'){
-					if(result instanceof Array){
-						for(var i in result){
-							let item = result[i];
-							if(item !== null && typeof item === 'object' && item.constructor.name !== 'Object'){
-								if(!('jsonSerialize' in item) || typeof item.jsonSerialize !== 'function'){
-									throw new Exception(String.sprintf('returned "%s" which does not have a jsonSerialize method', item.constructor.name));
-								}else{
-									result[i] = item.jsonSerialize();
-								}
-							}
-						}
-					}else{
-						if(!('jsonSerialize' in result) || typeof result.jsonSerialize !== 'function'){
-							throw new Exception(String.sprintf('returned "%s" which does not have a jsonSerialize method', result.constructor.name));
-						}else{
-							result = result.jsonSerialize();
-						}
-					}
-				}
+				result = JsonSerializer.serialize(result);
 				response.writeHead(200, {'Content-Type': 'application/json'});
 				if(typeof result !== 'undefined'){
 					response.write(JSON.stringify(result));
