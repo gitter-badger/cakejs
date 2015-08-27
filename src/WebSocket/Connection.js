@@ -16,12 +16,12 @@
 //CakeJS.WebSocket.Connection
 
 //Types
-import {MissingActionException} from '../Controller/Exception/MissingActionException'
-import {ClientException} from '../Controller/Exception/ClientException'
-import {FatalException} from '../Core/Exception/FatalException'
+import {MissingActionException} from 'Cake/Controller/Exception/MissingActionException'
+import {ClientException} from 'Cake/Controller/Exception/ClientException'
+import {FatalException} from 'Cake/Core/Exception/FatalException'
 import {BadRouteException} from 'Cake/Routing/Exception/BadRouteException';
-import {Exception} from '../Core/Exception/Exception'
-import {Request} from '../Network/Request'
+import {Exception} from 'Cake/Core/Exception/Exception'
+import {Request} from 'Cake/Network/Request'
 
 //Singelton instances
 import {Router} from '../Routing/Router'
@@ -130,7 +130,30 @@ export class Connection
 	emit(event){
 		var args = [];
 		for(var key in arguments){
-			args.push(arguments[key]);
+			let result = arguments[key];
+			
+			if(result !== null && typeof result === 'object' && result.constructor.name !== 'Object'){
+				if(result instanceof Array){
+					for(var i in result){
+						let item = result[i];
+						if(item !== null && typeof item === 'object' && item.constructor.name !== 'Object'){
+							if(!('jsonSerialize' in item) || typeof item.jsonSerialize !== 'function'){
+								throw new Exception(String.sprintf('returned "%s" which does not have a jsonSerialize method', item.constructor.name));
+							}else{
+								result[i] = item.jsonSerialize();
+							}
+						}
+					}
+				}else{
+					if(!('jsonSerialize' in result) || typeof result.jsonSerialize !== 'function'){
+						throw new Exception(String.sprintf('returned "%s" which does not have a jsonSerialize method', result.constructor.name));
+					}else{
+						result = result.jsonSerialize();
+					}
+				}
+			}
+			
+			args.push(result);
 		}
 		args.shift();
 		this.socket.emit("WebSocketEmit", {
