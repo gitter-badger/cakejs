@@ -158,8 +158,8 @@ export class Session
 	{
 		this._engine = engine;
 		this._keyValue = keyValue;
-		this.data = new SessionData(this);
 		this.connections = new ConnectionContainer();
+		this.data = new SessionData(this);
 	}
 	
 	/**
