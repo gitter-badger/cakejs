@@ -16,25 +16,27 @@
 //CakeJS.Database.Query
 
 //Exceptions
-import {NotImplementedException} from '../Exception/NotImplementedException';
-import {RuntimeException} from '../Exception/RuntimeException';
+import { NotImplementedException } from 'Cake/Exception/NotImplementedException';
+import { RuntimeException } from 'Cake/Exception/RuntimeException';
 
 //Types
-import {CollectionInterface} from '../Collection/CollectionInterface';
-import {ValueBinder} from './ValueBinder';
+import { CollectionInterface } from 'Cake/Collection/CollectionInterface';
+import { ValueBinder } from 'Cake/Database/ValueBinder';
 
 //Expressions
-import {ExpressionInterface} from './ExpressionInterface';
-import {QueryExpression} from './Expression/QueryExpression';
-import {ValuesExpression} from './Expression/ValuesExpression';
+import { ExpressionInterface } from 'Cake/Database/ExpressionInterface';
+import { QueryExpression } from 'Cake/Database/Expression/QueryExpression';
+import { ValuesExpression } from 'Cake/Database/Expression/ValuesExpression';
+import { OrderByExpression } from 'Cake/Database/Expression/OrderByExpression';
+import { OrderClauseExpression } from 'Cake/Database/Expression/OrderClauseExpression';
 
 //Utilities
-import merge from '../Utilities/merge';
-import isEmpty from '../Utilities/isEmpty';
-import isArray from '../Utilities/isArray';
-import toArray from '../Utilities/toArray';
-import count from '../Utilities/count';
-import getArrayKeysAndValues from '../Utilities/getArrayKeysAndValues';
+import merge from 'Cake/Utilities/merge';
+import isEmpty from 'Cake/Utilities/isEmpty';
+import isArray from 'Cake/Utilities/isArray';
+import toArray from 'Cake/Utilities/toArray';
+import count from 'Cake/Utilities/count';
+import getArrayKeysAndValues from 'Cake/Utilities/getArrayKeysAndValues';
 
 export class Query extends ExpressionInterface 
 {
@@ -260,9 +262,55 @@ export class Query extends ExpressionInterface
 		throw new NotImplementedException();
 	}
 	
-	order()
+	order(fields, overwrite = false)
 	{
-		throw new NotImplementedException();
+		if(overwrite){
+			this._parts['order'] = null;
+		}
+		
+		if(!fields){
+			return this;
+		}
+		
+		if(!this._parts['order']){
+			this._parts['order'] = new OrderByExpression();
+		}
+		this._conjugate('order', fields, '', []);
+		return this;
+	}
+	
+	orderAsc(field, overwrite = false)
+	{
+		if(overwrite){
+			this._parts['order'] = null;
+		}
+		
+		if(!field){
+			return this;
+		}
+		
+		if(!this._parts['order']){
+			this._parts['order'] = new OrderByExpression();
+		}
+		this._parts['order'].add(new OrderClauseExpression(field, 'ASC'));
+		return this;
+	}
+	
+	orderDesc(field, overwrite = false)
+	{
+		if(overwrite){
+			this._parts['order'] = null;
+		}
+		
+		if(!field){
+			return this;
+		}
+		
+		if(!this._parts['order']){
+			this._parts['order'] = new OrderByExpression();
+		}
+		this._parts['order'].add(new OrderClauseExpression(field, 'DESC'));
+		return this;
 	}
 	
 	group()

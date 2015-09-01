@@ -20,11 +20,13 @@
 
 //CakeJS.Database.Expression.OrderByExpression
 
-//Types
-import {QueryExpression} from './QueryExpression'
+//Expression
+import { QueryExpression } from 'Cake/Database/Expression/QueryExpression';
+import { ExpressionInterface } from 'Cake/Database/ExpressionInterface';
 
 //Utilities
-import merge from '../../Utilities/merge'
+import merge from 'Cake/Utilities/merge';
+import isNumeric from 'Cake/Utilities/isNumeric';
 
 /**
  * @internal
@@ -44,7 +46,7 @@ export class OrderByExpression extends QueryExpression
 			if(typeof direction === 'object' && direction instanceof ExpressionInterface){
 				direction = sprintf('(%s)', direction.sql(generator));
 			}
-			order.push(typeof k === 'number' ? direction : sprintf('%s %s', k, direction));
+			order.push(isNumeric(k) ? direction : sprintf('%s %s', k, direction));
 		}
 		return sprintf('ORDER BY %s', order.join(', '));
 	}
