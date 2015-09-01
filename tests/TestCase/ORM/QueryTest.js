@@ -24,13 +24,18 @@ export class QueryTest extends TestCase
 	fixtures = [ 'app.query_tests' ];
 	autoFixtures = true;
 	
+	async setUp()
+	{
+		await super.setUp();
+		this.QueryTables = await TableRegistry.get("QueryTests");
+	}
+	
 	/**
 	 * Tests QueryBuilder constructs correct SQL query
 	 * when selecting all
 	 */
 	async testSelect_All()
 	{
-		this.QueryTables = await TableRegistry.get("QueryTests");
 		var sqlQuery = this.QueryTables
 			.find('all')
 			.sql();
@@ -41,9 +46,8 @@ export class QueryTest extends TestCase
 	 * Tests QueryBuilder constructs correct SQL query
 	 * when selecting columnA and columnB
 	 */
-	async testSelect_Specific()
+	testSelect_Specific()
 	{
-		this.QueryTables = await TableRegistry.get("QueryTests");
 		var sqlQuery = this.QueryTables
 			.find()
 			.select(['columnA', 'columnB'])
@@ -55,9 +59,8 @@ export class QueryTest extends TestCase
 	 * Tests QueryBuilder constructs correct SQL query
 	 * when performing a indexless insert
 	 */
-	async testInsert()
+	testInsert()
 	{
-		this.QueryTables = await TableRegistry.get("QueryTests");
 		var sqlQuery = this.QueryTables
 			.query()
 			.insert(['columnA', 'columnB'])
@@ -73,9 +76,8 @@ export class QueryTest extends TestCase
 	 * Tests QueryBuilder constructs correct SQL query
 	 * when performing a update with set and where statements
 	 */
-	async testUpdate()
+	testUpdate()
 	{
-		this.QueryTables = await TableRegistry.get("QueryTests");
 		var sqlQuery = this.QueryTables
 			.query()
 			.update()
@@ -89,14 +91,37 @@ export class QueryTest extends TestCase
 	 * Tests QueryBuilder constructs correct SQL query
 	 * when performing a delete with a where statement
 	 */
-	async testDelete()
+	testDelete()
 	{
-		this.QueryTables = await TableRegistry.get("QueryTests");
 		var sqlQuery = this.QueryTables
 			.query()
 			.delete()
 			.where({'columnB': 'valueB'})
 			.sql();
 		this.assertEquals(sqlQuery, "DELETE FROM query_tests WHERE (columnB = :0)");
+	}
+	
+	testOrderBy()
+	{
+		var sqlQuery = this.QueryTables
+			.find()
+			.where({'columnB': 'valueB'})
+			.order({'columnB': 'DESC'})
+			.sql();
+		this.assertEquals(sqlQuery, "SELECT query_tests.id AS `query_tests__id`, query_tests.column_a AS `query_tests__column_a`, query_tests.column_b AS `query_tests__column_b` FROM query_tests WHERE (columnB = :0) ORDER BY columnB DESC");
+	
+		var sqlQuery = this.QueryTables
+			.find()
+			.where({'columnB': 'valueB'})
+			.orderAsc('columnB')
+			.sql();
+		this.assertEquals(sqlQuery, "SELECT query_tests.id AS `query_tests__id`, query_tests.column_a AS `query_tests__column_a`, query_tests.column_b AS `query_tests__column_b` FROM query_tests WHERE (columnB = :0) ORDER BY (columnB ASC)");
+		
+		var sqlQuery = this.QueryTables
+			.find()
+			.where({'columnB': 'valueB'})
+			.orderDesc('columnB')
+			.sql();
+		this.assertEquals(sqlQuery, "SELECT query_tests.id AS `query_tests__id`, query_tests.column_a AS `query_tests__column_a`, query_tests.column_b AS `query_tests__column_b` FROM query_tests WHERE (columnB = :0) ORDER BY (columnB DESC)");
 	}
 }
