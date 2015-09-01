@@ -31,6 +31,7 @@ export class JsonSerializer
 						for(let i = 0; i < object[i]; i++){
 							object[i] = JsonSerializer.serialize(object[i]);
 						}
+					}else if(object instanceof Date){
 					}else{
 						if(!('jsonSerialize' in object) || typeof object.jsonSerialize !== 'function'){
 							throw new Exception(String.sprintf('returned "%s" which does not have a jsonSerialize method', object.constructor.name));
