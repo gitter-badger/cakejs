@@ -67,6 +67,7 @@ export class Connection
 				controller.request = new Request(null, this.session);
 				controller.request.url = "/"+request.controller+"/"+request.action;
 				controller.request.data = request.data;
+				controller.request.connection = this.socket;
 				if(!(route.action in controller)){
 					throw new MissingActionException(route.action);
 				}
