@@ -23,6 +23,7 @@ export class Request
 		session = typeof session !== 'undefined' ? session : null;
 		this.data = null;
 		this.url = null;
+		this.connection = null;
 		this._detectorCache = {};
 		this._session = session;
 		this._detectors = {
