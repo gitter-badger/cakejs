@@ -22,4 +22,9 @@ module.exports = function(){
 			"App/": global.APP,
 		});
 	}
+	if(defined('WWW_ROOT')){
+		require('./hook').attach({
+			"Web/": path.resolve(global.WWW_ROOT,'src'),
+		});
+	}
 }
