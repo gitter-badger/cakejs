@@ -34,7 +34,7 @@ export class ProcessManager
 	{
 		var classes = await ClassLoader.loadFolder('Process');
 		for(var key in classes){
-			ProcessManager._processes[key.substr(0,key.length-"Process".length)] = new classes[key]();
+			ProcessManager._processes[key] = new classes[key]();
 		}
 		for(var key in ProcessManager._processes){
 			await ProcessManager._processes[key].initialize();

@@ -17,7 +17,7 @@
 
 import { Process } from 'Cake/Process/Process';
 
-export default class TestProcess extends Process 
+export class TestProcess extends Process 
 {
 	/**
 	 * Sets member variable keyA to valueA
