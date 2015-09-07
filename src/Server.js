@@ -103,7 +103,7 @@ export class Server extends events.EventEmitter
 		this._app.use(sessionParser(SessionManager.config()));
 		
 		//Loads app middlewares
-		try{await MiddlewareManager.initialize();}catch(e){
+		try{await MiddlewareManager.initialize(this._app);}catch(e){
 			if(e.constructor.name !== 'FolderMissingException'){
 				throw e;
 			}
