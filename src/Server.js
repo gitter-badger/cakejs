@@ -20,15 +20,16 @@ import {MissingConfigException} from 'Cake/Exception/MissingConfigException';
 import {Exception} from 'Cake/Core/Exception/Exception';
 
 //Express middlewares
-import sessionParser from 'Cake/ExpressMiddleware/SessionParser';
-import socketIOConnection from 'Cake/ExpressMiddleware/SocketIOConnection';
-import _static from 'Cake/ExpressMiddleware/Static';
-import forward from 'Cake/ExpressMiddleware/Forward';
-import proxy from 'Cake/ExpressMiddleware/Proxy';
+import sessionParser from 'Cake/Middleware/SessionParser';
+import socketIOConnection from 'Cake/Middleware/SocketIOConnection';
+import _static from 'Cake/Middleware/Static';
+import forward from 'Cake/Middleware/Forward';
+import proxy from 'Cake/Middleware/Proxy';
 
 //Singelton instances
 import {ControllerManager} from 'Cake/Controller/ControllerManager';
 import {ProcessManager} from 'Cake/Process/ProcessManager';
+import {MiddlewareManager} from 'Cake/Middleware/MiddlewareManager';
 import {Router} from 'Cake/Routing/Router';
 import {Configure} from 'Cake/Core/Configure';
 import {SessionManager} from 'Cake/Session/SessionManager';
@@ -83,12 +84,12 @@ export class Server extends events.EventEmitter
 		//Preloads managers
 		try{await ControllerManager.initialize();}catch(e){
 			if(e.constructor.name !== 'FolderMissingException'){
-				console.log(e);
+				throw e;
 			}
 		}
 		try{await ProcessManager.initialize();}catch(e){
 			if(e.constructor.name !== 'FolderMissingException'){
-				console.log(e);
+				throw e;
 			}
 		}
 		try{await ConnectionManager.initialize();}catch(e){}
@@ -100,7 +101,14 @@ export class Server extends events.EventEmitter
 		
 		this._app.use(cookieParser());
 		this._app.use(sessionParser(SessionManager.config()));
-		this.emit('use', this._app);
+		
+		//Loads app middlewares
+		try{await MiddlewareManager.initialize();}catch(e){
+			if(e.constructor.name !== 'FolderMissingException'){
+				throw e;
+			}
+		}
+		
 		if(Configure.read("Web.port") !== null){
 			var javascriptLibraryContent = fs.readFileSync(path.resolve(CAKE_CORE_INCLUDE_PATH,'dist','webroot','js','client.js'));
 			this._app.get('/js/cakejs.js', (request, response) => {

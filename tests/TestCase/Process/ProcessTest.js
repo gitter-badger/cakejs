@@ -13,27 +13,27 @@
  * @license     http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-//Uses
 import { TestCase } from 'Cake/TestSuite/TestCase';
-import { ProcessManager } from 'Cake/Process/ProcessManager';
+
+import { TestProcess } from 'App/Process/TestProcess';
 
 export class ProcessTest extends TestCase
 {
 	/**
 	 * Tests the Process named "TestProcess" if it was initialized
 	 */
-	async init()
+	async testInit()
 	{
-		var process = ProcessManager.get('Test');
+		var process = TestProcess.getInstance();
 		this.assertEquals(process.keyA, 'valueA');
 	}
 	
 	/**
 	 * Tests the Process named "TestProcess" if it was started
 	 */
-	async start()
+	async testStart()
 	{
-		var process = ProcessManager.get('Test');
+		var process = TestProcess.getInstance();
 		this.assertEquals(process.keyB, 'valueB');
 	}
 }

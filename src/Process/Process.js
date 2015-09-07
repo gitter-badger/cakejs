@@ -13,10 +13,15 @@
  * @license     http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-//CakeJS.Process.Process
+import { ProcessManager } from 'Cake/Process/ProcessManager';
 
-export class Process 
+export class Process
 {
+	static getInstance()
+	{
+		return ProcessManager.get(this.name);
+	}
+	
 	initialize()
 	{
 		
