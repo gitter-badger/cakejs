@@ -1,5 +1,7 @@
 # CakeJS Framework
 
+[![Join the chat at https://gitter.im/cakejs/cakejs](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/cakejs/cakejs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![npm](https://img.shields.io/badge/IRC-FreeNode-blue.svg?style=square)](http://webchat.freenode.net/?channels=cakejs)
 [![npm](https://img.shields.io/npm/l/cakejs.svg?style=square)](LICENSE)
 [![npm](https://img.shields.io/npm/v/cakejs.svg?style=square)](https://www.npmjs.com/package/cakejs)
